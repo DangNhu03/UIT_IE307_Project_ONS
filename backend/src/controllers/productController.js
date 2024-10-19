@@ -1,6 +1,5 @@
 const Category = require('../models/categoriesModels');
 const Product = require('../models/productsModels');
-const ProductVariation = require('../models/variationsModels');
 
 
 
@@ -46,7 +45,6 @@ const getAllCategories = async (req, res) => {
 // POST: Thêm mới sản phẩm
 const postProduct = async (req, res) => {
     try {
-        // Lấy thông tin sản phẩm từ body request
         const {
             cate_id,
             prod_name,
@@ -58,9 +56,11 @@ const postProduct = async (req, res) => {
             prod_sold,
             prod_avg_rating,
             prod_review_count,
-            prod_image
+            prod_image,
+            prod_variations // Mảng các biến thể của sản phẩm
         } = req.body;
 
+        // Tạo một đối tượng Product mới với các thông tin trên
         const newProduct = new Product({
             cate_id,
             prod_name,
@@ -72,7 +72,8 @@ const postProduct = async (req, res) => {
             prod_sold,
             prod_avg_rating,
             prod_review_count,
-            prod_image
+            prod_image,
+            prod_variations 
         });
 
         const savedProduct = await newProduct.save();
@@ -88,6 +89,7 @@ const postProduct = async (req, res) => {
         });
     }
 };
+
 
 // GET: Lấy tất cả sản phẩm
 const getAllProduct = async (req, res) => {
@@ -108,78 +110,9 @@ const getAllProduct = async (req, res) => {
     }
 };
 
-
-// POST: Thêm biến thể cho sản phẩm
-const postVariationForProduct = async (req, res) => {
-    try {
-        const { productId } = req.params;
-        const {
-            prod_price,
-            prod_stock_quantity,
-            prod_image,
-            prod_variations
-        } = req.body;
-
-        // Kiểm tra sản phẩm có tồn tại không
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(404).json({ message: "Product not found" });
-        }
-
-        // Tạo biến thể cho sản phẩm
-        const newVariation = new ProductVariation({
-            prod_id: productId,
-            prod_price,
-            prod_stock_quantity,
-            prod_image,
-            prod_variations
-        });
-
-        // Lưu biến thể vào database
-        const savedVariation = await newVariation.save();
-
-        res.status(201).json({
-            message: "Product variation created successfully",
-            variation: savedVariation
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Failed to create product variation",
-            error: error.message
-        });
-    }
-};
-
-//GET: Lấy sản phẩm cùng với các biến thể 
-const getProductWithVariations = async (req, res) => {
-    try {
-        const { productId } = req.params;
-
-        // Tìm sản phẩm và các biến thể liên quan
-        const product = await Product.findById(productId);
-        const variations = await ProductVariation.find({ prod_id: productId });
-
-        if (!product) {
-            return res.status(404).json({ message: "Product not found" });
-        }
-
-        res.status(200).json({
-            message: "Product and variations retrieved successfully",
-            product,
-            variations
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Failed to retrieve product and variations",
-            error: error.message
-        });
-    }
-};
 module.exports = {
     postCategories,
     getAllCategories,
     postProduct,
     getAllProduct,
-    postVariationForProduct,
-    getProductWithVariations,
 };

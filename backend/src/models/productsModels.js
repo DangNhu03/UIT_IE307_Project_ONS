@@ -14,6 +14,13 @@ let ProductsSchema = new Schema({
   prod_avg_rating: { type: Number, required: true, default: 0 },
   prod_review_count: { type: Number, required: true, default: 0 },
   prod_image: { type: [String], required: true },
+  prod_variations: [{
+    _id: { type: Schema.Types.ObjectId, auto: true }, 
+    variant_name: { type: String, required: true }, 
+    variant_price: { type: Number, required: true }, 
+    variant_stock_quantity: { type: Number, default: 10 }, 
+    variant_image: { type: String }, 
+  }],
 });
 
 module.exports = mongoose.model("products", ProductsSchema);
