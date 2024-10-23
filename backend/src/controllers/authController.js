@@ -1,5 +1,4 @@
 const User = require('../models/usersModels'); // Model của users
-const UserVoucher = require('../models/uservoucherModels'); // Model của user vouchers
 const Voucher = require('../models/vouchersModels'); // Model của vouchers
 
 // POST: Thêm người dùng mới
@@ -44,14 +43,18 @@ const addVoucher = async (req, res) => {
             return res.status(404).json({ message: 'Voucher not found' });
         }
 
-        // Thêm voucher cho người dùng
-        const newUserVoucher = new UserVoucher({
+        // Thêm voucher vào list_vouchers của người dùng
+        const user = await User.findByIdAndUpdate(
             user_id,
-            voucher_id
-        });
+            { $addToSet: { list_vouchers: voucher_id } }, // Thêm voucher vào mảng nếu chưa có
+            { new: true } // Trả về tài liệu người dùng đã cập nhật
+        );
 
-        await newUserVoucher.save();
-        res.status(201).json({ message: 'Voucher added to user successfully', userVoucher: newUserVoucher });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(201).json({ message: 'Voucher added to user successfully', user });
     } catch (error) {
         res.status(500).json({ message: 'Failed to add voucher to user', error: error.message });
     }
