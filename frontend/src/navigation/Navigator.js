@@ -1,24 +1,35 @@
 // Navigate Between Screens using React Navigation in React Native //
 // https://aboutreact.com/react-native-stack-navigation //
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from '../screens/Home';
-import Vouchers from '../screens/Vouchers';
-import Categories from '../screens/Categories';
-import Account from '../screens/Account';
-import Cart from '../screens/Cart';
-import Login from '../screens/Login';
-import Register from '../screens/Register';
-import { AntDesign } from '@expo/vector-icons';
+import Home from "../screens/Home";
+import Vouchers from "../screens/Vouchers";
+import Categories from "../screens/Categories";
+import Account from "../screens/Account";
+import Cart from "../screens/Cart";
+import Login from "../screens/Login";
+import Register from "../screens/Register";
+import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Loading from "../screens/Loading";
+import { useState, useEffect } from "react";
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+  const [isLoading, setIsLoading] = useState(true);
+  // Giả lập quá trình tải dữ liệu trong `useEffect`
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false); // Sau 2 giây, tắt màn hình loading
+    }, 2000);
+  }, []);
+
   function BottomTabs() {
     return (
       <Tab.Navigator>
@@ -27,8 +38,8 @@ const StackNavigator = () => {
           component={Home}
           options={{
             tabBarLabel: "Home",
-            tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)            //   headerShown: false,
+            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
+            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)            //   headerShown: false,
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialIcons name="yard" size={24} color="#FF71CD" />
@@ -43,13 +54,21 @@ const StackNavigator = () => {
           component={Vouchers}
           options={{
             tabBarLabel: "Vouchers",
-            tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)
+            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
+            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialIcons name="local-fire-department" size={24} color="#FF71CD" />
+                <MaterialIcons
+                  name="local-fire-department"
+                  size={24}
+                  color="#FF71CD"
+                />
               ) : (
-                <MaterialIcons name="local-fire-department" size={24} color="#241E92" />
+                <MaterialIcons
+                  name="local-fire-department"
+                  size={24}
+                  color="#241E92"
+                />
               ),
           }}
         />
@@ -59,13 +78,21 @@ const StackNavigator = () => {
           component={Categories}
           options={{
             tabBarLabel: "Categories",
-            tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)
+            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
+            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#FF71CD" />
+                <MaterialCommunityIcons
+                  name="format-list-bulleted"
+                  size={24}
+                  color="#FF71CD"
+                />
               ) : (
-                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#241E92" />
+                <MaterialCommunityIcons
+                  name="format-list-bulleted"
+                  size={24}
+                  color="#241E92"
+                />
               ),
           }}
         />
@@ -75,8 +102,8 @@ const StackNavigator = () => {
           component={Account}
           options={{
             tabBarLabel: "Account",
-            tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)
+            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
+            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
             // headerShown: false,
             tabBarIcon: ({ focused }) =>
               // focused ? (
@@ -94,29 +121,34 @@ const StackNavigator = () => {
       </Tab.Navigator>
     );
   }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Cart"
-            component={Cart}
-            options={{ headerShown: false }}
-          /> */}
         <Stack.Screen
           name="Main"
           component={BottomTabs}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ headerShown: false }}
+        />
+        {/* <Stack.Screen
+            name="Cart"
+            component={Cart}
+            options={{ headerShown: false }}
+          /> */}
         {/* <Stack.Screen
             name="Info"
             component={ProductInfoScreen}
