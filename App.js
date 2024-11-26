@@ -1,8 +1,8 @@
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { ModalPortal } from "react-native-modals";
-import { Provider } from "react-redux";
-import StackNavigator from "./navigation/Navigator";
+// import { ModalPortal } from "react-native-modals";
+// import { Provider } from "react-redux";
+import StackNavigator from "./frontend/src/navigation/Navigator";
 // import store from "./store";
 // import { UserContext } from "./UserContext";
 
