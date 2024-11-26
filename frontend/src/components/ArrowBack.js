@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/SimpleLineIcons"; // Sử dụng icon từ MaterialCommunityIcons
+import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
 
 const ArrowBack = ({ title }) => {
