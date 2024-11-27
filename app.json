@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "UIT_IE307_Project_ONS",
     "slug": "UIT_IE307_Project_ONS",
     "version": "1.0.0",
