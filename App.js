@@ -1,12 +1,29 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ThemeProvider } from './frontend/src/contexts/ThemeContext'; // Đảm bảo đường dẫn chính xác
-import StackNavigator from './frontend/src/navigation/Navigator'; // Đảm bảo đường dẫn chính xác
-
+// import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+// import { ModalPortal } from "react-native-modals";
+// import { Provider } from "react-redux";
+import StackNavigator from "@navigation/Navigator";
+// import store from "./store";
+// import { UserContext } from "./UserContext"
+import { AuthContextProvider } from "@context/AuthContext";
 export default function App() {
   return (
-    <ThemeProvider>
-      <StackNavigator /> 
-    </ThemeProvider>
+    <>
+      {/* <Provider store={store}>
+        <UserContext> */}
+      <AuthContextProvider>
+        <StackNavigator />
+      </AuthContextProvider>
+      {/* <ModalPortal /> */}
+      {/* </UserContext>
+      </Provider> */}
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+});

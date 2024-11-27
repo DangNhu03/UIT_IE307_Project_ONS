@@ -1,23 +1,37 @@
 // Navigate Between Screens using React Navigation in React Native //
 // https://aboutreact.com/react-native-stack-navigation //
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from '../screens/Home';
-import Vouchers from '../screens/Vouchers';
-import Categories from '../screens/Categories';
-import Account from '../screens/Account';
+import Home from "../screens/Home";
+import Vouchers from "../screens/Vouchers";
+import Categories from "../screens/Categories";
+import Account from "../screens/Account";
 import Notifications from "../screens/Notifications.js";
-import Cart from '../screens/Cart';
-import Login from '../screens/Login';
-import Register from '../screens/Register';
+import Cart from "../screens/Cart";
+import Login from "../screens/Login";
+import Register from "../screens/Register";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Loading from "../screens/Loading";
+import { useState, useEffect } from "react";
+
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+  const [isLoading, setIsLoading] = useState(true);
+  // Giả lập quá trình tải dữ liệu trong `useEffect`
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false); // Sau 2 giây, tắt màn hình loading
+    }, 2000);
+  }, []);
+
   const badgeCount = 3;
 
   function BottomTabs() {
@@ -53,9 +67,17 @@ const StackNavigator = () => {
             tabBarLabel: "Ưu đãi",
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialIcons name="local-fire-department" size={24} color="#FF71CD" />
+                <MaterialIcons
+                  name="local-fire-department"
+                  size={24}
+                  color="#FF71CD"
+                />
               ) : (
-                <MaterialIcons name="local-fire-department" size={24} color="#241E92" />
+                <MaterialIcons
+                  name="local-fire-department"
+                  size={24}
+                  color="#241E92"
+                />
               ),
           }}
         />
@@ -67,7 +89,11 @@ const StackNavigator = () => {
             tabBarLabel: "Danh mục",
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#FF71CD" />
+                <MaterialCommunityIcons
+                  name="format-list-bulleted"
+                  size={24}
+                  color="#FF71CD"
+                />
               ) : (
                 <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#241E92" />
               ),
@@ -112,14 +138,60 @@ const StackNavigator = () => {
       </Tab.Navigator>
     );
   }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Main"
           component={BottomTabs}
-          options={{ headerShown: false, }}
+          options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ headerShown: false }}
+        />
+        {/* <Stack.Screen
+            name="Cart"
+            component={Cart}
+            options={{ headerShown: false }}
+          /> */}
+        {/* <Stack.Screen
+            name="Info"
+            component={ProductInfoScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Address"
+            component={AddAddressScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Add"
+            component={AddressScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Confirm"
+            component={ConfirmationScreen}
+            options={{ headerShown: false }}
+          />
+  
+          <Stack.Screen
+            name="Order"
+            component={OrderScreen}
+            options={{ headerShown: false }}
+          /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
