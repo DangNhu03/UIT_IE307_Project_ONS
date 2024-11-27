@@ -75,101 +75,106 @@ export default function Home() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {/* HeaderBar */}
-      <HeaderBar />
-
-      {/* Sản phẩm */}
-      <View style={styles.gridContainer}>
-        {categories.map((category) => (
-          <View key={category._id} style={styles.gridItem}>
-            <Text style={{ margin: 0, padding: 0 }}>
-              <ProductListItemMini text={category.cate_name} />  {/* Hiển thị tên danh mục */}
-            </Text>
+    <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
+      <View style={styles.container}>
+        <HeaderBar />
+        <ScrollView>
+          <View style={styles.gridContainer}>
+            {categories.map((category) => (
+              <View key={category._id} style={styles.gridItem}>
+                <Text style={{ margin: 0, padding: 0 }}>
+                  <ProductListItemMini text={category.cate_name} />
+                </Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
 
-      {/* Flash Deals */}
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View style={styles.flashDealsContainer}>
-          {/* Wrapper view for padding */}
-          <View style={styles.flashDealsSvgContainer}>
-            <Svg width="100%" height="100%" style={styles.flashDealsSvg}>
-              <Defs>
-                <LinearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <Stop offset="0%" stopColor="#FFE1FF" stopOpacity="1" />
-                  <Stop offset="50%" stopColor="#FFEFFF" stopOpacity="1" />
-                  <Stop offset="100%" stopColor="#FFF" stopOpacity="1" />
-                </LinearGradient>
-              </Defs>
-              <Rect width="100%" height="100%" fill="url(#grad)" />
-            </Svg>
-          </View>
-          <View style={styles.flashDealsHeader}>
-            <View style={styles.flashDealsTitle}>
-              <Text style={styles.flashDealsTitleText}>Flash deals</Text>
-              <Text style={styles.flashDealsTitleTime}>
-                <CountdownTimer targetTime={targetTime} />
-              </Text>
+          {/* Flash Deals */}
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <View style={styles.flashDealsContainer}>
+              <View style={styles.flashDealsSvgContainer}>
+                <Svg width="100%" height="100%" style={styles.flashDealsSvg}>
+                  <Defs>
+                    <LinearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <Stop offset="0%" stopColor="#FFE1FF" stopOpacity="1" />
+                      <Stop offset="50%" stopColor="#FFEFFF" stopOpacity="1" />
+                      <Stop offset="100%" stopColor="#FFF" stopOpacity="1" />
+                    </LinearGradient>
+                  </Defs>
+                  <Rect width="100%" height="100%" fill="url(#grad)" />
+                </Svg>
+              </View>
+              <View style={styles.flashDealsHeader}>
+                <View style={styles.flashDealsTitle}>
+                  <Text style={styles.flashDealsTitleText}>Flash deals</Text>
+                  <Text style={styles.flashDealsTitleTime}>
+                    <CountdownTimer targetTime={targetTime} />
+                  </Text>
+                </View>
+                <TouchableOpacity style={styles.flashDealsSeeAll}>
+                  <Text style={styles.flashDealsSeeAllText}>Xem tất cả</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.flashDealsContent}>
+                {products.map((product, index) => (
+                  <View
+                    key={index}
+                    style={[styles.flashDealsItem, index !== products.length - 1 && { marginRight: 10 }]}
+                  >
+                    <ProductItem data={product} />
+                  </View>
+                ))}
+              </ScrollView>
             </View>
-            <TouchableOpacity style={styles.flashDealsSeeAll}>
-              <Text style={styles.flashDealsSeeAllText}>Xem tất cả</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.flashDealsContent}>
-            {products.map((product, index) => (
-              <View
-                key={index}
-                style={[styles.flashDealsItem, index !== products.length - 1 && { marginRight: 10 }]}
-              >
-                <ProductItem data={product} />
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-      {/* Banner */}
-      <Image
-        source={require('../assets/imgs/banner.png')}
-        style={styles.banner}
-        resizeMode="cover"
-      />
+          )}
+          {/* Banner */}
+          <Image
+            source={require('../assets/imgs/banner.png')}
+            style={styles.banner}
+            resizeMode="cover"
+          />
 
-      {/* SP */}
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View style={styles.productList}>
-          {/* <View style={styles.productListSvg}> */}
-            <Svg width="100%" height="100%" style={styles.productListSvg}>
-              <Defs>
-                <LinearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <Stop offset="0.2%" stopColor="#FFE1FF" stopOpacity="1" />
-                  <Stop offset="99.8%" stopColor="#E5A5FF" stopOpacity="1" />
-                </LinearGradient>
-              </Defs>
-              <Rect width="100%" height="100%" fill="url(#gradient1)" rx="8" ry="8" />
-            </Svg>
-          {/* </View> */}
+          {/* SP */}
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <View style={styles.productList}>
+              {/* <View style={styles.productListSvg}> */}
+              <Svg width="100%" height="100%" style={styles.productListSvg}>
+                <Defs>
+                  <LinearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <Stop offset="0.2%" stopColor="#FFE1FF" stopOpacity="1" />
+                    <Stop offset="99.8%" stopColor="#E5A5FF" stopOpacity="1" />
+                  </LinearGradient>
+                </Defs>
+                <Rect width="100%" height="100%" fill="url(#gradient1)" rx="8" ry="8" />
+              </Svg>
+              {/* </View> */}
 
-          {/* Hiển thị sản phẩm */}
-          <View style={styles.productItemsContainer}>
-            {products.map((product, index) => (
-              <View
-                key={index}
-                style={[styles.productItem, index % 2 === 0 ? { paddingLeft: 10 } : { paddingRight: 10 }]}
-                // style={styles.productItem}
-              >
-                <ProductItem data={product} />
+              {/* Hiển thị sản phẩm */}
+              <View style={styles.productItemsContainer}>
+                {products.map((product, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.productItem,
+                      index % 2 === 0 ? { paddingLeft: 10 } : { paddingRight: 10 },
+                      index === 0 || index === 1 ? { paddingTop: 10 } : {},
+                      index === products.length - 1 || index === products.length - 2 ? { paddingBottom: 10 } : {}
+                    ]}
+                  // style={styles.productItem}
+                  >
+                    <ProductItem data={product} />
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        </View>
-      )}
-    </ScrollView>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -177,7 +182,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#241E92',
-    paddingTop: 44,
+    // paddingTop: 44,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -190,23 +195,24 @@ const styles = StyleSheet.create({
     width: '18%',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginBottom: 10,
+    marginBottom: 10,
     // marginTop: 10,
     borderRadius: 8,
   },
   flashDealsContainer: {
     // flex: 1,
-    // position: 'relative', // SVG sẽ căn chỉnh với các thành phần khác trong container này
+    // position: 'relative',
     paddingRight: 5,
     paddingLeft: 10,
     paddingTop: 5,
     paddingBottom: 20,
+    marginTop: 10,
     // flexDirection: 'column',
     gap: 5,
     minHeight: 330
   },
   flashDealsSvgContainer: {
-    position: 'absolute', // Đảm bảo SVG phủ toàn bộ container
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -254,7 +260,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginHorizontal: 10,
-    paddingTop: 5,
+    // paddingTop: 5,
+    // paddingBottom:10
+    marginBottom: 10
   },
   productListSvg: {
     position: 'absolute',
@@ -264,7 +272,7 @@ const styles = StyleSheet.create({
     bottom: 0,
 
   },
-  productItemsContainer:{
+  productItemsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
