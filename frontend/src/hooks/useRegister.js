@@ -3,9 +3,11 @@ import { useAuthContext } from "@context/AuthContext";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native"; 
 import { Alert } from "react-native";
-import { API_URL } from "@env";
+// import { API_URL } from "@env";
 
 export function useRegister() {
+  let API_URL = 'http://192.168.137.1:5000'
+
   const { dispatch } = useAuthContext();
   const [errorExist, setErrorExist] = useState(null);
   const [loading, setLoading] = useState(null);

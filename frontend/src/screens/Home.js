@@ -5,39 +5,40 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image, ActivityIndicator
+  Image, ActivityIndicator,
+  findNodeHandle 
 } from 'react-native';
-import { React, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ProductListItemMini from '../components/ProductListItemMini';
 import HeaderBar from '../components/HeaderBar';
 import CountdownTimer from '../components/CountdownTimer';
 import ProductItem from '../components/ProductItem';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
-import { API_URL } from "@env";
+import axios from 'axios';
+import { useAuthContext } from "@context/AuthContext";
 
 export default function Home() {
+  let API_URL = 'http://192.168.137.1:5000'
+
   const targetTime = 2 * 60 * 60 + 30 * 60; // 2 giờ 30 phút = 9000 giây
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    // Gửi yêu cầu GET đến API của bạn
-    fetch(`${API_URL}/products/categories`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
+    console.log(`${API_URL}`)
+    console.log(user)
+    axios
+      .get(`${API_URL}/products/categories`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .then((data) => {
-        setCategories(data);
+      .then((response) => {
+        setCategories(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -46,22 +47,15 @@ export default function Home() {
       });
   }, []);
 
-  // Lấy dữ liệu sản phẩm
   useEffect(() => {
-    fetch(`${API_URL}/products`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
+    axios
+      .get(`${API_URL}/products`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .then((data) => {
-        setProducts(data.products);
+      .then((response) => {
+        setProducts(response.data.products);
         setLoading(false);
       })
       .catch((error) => {
@@ -69,16 +63,25 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+  // Ref để cuộn đến phần danh sách sản phẩm
+  const scrollViewRef = useRef(null);
+  const productListRef = useRef(null);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // Hàm cuộn xuống phần danh sách sản phẩm
+  const scrollToProductList = () => {
+    productListRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      scrollViewRef.current?.scrollTo({
+        y: pageY - 82, // Trừ chiều cao header
+        animated: true,
+      });
+    });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
       <View style={styles.container}>
         <HeaderBar />
-        <ScrollView>
+        <ScrollView ref={scrollViewRef}> 
           <View style={styles.gridContainer}>
             {categories.map((category) => (
               <View key={category._id} style={styles.gridItem}>
@@ -113,19 +116,27 @@ export default function Home() {
                     <CountdownTimer targetTime={targetTime} />
                   </Text>
                 </View>
-                <TouchableOpacity style={styles.flashDealsSeeAll}>
-                  <Text style={styles.flashDealsSeeAllText}>Xem tất cả</Text>
+                <TouchableOpacity
+                  style={styles.flashDealsSeeAll}
+                  onPress={scrollToProductList}
+                >
+                  <Text style={styles.flashDealsSeeAllText}>Xem tất cả sản phẩm</Text>
                 </TouchableOpacity>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.flashDealsContent}>
-                {products.map((product, index) => (
-                  <View
-                    key={index}
-                    style={[styles.flashDealsItem, index !== products.length - 1 && { marginRight: 10 }]}
-                  >
-                    <ProductItem data={product} />
-                  </View>
-                ))}
+                {products
+                  .filter((product) => product.prod_discount !== 0) // Lọc sản phẩm có prod_discount khác 0
+                  .map((product, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.flashDealsItem,
+                        index !== products.length - 1 && { marginRight: 10 },
+                      ]}
+                    >
+                      <ProductItem data={product} />
+                    </View>
+                  ))}
               </ScrollView>
             </View>
           )}
@@ -140,7 +151,7 @@ export default function Home() {
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
           ) : (
-            <View style={styles.productList}>
+            <View style={styles.productList} ref={productListRef}>
               {/* <View style={styles.productListSvg}> */}
               <Svg width="100%" height="100%" style={styles.productListSvg}>
                 <Defs>
@@ -250,8 +261,8 @@ const styles = StyleSheet.create({
   flashDealsContent: {},
   flashDealsItem: {},
   banner: {
-    width: '100%',
-    height: 125,
+    width: "100%",
+    height: 121,
     marginTop: 20,
   },
   productList: {
