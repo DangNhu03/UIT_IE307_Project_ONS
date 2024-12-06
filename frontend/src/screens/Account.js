@@ -37,12 +37,12 @@ export default function Account() {
   ];
 
   const orderStatuses = [
-    { id: "1", title: "Chờ thanh toán", iconName: "credit-card-check" },
-    { id: "2", title: "Đang xử lý", iconName: "progress-clock" },
-    { id: "3", title: "Đang giao", iconName: "truck-delivery" },
-    { id: "4", title: "Hoàn thành", iconName: "check-circle-outline" },
+    { id: "1", title: "Mới đặt", iconName: "clipboard-check-outline" },
+    { id: "2", title: "Đang xử lý", iconName: "loader" },
+    { id: "3", title: "Thành công", iconName: "package" },
+    { id: "4", title: "Đã hủy", iconName: "autorenew" },
+    { id: "5", title: "Đánh giá", iconName: "star-circle-outline" },
   ];
-  
 
   const handlePress = (item) => {
     const screen = item.screen;

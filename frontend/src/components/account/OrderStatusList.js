@@ -1,9 +1,11 @@
 import React from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { View, FlatList, StyleSheet } from "react-native";
 import ItemStatus from "./ItemStatus";
 
 const OrderStatusList = ({ data }) => {
+  const handlePress = (title) => {
+    alert(`Icon clicked: ${title}`);
+  };
   return (
     <View style={styles.container}>
       <FlatList
@@ -12,12 +14,7 @@ const OrderStatusList = ({ data }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <ItemStatus
-            title={item.title}
-            IconComponent={() => (
-              <MaterialCommunityIcons name={item.iconName} size={30} color="#4B79F7" />
-            )}
-          />
+          <ItemStatus title={item.title} iconName={item.iconName} onPress={() => handlePress(item.title)}/>
         )}
       />
     </View>
@@ -25,6 +22,8 @@ const OrderStatusList = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+  },
 });
 
 export default OrderStatusList;
