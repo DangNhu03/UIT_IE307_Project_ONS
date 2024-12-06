@@ -37,6 +37,13 @@ export const AuthContextProvider = ({ children }) => {
         loadUser();
     }, []);
 
+    // useEffect theo dõi sự thay đổi của 'user' và lưu vào AsyncStorage
+    useEffect(() => {
+        if (state.user) {
+            AsyncStorage.setItem("user", JSON.stringify(state.user)); // Lưu thông tin người dùng vào AsyncStorage
+        }
+    }, [state.user]);  // Lắng nghe sự thay đổi của 'user'
+
     return (
         <AuthContext.Provider value={{ ...state, dispatch }}>
             {children}

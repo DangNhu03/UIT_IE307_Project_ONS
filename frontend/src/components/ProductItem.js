@@ -13,7 +13,7 @@ const ProductItem = ({ data }) => {
                     <Image
                         source={{ uri: imageUrl }}
                         style={styles.img}
-                        resizeMode="contain"
+                        resizeMode="cover"
                     />
                     {data.prod_discount > 0 && (<Text style={styles.discountBadge}>-{data.prod_discount}%</Text>)}
                 </View>
