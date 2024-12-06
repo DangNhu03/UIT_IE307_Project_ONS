@@ -4,20 +4,31 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../screens/Home";
-import Vouchers from "../screens/Vouchers";
-import Categories from "../screens/Categories";
-import Account from "../screens/Account";
-import Cart from "../screens/Cart";
-import Login from "../screens/Login";
-import Register from "../screens/Register";
+import Home from "@screens/Home";
+import Vouchers from "@screens/Vouchers";
+import Categories from "@screens/Categories";
+import Account from "@screens/Account";
+import Cart from "@screens/Cart";
+import Login from "@screens/Login";
+import Register from "@screens/Register";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Loading from "../screens/Loading";
+import Loading from "@screens/Loading";
 import { useState, useEffect } from "react";
+
+import PersonalInfo from "@screens/accounts/PersonalInfo";
+import Address from "@screens/accounts/Address";
+import LinkAccount from "@screens/accounts/LinkAccount";
+import ChangePassword from "@screens/accounts/ChangePassword";
+import FAQ from "@screens/accounts/FAQ";
+import ShoppingGuide from "@screens/accounts/ShoppingGuide";
+import TermsAndPolicies from "@screens/accounts/TermsAndPolicies";
+import AboutUs from "@screens/accounts/AboutUs";
+import ContactUs from "@screens/accounts/ContactUs";
+import DeleteAccount from "@screens/accounts/DeleteAccount";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -116,6 +127,7 @@ const StackNavigator = () => {
               ) : (
                 <Ionicons name="person-outline" size={24} color="#241E92" />
               ),
+            headerShown: false,
           }}
         />
       </Tab.Navigator>
@@ -175,6 +187,57 @@ const StackNavigator = () => {
             component={OrderScreen}
             options={{ headerShown: false }}
           /> */}
+
+        <Stack.Screen
+          name="PersonalInfo"
+          component={PersonalInfo}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Address"
+          component={Address}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="LinkAccount"
+          component={LinkAccount}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ChangePassword"
+          component={ChangePassword}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="FAQ"
+          component={FAQ}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ShoppingGuide"
+          component={ShoppingGuide}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TermsAndPolicies"
+          component={TermsAndPolicies}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AboutUs"
+          component={AboutUs}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ContactUs"
+          component={ContactUs}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="DeleteAccount"
+          component={DeleteAccount}
+          // options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

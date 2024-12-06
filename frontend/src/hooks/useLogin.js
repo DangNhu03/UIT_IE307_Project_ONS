@@ -17,6 +17,7 @@ export function useLogin() {
       setLoading(true);
       setPhone("");
       setPassword("");
+      console.log(`${API_URL}/api/auth/login`)
 
       const response = await axios.post(`${API_URL}/api/auth/login`, user);
     
