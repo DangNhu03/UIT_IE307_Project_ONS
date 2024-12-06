@@ -30,6 +30,7 @@ import AboutUs from "@screens/accounts/AboutUs";
 import ContactUs from "@screens/accounts/ContactUs";
 import DeleteAccount from "@screens/accounts/DeleteAccount";
 
+import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -41,22 +42,31 @@ const StackNavigator = () => {
     }, 2000);
   }, []);
 
+  const badgeCount = 3;
+
   function BottomTabs() {
     return (
-      <Tab.Navigator>
+      <Tab.Navigator initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
+          tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)
+        }}>
         <Tab.Screen
           name="Home"
           component={Home}
           options={{
-            tabBarLabel: "Home",
-            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)            //   headerShown: false,
+            tabBarLabel: "Trang chủ",
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialIcons name="yard" size={24} color="#FF71CD" />
               ) : (
                 <MaterialIcons name="yard" size={24} color="#241E92" />
               ),
+            // headerTitle: () => <HeaderBar />,
+            // headerStyle: {
+            //   backgroundColor: '#FFF', // Màu nền của header
+            // },
           }}
         />
 
@@ -64,9 +74,7 @@ const StackNavigator = () => {
           name="Vouchers"
           component={Vouchers}
           options={{
-            tabBarLabel: "Vouchers",
-            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
+            tabBarLabel: "Ưu đãi",
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialIcons
@@ -88,9 +96,7 @@ const StackNavigator = () => {
           name="Categories"
           component={Categories}
           options={{
-            tabBarLabel: "Categories",
-            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
+            tabBarLabel: "Danh mục",
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialCommunityIcons
@@ -99,12 +105,30 @@ const StackNavigator = () => {
                   color="#FF71CD"
                 />
               ) : (
-                <MaterialCommunityIcons
-                  name="format-list-bulleted"
-                  size={24}
-                  color="#241E92"
-                />
+                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#241E92" />
               ),
+          }}
+        />
+
+        <Tab.Screen
+          name="Notifications"
+          component={Notifications}
+          options={{
+            tabBarLabel: "Thông báo",
+            tabBarIcon: ({ focused }) => (
+              <View style={{ position: 'relative' }}>
+                <MaterialIcons
+                  name="notifications-none"
+                  size={24}
+                  color={focused ? "#FF71CD" : "#241E92"}
+                />
+                {badgeCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{badgeCount}</Text>
+                  </View>
+                )}
+              </View>
+            ),
           }}
         />
 
@@ -112,20 +136,12 @@ const StackNavigator = () => {
           name="Account"
           component={Account}
           options={{
-            tabBarLabel: "Account",
-            tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
-            tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
-            // headerShown: false,
+            tabBarLabel: "Tài khoản",
             tabBarIcon: ({ focused }) =>
-              // focused ? (
-              //   <AntDesign name="shoppingcart" size={24} color="#008E97" />
-              // ) : (
-              //   <AntDesign name="shoppingcart" size={24} color="black" />
-              // ),
               focused ? (
-                <Ionicons name="person" size={24} color="#FF71CD" />
+                <MaterialIcons name="person-outline" size={24} color="#FF71CD" />
               ) : (
-                <Ionicons name="person-outline" size={24} color="#241E92" />
+                <MaterialIcons name="person-outline" size={24} color="#241E92" />
               ),
             headerShown: false,
           }}
@@ -245,4 +261,21 @@ const StackNavigator = () => {
 
 export default StackNavigator;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+});
