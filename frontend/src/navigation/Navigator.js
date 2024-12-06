@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@screens/Home";
 import Vouchers from "@screens/Vouchers";
 import Categories from "@screens/Categories";
+import Notifications from "@screens/Notifications.js";
 import Account from "@screens/Account";
 import Cart from "@screens/Cart";
 import Login from "@screens/Login";

@@ -131,25 +131,28 @@ const addVoucher = async (req, res) => {
 };
 
 
-// GET: Lấy thông tin người dùng cùng với thông tin địa chỉ từ local_default_id
-const getUserWithLocation = async (req, res) => {
+// GET: Lấy thông tin người dùng thông qua id
+const getUserById = async (req, res) => {
   try {
     const { id } = req.params; // Lấy user_id từ URL
 
-    // Tìm người dùng và populate thêm thông tin của địa chỉ từ local_default_id
-    const user = await User.findById(id).populate("local_default_id");
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    
+    const user = await User.findById(id)
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json(user);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Failed to retrieve user and location",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to retrieve user",
+      error: error.message,
+    });
   }
 };
 
@@ -191,6 +194,6 @@ module.exports = {
   getAllUser,
   addVoucher,
   getListVouchers,
-  getUserWithLocation,
+  getUserById,
   loginUser,
 };
