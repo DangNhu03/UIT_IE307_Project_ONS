@@ -57,6 +57,8 @@ const postProduct = async (req, res) => {
             prod_avg_rating,
             prod_review_count,
             prod_image,
+            prod_description,
+            prod_characteristics,
             prod_variations // Mảng các biến thể của sản phẩm
         } = req.body;
 
@@ -73,6 +75,8 @@ const postProduct = async (req, res) => {
             prod_avg_rating,
             prod_review_count,
             prod_image,
+            prod_description,
+            prod_characteristics,
             prod_variations 
         });
 
@@ -110,9 +114,75 @@ const getAllProduct = async (req, res) => {
     }
 };
 
+// PUT: Chỉnh sửa sản phẩm theo ID
+const updateProduct = async (req, res) => {
+    try {
+        const { product_id } = req.params; // Lấy productId từ URL
+        const {
+            cate_id,
+            prod_name,
+            prod_price,
+            date_start_sale,
+            date_end_sale,
+            prod_discount,
+            prod_stock,
+            prod_sold,
+            prod_avg_rating,
+            prod_review_count,
+            prod_image,
+            prod_description,
+            prod_characteristics,
+            prod_variations // Mảng các biến thể của sản phẩm
+        } = req.body;
+
+        // Tìm sản phẩm theo ID và cập nhật các trường dữ liệu
+        const updatedProduct = await Product.findByIdAndUpdate(
+            product_id, 
+            {
+                cate_id,
+                prod_name,
+                prod_price,
+                date_start_sale,
+                date_end_sale,
+                prod_discount,
+                prod_stock,
+                prod_sold,
+                prod_avg_rating,
+                prod_review_count,
+                prod_image,
+                prod_description,
+                prod_characteristics,
+                prod_variations
+            },
+            { new: true } // Trả về bản ghi mới sau khi cập nhật
+        );
+
+        // Kiểm tra nếu không tìm thấy sản phẩm
+        if (!updatedProduct) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+
+        // Trả về sản phẩm đã được chỉnh sửa
+        res.status(200).json({
+            message: "Product updated successfully",
+            product: updatedProduct
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to update product",
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
     postCategories,
     getAllCategories,
     postProduct,
     getAllProduct,
+    updateProduct,
 };
