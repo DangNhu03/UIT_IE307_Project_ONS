@@ -14,6 +14,8 @@ let ProductsSchema = new Schema({
   prod_avg_rating: { type: Number, required: true, default: 0 },
   prod_review_count: { type: Number, required: true, default: 0 },
   prod_image: { type: [String], required: true },
+  prod_description: { type: String, required: true },
+  prod_characteristics: { type: [String], required: true },
   prod_variations: [{
     _id: { type: Schema.Types.ObjectId, auto: true }, 
     variant_name: { type: String, required: true }, 
