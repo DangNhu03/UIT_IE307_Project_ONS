@@ -1,8 +1,13 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // Thư viện icon
+import { useNavigation } from '@react-navigation/native';
 const badgeCount = 3;
-const HeaderBar = () => (
+const HeaderBar = () => {
+
+    const navigation = useNavigation(); 
+
+    return (
     <View style={styles.headerContainer}>
         <Image style={styles.logo}
             source={require("../assets/imgs/logo.png")} />
@@ -18,7 +23,7 @@ const HeaderBar = () => (
         </View>
 
         <View style={styles.iconContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
                 <MaterialCommunityIcons name='cart-outline' size={24} color='#241E92' />
             </TouchableOpacity>
             <TouchableOpacity><Ionicons name='chatbox-ellipses-outline' size={24} color='#241E92' />
@@ -30,7 +35,8 @@ const HeaderBar = () => (
 
         </View>
     </View>
-);
+    );
+}
 
 const styles = StyleSheet.create({
     headerContainer: {
