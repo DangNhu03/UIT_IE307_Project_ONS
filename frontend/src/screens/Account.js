@@ -11,6 +11,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import InfoList from "@components/account/InfoList";
 import OrderStatusList from "@components/account/OrderStatusList";
@@ -46,24 +47,41 @@ export default function Account() {
 
   const handlePress = (item) => {
     const screen = item.screen;
-    if (user) {
-      navigation.navigate(screen);
-    } else {
-      Alert.alert("Thông báo", "Bạn cần đăng nhập để sử dụng tính năng này.", [
-        { text: "Đăng nhập", onPress: () => navigation.navigate("Login") },
-        { text: "Hủy", style: "cancel" },
-      ]);
-    }
+    navigation.navigate(screen);
   };
+
   const handleLogout = () => {
-    dispatch({ type: "LOGOUT" });
-    navigation.navigate("Login");
+    Alert.alert(
+      "Đăng xuất",
+      "Bạn có chắc chắn muốn đăng xuất?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+        {
+          text: "Đồng ý",
+          onPress: () => {
+            dispatch({ type: "LOGOUT" });
+            navigation.navigate("Home");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
     <ScrollView style={styles.container}>
       <ArrowBack title="Tài khoản" />
-      <View style={styles.inforUser}>
+      <View
+        style={[
+          styles.inforUser,
+          user &&
+            Array.isArray(user) &&
+            user.length > 0 && { justifyContent: "flex-start" },
+        ]}
+      >
         <Image
           source={require("../assets/avatar.jpg")}
           style={styles.userImage}
@@ -78,6 +96,9 @@ export default function Account() {
             />
             <Button
               title="Đăng ký"
+              textColor="#241E92"
+              backgroundColor="#fff"
+              width="95"
               onPress={() => navigation.navigate("Register")}
             />
           </View>
@@ -88,20 +109,35 @@ export default function Account() {
           <Text style={styles.title}>Đơn mua</Text>
           <OrderStatusList data={orderStatuses} />
         </View>
-        <View style={styles.line}></View>
-        <View style={styles.settingContainer}>
-          <Text style={styles.title}>Cài đặt</Text>
-          <InfoList data={settings} onPress={handlePress} />
-        </View>
+        {user && Array.isArray(user) && user.length > 0 && (
+          <>
+            <View style={styles.line}></View>
+            <View style={styles.settingContainer}>
+              <Text style={styles.title}>Cài đặt</Text>
+              <InfoList data={settings} onPress={handlePress} />
+            </View>
+          </>
+        )}
         <View style={styles.line}></View>
         <View style={styles.supportContainer}>
           <Text style={styles.title}>Hỗ trợ</Text>
-          <InfoList data={suppports} onPress={handlePress} />
+          <InfoList
+            data={
+              user && Array.isArray(user) && user.length > 0
+                ? suppports
+                : suppports.filter((item) => item.name !== "Xóa tài khoản")
+            }
+            onPress={handlePress}
+          />
         </View>
-        <View style={styles.line}></View>
-        <TouchableOpacity onPress={handleLogout}>
-          <Text style={styles.title}>Đăng xuất</Text>
-        </TouchableOpacity>
+        {user && Array.isArray(user) && user.length > 0 && (
+          <>
+            <View style={styles.line}></View>
+            <TouchableOpacity onPress={handleLogout}>
+              <Text style={styles.title}>Đăng xuất</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -120,6 +156,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 20,
     paddingBottom: 20,
+    justifyContent: "space-between",
   },
   userImage: {
     width: 50,
@@ -131,10 +168,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
   },
+  authButtons: {
+    flexDirection: "row",
+    gap: 10,
+  },
   contentContainer: {
     backgroundColor: "#fff",
     gap: 10,
     padding: 10,
+    minHeight: "100%",
   },
 
   orderContainer: {},
@@ -149,5 +191,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#241E92",
+  },
+  supportContainer: {
+    gap: 5,
   },
 });

@@ -33,5 +33,6 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     color: "#241E92",
+    lineHeight:24
   },
 });
