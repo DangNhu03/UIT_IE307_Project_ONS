@@ -1,9 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native"; // Import hook navigation
 
 const Noti = ({ data }) => {
+    const navigation = useNavigation(); // Khởi tạo navigation
     const onPress = () => {
-        console.log('haha');
+        if (data.noti_type === "voucher") {
+            navigation.navigate("Vouchers"); // Điều hướng đến màn hình Voucher
+        } else if (data.noti_type === "product") {
+            navigation.navigate("Categories"); // Điều hướng đến màn hình danh mục sản phẩm
+        }
     };
 
     return (

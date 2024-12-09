@@ -5,17 +5,18 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image, ActivityIndicator,
-  findNodeHandle 
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
-import ProductListItemMini from '../components/ProductListItemMini';
+import CategoriesMini from '../components/CategoriesMini';
 import HeaderBar from '../components/HeaderBar';
 import CountdownTimer from '../components/CountdownTimer';
 import ProductItem from '../components/ProductItem';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import axios from 'axios';
 import { useAuthContext } from "@context/AuthContext";
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 export default function Home() {
   let API_URL = 'http://192.168.137.1:5000'
@@ -25,6 +26,13 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation();
+  // Hàm handleSearch để gửi query lên trang Categories
+  const handleSearch = (query) => {
+    // Chuyển đến trang Categories và truyền searchQuery qua params
+    navigation.navigate('Categories', { searchQuery: query });
+  };
 
   const { user } = useAuthContext();
 
@@ -80,13 +88,13 @@ export default function Home() {
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
       <View style={styles.container}>
-        <HeaderBar />
-        <ScrollView ref={scrollViewRef}> 
+        <HeaderBar onSearch={handleSearch}/>
+        <ScrollView ref={scrollViewRef}>
           <View style={styles.gridContainer}>
             {categories.map((category) => (
               <View key={category._id} style={styles.gridItem}>
                 <Text style={{ margin: 0, padding: 0 }}>
-                  <ProductListItemMini text={category.cate_name} />
+                  <CategoriesMini text={category.cate_name} />
                 </Text>
               </View>
             ))}

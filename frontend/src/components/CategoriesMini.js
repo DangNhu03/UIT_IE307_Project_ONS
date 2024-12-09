@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Polygon } from 'react-native-svg';
 
-export default function ProductListItemMini({ text }) {
+export default function CategoriesMini({ text }) {
     return (
         <View style={styles.container}>
             <View style={styles.hexagon}>

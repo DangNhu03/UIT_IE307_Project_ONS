@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { useNavigation } from "@react-navigation/native";
 
-const ArrowBack = ({ title }) => {
+const ArrowBack = ({ title, titleColor }) => {
   const navigation = useNavigation();
 
   return (
@@ -13,12 +13,16 @@ const ArrowBack = ({ title }) => {
           onPress={() => navigation.goBack()}
           style={styles.iconContainer}
         >
-          <Icon name="arrow-left-circle" size={24} color="white" />
+          <Icon
+            name="arrow-left-circle"
+            size={24}
+            style={{ color: titleColor ? titleColor : 'white' }}
+          />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[titleColor ? { color: titleColor } : { color: 'white' }, styles.title]}>{title}</Text>
       </View>
       {/* Đường line bên dưới */}
-      <View style={styles.line} />
+      <View style={[titleColor ? { backgroundColor: titleColor } : { backgroundColor: 'white' }, styles.line]} />
     </View>
   );
 };
@@ -26,7 +30,7 @@ const ArrowBack = ({ title }) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginBottom:20
+    marginBottom: 20
   },
   titleContainer: {
     flexDirection: "row",
@@ -35,17 +39,15 @@ const styles = StyleSheet.create({
     height: 56,
   },
   iconContainer: {
-    marginRight:10,
+    marginRight: 10,
     paddingRight: 12,
   },
   title: {
-    color: "white",
     fontSize: 18,
     fontWeight: "500",
   },
   line: {
     height: 1,
-    backgroundColor: "white",
     opacity: 0.8,
   },
 });

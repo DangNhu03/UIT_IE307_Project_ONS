@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@screens/Home";
 import Vouchers from "@screens/Vouchers";
 import Categories from "@screens/Categories";
+import Notifications from "@screens/Notifications.js";
 import Account from "@screens/Account";
 import Cart from "@screens/Cart";
 import Login from "@screens/Login";
@@ -29,6 +30,8 @@ import TermsAndPolicies from "@screens/accounts/TermsAndPolicies";
 import AboutUs from "@screens/accounts/AboutUs";
 import ContactUs from "@screens/accounts/ContactUs";
 import DeleteAccount from "@screens/accounts/DeleteAccount";
+
+import ChatWithBotScreen from "@screens/Chat.js";
 
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
@@ -172,38 +175,6 @@ const StackNavigator = () => {
           component={Register}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-            name="Cart"
-            component={Cart}
-            options={{ headerShown: false }}
-          /> */}
-        {/* <Stack.Screen
-            name="Info"
-            component={ProductInfoScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Address"
-            component={AddAddressScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Add"
-            component={AddressScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Confirm"
-            component={ConfirmationScreen}
-            options={{ headerShown: false }}
-          />
-  
-          <Stack.Screen
-            name="Order"
-            component={OrderScreen}
-            options={{ headerShown: false }}
-          /> */}
-
         <Stack.Screen
           name="PersonalInfo"
           component={PersonalInfo}
@@ -253,6 +224,11 @@ const StackNavigator = () => {
           name="DeleteAccount"
           component={DeleteAccount}
           // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Chat"
+          component={ChatWithBotScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

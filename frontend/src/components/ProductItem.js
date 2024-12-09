@@ -36,11 +36,11 @@ const ProductItem = ({ data }) => {
                 </View>
                 {/* Popularity Bar */}
                 <View style={styles.progressBarContainer}>
-                    <View style={styles.progressBar}>
-                        <View style={[styles.progress, { width: `${30}%` }]} />
+                <View style={styles.progressBar}>
+                        <View style={[styles.progress, { width: `${data.prod_sold/data.prod_stock*100}%` }]} />
                         <View style={styles.content}>
                             <Text style={styles.icon}>🔥</Text>
-                            <Text style={styles.percentage}>{30}%</Text>
+                            <Text style={styles.percentage}>{Math.round(data.prod_sold/data.prod_stock*100)}%</Text>
                         </View>
                     </View>
                 </View>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         paddingRight: 5,
-        paddingLeft: 3
+        paddingLeft: 3,
     },
     icon: {
         fontSize: 12,

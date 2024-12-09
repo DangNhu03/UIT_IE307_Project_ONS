@@ -217,11 +217,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#241E92",  // Background color for the whole container
     paddingTop: 40,
+    // marginBottom:10
   },
   tabContent: {
     flex: 1,
     backgroundColor: "#241E92",  // Apply background color to the content area
-    paddingBottom: 20,  // Adjust bottom padding if necessary
+    // marginBottom: 10,  // Adjust bottom padding if necessary
   },
   searchBar: {
     width: 390,
