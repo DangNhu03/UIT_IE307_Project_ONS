@@ -3,8 +3,9 @@ const product = require("./productRoutes");
 const cart = require("./cartRoutes");
 const order = require("./orderRoutes");
 const account = require("./accountRoutes");
-const voucher= require("./voucherRoutes")
-const notification= require("./notificationRoutes")
+const voucher = require("./voucherRoutes")
+const notification = require("./notificationRoutes")
+const chat = require("./chatRoutes")
 
 const route = (app) => {
   app.use("/products", product);
@@ -14,6 +15,7 @@ const route = (app) => {
   app.use("/orders", order);
   app.use("/vouchers", voucher)
   app.use("/notifications", notification)
+  app.use("/api/chat", chat)
 };
 
 module.exports = route;

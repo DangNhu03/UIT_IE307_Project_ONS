@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TextInput,
@@ -16,10 +16,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useAuthContext } from "@context/AuthContext";
 
+import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 const badgeCount = 3;
 const HeaderBar = () => {
   const navigation = useNavigation();
   const { user } = useAuthContext();
+  const [searchQuery, setSearchQuery] = useState("");
+  const route = useRoute();
 
   const handleCartPress = () => {
     if (user && Array.isArray(user) && user.length > 0) {
@@ -37,6 +41,16 @@ const HeaderBar = () => {
     }
   };
 
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch(searchQuery.trim()); // Gửi từ khóa tìm kiếm lên component cha
+      setSearchQuery
+    }
+  };
+  const handleClickChat = () => {
+    navigation.navigate('Chat')
+  }
+
   return (
     <View style={styles.headerContainer}>
       <Image style={styles.logo} source={require("../assets/imgs/logo.png")} />
@@ -45,8 +59,11 @@ const HeaderBar = () => {
         <TextInput
           placeholder="Tìm kiếm sản phẩm..."
           style={styles.searchBarInput}
+          value={route.params?.searchQuery || searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          onSubmitEditing={handleSearch} // Tìm kiếm khi nhấn Enter
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSearch}>
           <MaterialIcons
             name="search"
             size={24}
@@ -74,8 +91,7 @@ const HeaderBar = () => {
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+);
 
 const styles = StyleSheet.create({
   headerContainer: {

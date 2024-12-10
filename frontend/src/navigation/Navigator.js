@@ -31,6 +31,8 @@ import AboutUs from "@screens/accounts/AboutUs";
 import ContactUs from "@screens/accounts/ContactUs";
 import DeleteAccount from "@screens/accounts/DeleteAccount";
 
+import ChatWithBotScreen from "@screens/Chat.js";
+
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -254,6 +256,11 @@ const StackNavigator = () => {
           name="DeleteAccount"
           component={DeleteAccount}
           // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Chat"
+          component={ChatWithBotScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

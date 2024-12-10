@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: "#241E92",
+        borderColor: "#E5A5FF",
     },
     textButton: {
         color: "#241E92",

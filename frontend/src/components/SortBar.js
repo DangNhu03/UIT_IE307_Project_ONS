@@ -1,39 +1,56 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const SortBar = ({ options }) => {
-  const [activeSort, setActiveSort] = useState(options[0]?.text);
+const SortBar = ({onSortChange}) => {
+  // Danh sách các mục sắp xếp
+  const sortOptions = [
+    { label: "Nổi bật", icon: null },
+    { label: "Mới nhất", icon: null },
+    { label: "Bán chạy", icon: null },
+    { label: "Giá ↑↓", icon: null },
+    { label: "Danh sách", icon: <MaterialIcons name="checklist" size={24} /> },
+  ];
 
-  const handleSortChange = (text) => {
-    setActiveSort(text);
+  const [activeSort, setActiveSort] = useState(sortOptions[0].label);
+
+  const handleSortChange = (label) => {
+    setActiveSort(label);
+    onSortChange(label); // Gọi hàm callback từ parent
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.sortOptions}>
-        {options.map((item, index) => (
-          <View key={item.text} style={styles.sortItem}>
-            <TouchableOpacity
-              style={[
-                styles.sortButton,
-                { width: item.width || "auto" },
-              ]}
-              onPress={() => handleSortChange(item.text)}
-            >
+      {sortOptions.map((item, index) => (
+        <View key={item.label} style={styles.sortItem}>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              activeSort === item.label && styles.activeSortButton,
+            ]}
+            onPress={() => handleSortChange(item.label)}
+          >
+            {item.icon ? (
+              <MaterialIcons
+                name="checklist"
+                size={24}
+                color={activeSort === item.label ? "#FF71CD" : "#241E92"}
+              />
+            ) : (
               <Text
                 style={[
                   styles.sortButtonText,
-                  activeSort === item.text && styles.activeButtonText,
+                  activeSort === item.label && styles.activeButtonText,
                 ]}
               >
-                {item.text}
+                {item.label}
               </Text>
-            </TouchableOpacity>
-            {/* Đường gạch dọc, ẩn sau mục cuối cùng */}
-            {index < options.length - 1 && <View style={styles.divider} />}
-          </View>
-        ))}
-      </View>
+            )}
+          </TouchableOpacity>
+          {/* Đường phân chia */}
+          {index < sortOptions.length - 1 && <View style={styles.divider} />}
+        </View>
+      ))}
     </View>
   );
 };
@@ -45,37 +62,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     height: 40,
-    borderBottomWidth: 2,
-    borderBottomColor: "#241E92",
-  },
-  sortOptions: {
-    flexDirection: "row",
-    flex: 1,
-    flexWrap: "nowrap", // Không cho phép xuống dòng
   },
   sortItem: {
     flexDirection: "row",
     alignItems: "center",
   },
   sortButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row", // Icon và text nằm ngang
+    paddingHorizontal: 12,
   },
   sortButtonText: {
     fontSize: 16,
-    fontWeight: 'normal',
     color: "#241E92",
+    fontWeight: "500",
+    textAlign: "center",
   },
   activeButtonText: {
-    color: "#FF71CD",
-    fontWeight: 'normal',
+    color: "#FF71CD", // Màu chữ cho mục được chọn
+    fontWeight: "bold",
   },
   divider: {
-    height: 25,
     width: 1,
-    backgroundColor: "#CFCED6",
-    marginHorizontal: 8,
+    height: 25,
+    backgroundColor: "#CFCED6", // Màu đường gạch dọc
+    marginVertical: 10,
   },
 });
 
