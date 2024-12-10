@@ -1,102 +1,141 @@
-import React from 'react';
-import { View, TextInput, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // Thư viện icon
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
+  Alert
+} from "react-native";
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Ionicons,
+} from "@expo/vector-icons"; // Thư viện icon
+import { useNavigation } from "@react-navigation/native";
+import { useAuthContext } from "@context/AuthContext";
+
 const badgeCount = 3;
 const HeaderBar = () => {
+  const navigation = useNavigation();
+  const { user } = useAuthContext();
 
-    const navigation = useNavigation(); 
+  const handleCartPress = () => {
+    if (user && Array.isArray(user) && user.length > 0) {
+      navigation.navigate("Cart");
+    } else {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng đăng nhập để xem giỏ hàng!",
+        [
+          { text: "Hủy", style: "cancel" },
+          { text: "Đăng nhập", onPress: () => navigation.navigate("Login") },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
 
-    return (
+  return (
     <View style={styles.headerContainer}>
-        <Image style={styles.logo}
-            source={require("../assets/imgs/logo.png")} />
+      <Image style={styles.logo} source={require("../assets/imgs/logo.png")} />
 
-        <View style={styles.searchBarContainer}>
-            <TextInput
-                placeholder="Tìm kiếm sản phẩm..."
-                style={styles.searchBarInput}
-            />
-            <TouchableOpacity>
-                <MaterialIcons name='search' size={24} color='white' style={styles.searchBarIcon} />
-            </TouchableOpacity>
-        </View>
+      <View style={styles.searchBarContainer}>
+        <TextInput
+          placeholder="Tìm kiếm sản phẩm..."
+          style={styles.searchBarInput}
+        />
+        <TouchableOpacity>
+          <MaterialIcons
+            name="search"
+            size={24}
+            color="white"
+            style={styles.searchBarIcon}
+          />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-                <MaterialCommunityIcons name='cart-outline' size={24} color='#241E92' />
-            </TouchableOpacity>
-            <TouchableOpacity><Ionicons name='chatbox-ellipses-outline' size={24} color='#241E92' />
-                {badgeCount > 0 && (
-                    <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{badgeCount}</Text>
-                    </View>
-                )}</TouchableOpacity>
-
-        </View>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={handleCartPress}>
+          <MaterialCommunityIcons
+            name="cart-outline"
+            size={24}
+            color="#241E92"
+          />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="chatbox-ellipses-outline" size={24} color="#241E92" />
+          {badgeCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{badgeCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
-    );
-}
+  );
+};
 
 const styles = StyleSheet.create({
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        paddingHorizontal: 10,
-        justifyContent: 'space-between',
-        height: 42,
-    },
-    logo: {
-        width: 40,
-        height: 30,
-    },
-    searchBarContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: 230,
-        height: 30,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#CFCED6',
-        paddingLeft: 6,
-    },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    paddingHorizontal: 10,
+    justifyContent: "space-between",
+    height: 42,
+  },
+  logo: {
+    width: 40,
+    height: 30,
+  },
+  searchBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 230,
+    height: 30,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CFCED6",
+    paddingLeft: 6,
+  },
 
-    searchBarInput: {
-        flex: 1,
-        fontWeight: '400',
-        fontSize: 14,
-        paddingVertical: 0,
-        paddingLeft: 4,
-    },
-    searchBarIcon: {
-        backgroundColor: '#241E92',
-        paddingVertical: 3,
-        paddingHorizontal: 6,
-        borderTopRightRadius: 8,
-        borderBottomRightRadius: 8
-    },
-    iconContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-    },
-    badge: {
-        position: "absolute",
-        top: -5,
-        right: -5,
-        backgroundColor: "red",
-        width: 16,
-        height: 16,
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    badgeText: {
-        color: "white",
-        fontSize: 10,
-        fontWeight: "bold",
-    },
+  searchBarInput: {
+    flex: 1,
+    fontWeight: "400",
+    fontSize: 14,
+    paddingVertical: 0,
+    paddingLeft: 4,
+  },
+  searchBarIcon: {
+    backgroundColor: "#241E92",
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  badge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
 });
 
 export default HeaderBar;

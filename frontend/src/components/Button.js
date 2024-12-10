@@ -7,9 +7,10 @@ export default function Button({
   backgroundColor = "#FF71CD",
   textColor = "#FFFFFF",
   width,
+  borderRadius,
   icon, // Prop icon có thể là một React element hoặc nguồn ảnh
 }) {
-  const hasIcon = !!icon; 
+  const hasIcon = !!icon;
 
   return (
     <TouchableOpacity
@@ -18,6 +19,7 @@ export default function Button({
         {
           backgroundColor,
           width: width || "auto",
+          borderRadius: borderRadius || 8,
         },
       ]}
       onPress={onPress}
@@ -44,13 +46,12 @@ export default function Button({
 const styles = StyleSheet.create({
   button: {
     height: 42,
-    borderRadius: 8,
     justifyContent: "center",
     paddingHorizontal: 10,
   },
   content: {
     flexDirection: "row",
-    alignItems: "center", 
+    alignItems: "center",
     justifyContent: "center",
   },
   buttonText: {
@@ -60,10 +61,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 30,
     height: 30,
-    marginRight: 8, 
+    marginRight: 8,
     resizeMode: "contain",
   },
   iconContainer: {
-    marginRight: 8, 
+    marginRight: 8,
   },
 });
