@@ -230,6 +230,11 @@ const StackNavigator = () => {
           component={ChatWithBotScreen}
           options={{ headerShown: false }}
         />
+          <Stack.Screen
+          name="Cart"
+          component={Cart}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -15,8 +15,10 @@ import {
 
 import CartItem from "@components/CartItem";
 import Button from "@components/Button";
+import { useNavigation } from "@react-navigation/native"
 
 export default function Cart() {
+  const navigation = useNavigation();
   const badgeCount = 3;
   const products = [
     { id: 1, name: "Sản phẩm A", price: 100000, category: "Danh mục 1" },
@@ -39,6 +41,9 @@ export default function Cart() {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEditMode = () => setIsEditing(!isEditing);
+  const handleClickChat = () => {
+    navigation.navigate("Chat");
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +55,7 @@ export default function Cart() {
               <Text style={styles.subtitle}>{isEditing ? "Xong" : "Sửa"}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleClickChat}>
               <Ionicons
                 name="chatbox-ellipses-outline"
                 size={24}
