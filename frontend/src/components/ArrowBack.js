@@ -37,13 +37,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     height: 56,
-    justifyContent:"space-between"
-  },
-  titleContainer:{
-    flexDirection:"row"
   },
   iconContainer: {
-    marginRight:10,
+    marginRight: 10,
     paddingRight: 12,
   },
   title: {

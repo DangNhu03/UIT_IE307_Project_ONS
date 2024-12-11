@@ -176,38 +176,6 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-            name="Cart"
-            component={Cart}
-            options={{ headerShown: false }}
-          />
-        {/* <Stack.Screen
-            name="Info"
-            component={ProductInfoScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Address"
-            component={AddAddressScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Add"
-            component={AddressScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Confirm"
-            component={ConfirmationScreen}
-            options={{ headerShown: false }}
-          />
-  
-          <Stack.Screen
-            name="Order"
-            component={OrderScreen}
-            options={{ headerShown: false }}
-          /> */}
-
-        <Stack.Screen
           name="PersonalInfo"
           component={PersonalInfo}
           // options={{ headerShown: false }}

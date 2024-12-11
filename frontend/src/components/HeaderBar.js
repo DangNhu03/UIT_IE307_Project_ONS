@@ -1,45 +1,13 @@
-import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Image,
-  Text,
-  TouchableOpacity,
-  Alert
-} from "react-native";
-import {
-  MaterialIcons,
-  MaterialCommunityIcons,
-  Ionicons,
-} from "@expo/vector-icons"; // Thư viện icon
-import { useNavigation } from "@react-navigation/native";
-import { useAuthContext } from "@context/AuthContext";
-
+import React, { useState } from 'react';
+import { View, TextInput, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // Thư viện icon
 import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 const badgeCount = 3;
-const HeaderBar = () => {
-  const navigation = useNavigation();
-  const { user } = useAuthContext();
+const HeaderBar = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const route = useRoute();
-
-  const handleCartPress = () => {
-    if (user && Array.isArray(user) && user.length > 0) {
-      navigation.navigate("Cart");
-    } else {
-      Alert.alert(
-        "Thông báo",
-        "Vui lòng đăng nhập để xem giỏ hàng!",
-        [
-          { text: "Hủy", style: "cancel" },
-          { text: "Đăng nhập", onPress: () => navigation.navigate("Login") },
-        ],
-        { cancelable: true }
-      );
-    }
-  };
+  const navigation = useNavigation();
 
   const handleSearch = () => {
     if (onSearch) {
@@ -53,7 +21,10 @@ const HeaderBar = () => {
 
   return (
     <View style={styles.headerContainer}>
-      <Image style={styles.logo} source={require("../assets/imgs/logo.png")} />
+      <Image
+        style={styles.logo}
+        source={require("../assets/imgs/logo.png")}
+      />
 
       <View style={styles.searchBarContainer}>
         <TextInput
@@ -74,14 +45,14 @@ const HeaderBar = () => {
       </View>
 
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={handleCartPress}>
+        <TouchableOpacity>
           <MaterialCommunityIcons
             name="cart-outline"
             size={24}
             color="#241E92"
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleClickChat}>
           <Ionicons name="chatbox-ellipses-outline" size={24} color="#241E92" />
           {badgeCount > 0 && (
             <View style={styles.badge}>
@@ -91,15 +62,16 @@ const HeaderBar = () => {
         </TouchableOpacity>
       </View>
     </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
     paddingHorizontal: 10,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     height: 42,
   },
   logo: {
@@ -107,33 +79,33 @@ const styles = StyleSheet.create({
     height: 30,
   },
   searchBarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     width: 230,
     height: 30,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#CFCED6",
+    borderColor: '#CFCED6',
     paddingLeft: 6,
   },
 
   searchBarInput: {
     flex: 1,
-    fontWeight: "400",
+    fontWeight: '400',
     fontSize: 14,
     paddingVertical: 0,
     paddingLeft: 4,
   },
   searchBarIcon: {
-    backgroundColor: "#241E92",
+    backgroundColor: '#241E92',
     paddingVertical: 3,
     paddingHorizontal: 6,
     borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
+    borderBottomRightRadius: 8
   },
   iconContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
   },
   badge: {
