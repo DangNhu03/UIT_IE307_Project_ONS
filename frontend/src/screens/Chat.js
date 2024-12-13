@@ -4,7 +4,7 @@ import { AuthContext } from "@contexts/AuthContext"; // Giả sử bạn có Aut
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-
+import { API_URL } from '../../../url';
 const ChatWithBotScreen = () => {
   const [message, setMessage] = useState(""); // Tin nhắn người dùng nhập
   const [messages, setMessages] = useState([]); // Danh sách tin nhắn trong cuộc trò chuyện
@@ -13,7 +13,6 @@ const ChatWithBotScreen = () => {
   // Lấy thông tin người dùng từ AuthContext (giả sử có AuthContext)
   const { user } = useContext(AuthContext);
   const user_id = user && user[0]?._id;
-  const API_URL = 'http://192.168.137.1:5000';
   useEffect(() => {
     if (user_id) {
       // Lấy lịch sử tin nhắn khi người dùng đăng nhập

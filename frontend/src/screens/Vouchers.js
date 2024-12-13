@@ -13,7 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import ArrowBack from "@components/ArrowBack";
 import axios from 'axios';
 import { useAuthContext } from "@contexts/AuthContext";
-
+import { API_URL } from '../../../url';
 export default function Vouchers() {
   const [loading, setLoading] = useState(true);
   const [vouchers, setVouchers] = useState([]);
@@ -23,7 +23,6 @@ export default function Vouchers() {
   const [isSave, setIsSave] = useState(false); // Trạng thái isSave
   const { user } = useAuthContext();
   const user_id = user && user[0]?._id;
-  const API_URL = 'http://192.168.137.1:5000';
 
   const Tab = createMaterialTopTabNavigator();
 

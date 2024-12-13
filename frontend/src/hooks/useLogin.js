@@ -5,9 +5,9 @@ import { Alert } from "react-native";
 // import { API_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
+import { API_URL } from '../../../url';
 
 export function useLogin() {
-  let API_URL = 'http://192.168.137.1:5000'
 
   const { dispatch } = useAuthContext();
   const [loading, setLoading] = useState(false);

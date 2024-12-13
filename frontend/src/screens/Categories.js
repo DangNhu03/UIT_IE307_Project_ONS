@@ -18,9 +18,8 @@ import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import axios from 'axios';
 import { useAuthContext } from "@contexts/AuthContext";
 import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
-
+import { API_URL } from '../../../url';
 export default function Categories() {
-  let API_URL = 'http://192.168.137.1:5000'
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);

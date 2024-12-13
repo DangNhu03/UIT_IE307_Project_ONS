@@ -17,9 +17,9 @@ import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import axios from 'axios';
 import { useAuthContext } from "../contexts/AuthContext";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { API_URL } from '../../../url';
 
 export default function Home() {
-  let API_URL = 'http://192.168.137.1:5000'
 
   const targetTime = 2 * 60 * 60 + 30 * 60; // 2 giờ 30 phút = 9000 giây
 
