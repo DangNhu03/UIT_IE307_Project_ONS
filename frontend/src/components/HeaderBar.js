@@ -14,7 +14,7 @@ import {
 } from "@expo/vector-icons"; // Thư viện icon
 import { useRoute } from "@react-navigation/native"; // Dùng để nhận params
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 
 const badgeCount = 3;
 const HeaderBar = ({ onSearch }) => {

@@ -15,7 +15,7 @@ import CountdownTimer from '../components/CountdownTimer';
 import ProductItem from '../components/ProductItem';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import axios from 'axios';
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 export default function Home() {

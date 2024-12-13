@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import StackNavigator from "@navigation/Navigator";
 // import store from "./store";
 // import { UserContext } from "./UserContext"
-import { AuthContextProvider } from "@context/AuthContext";
+import {AuthContextProvider} from "@contexts/AuthContext"
 export default function App() {
   return (
     <>

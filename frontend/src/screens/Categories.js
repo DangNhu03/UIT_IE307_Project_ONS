@@ -16,7 +16,7 @@ import SortBar from '@components/SortBar';
 import ProductItem from '@components/ProductItem';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import axios from 'axios';
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
 
 export default function Categories() {

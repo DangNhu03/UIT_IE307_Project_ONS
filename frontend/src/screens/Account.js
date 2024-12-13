@@ -1,6 +1,6 @@
 import ArrowBack from "@components/ArrowBack";
 import Button from "@components/Button";
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import {

@@ -12,7 +12,7 @@ import VoucherList from '@components/VoucherItem';
 import { MaterialIcons } from '@expo/vector-icons';
 import ArrowBack from "@components/ArrowBack";
 import axios from 'axios';
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 
 export default function Vouchers() {
   const [loading, setLoading] = useState(true);

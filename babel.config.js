@@ -12,7 +12,7 @@ module.exports = function (api) {
             "@screens": "./frontend/src/screens",
             "@hooks": "./frontend/src/hooks",
             "@assets": "./frontend/src/assest",
-            "@context": "./frontend/src/context",
+            "@contexts": "./frontend/src/contexts",
             "@navigation": "./frontend/src/navigation",
           },
         },

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from "react-native";
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 import axios from "axios";
 import { Alert } from "react-native";
 

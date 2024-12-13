@@ -4,7 +4,7 @@ import VoucherSelect from "@components/VoucherSelect";
 import PaymentMethod from "@components/payments/PaymentMethod";
 import DeliveryMethod from "@components/payments/DeliveryMethod";
 import DetailPayment from "@components/payments/DetailPayment";
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import DeliveryAddress from "@components/payments/DeliveryAddress";

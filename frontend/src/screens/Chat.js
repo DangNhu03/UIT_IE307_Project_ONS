@@ -1,6 +1,6 @@
 import ArrowBack from "@components/ArrowBack";
 import Button from "@components/Button";
-import { AuthContext } from "@context/AuthContext"; // Giả sử bạn có AuthContext
+import { AuthContext } from "@contexts/AuthContext"; // Giả sử bạn có AuthContext
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, View } from "react-native";

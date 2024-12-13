@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthContext } from "@context/AuthContext";
+import { useAuthContext } from "@contexts/AuthContext";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native"; 
 import { Alert } from "react-native";
