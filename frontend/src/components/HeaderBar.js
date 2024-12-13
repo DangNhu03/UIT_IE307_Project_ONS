@@ -34,19 +34,7 @@ const HeaderBar = ({ onSearch }) => {
   };
 
   const handleCartPress = () => {
-    if (user && Array.isArray(user) && user.length > 0) {
       navigation.navigate("Cart");
-    } else {
-      Alert.alert(
-        "Thông báo",
-        "Vui lòng đăng nhập để xem giỏ hàng!",
-        [
-          { text: "Hủy", style: "cancel" },
-          { text: "Đăng nhập", onPress: () => navigation.navigate("Login") },
-        ],
-        { cancelable: true }
-      );
-    }
   };
 
   return (

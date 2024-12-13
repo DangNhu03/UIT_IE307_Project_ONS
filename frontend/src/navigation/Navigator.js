@@ -10,6 +10,7 @@ import Categories from "@screens/Categories";
 import Notifications from "@screens/Notifications.js";
 import Account from "@screens/Account";
 import Cart from "@screens/Cart";
+import Payment from "@screens/Payment";
 import Login from "@screens/Login";
 import Register from "@screens/Register";
 import { AntDesign } from "@expo/vector-icons";
@@ -49,12 +50,14 @@ const StackNavigator = () => {
 
   function BottomTabs() {
     return (
-      <Tab.Navigator initialRouteName="Home"
+      <Tab.Navigator
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "#FF71CD",    // Active label color (focused)
-          tabBarInactiveTintColor: "#241E92",  // Inactive label color (not focused)
-        }}>
+          tabBarActiveTintColor: "#FF71CD", // Active label color (focused)
+          tabBarInactiveTintColor: "#241E92", // Inactive label color (not focused)
+        }}
+      >
         <Tab.Screen
           name="Home"
           component={Home}
@@ -108,7 +111,11 @@ const StackNavigator = () => {
                   color="#FF71CD"
                 />
               ) : (
-                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#241E92" />
+                <MaterialCommunityIcons
+                  name="format-list-bulleted"
+                  size={24}
+                  color="#241E92"
+                />
               ),
           }}
         />
@@ -119,7 +126,7 @@ const StackNavigator = () => {
           options={{
             tabBarLabel: "Thông báo",
             tabBarIcon: ({ focused }) => (
-              <View style={{ position: 'relative' }}>
+              <View style={{ position: "relative" }}>
                 <MaterialIcons
                   name="notifications-none"
                   size={24}
@@ -142,9 +149,17 @@ const StackNavigator = () => {
             tabBarLabel: "Tài khoản",
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialIcons name="person-outline" size={24} color="#FF71CD" />
+                <MaterialIcons
+                  name="person-outline"
+                  size={24}
+                  color="#FF71CD"
+                />
               ) : (
-                <MaterialIcons name="person-outline" size={24} color="#241E92" />
+                <MaterialIcons
+                  name="person-outline"
+                  size={24}
+                  color="#241E92"
+                />
               ),
             headerShown: false,
           }}
@@ -230,9 +245,14 @@ const StackNavigator = () => {
           component={ChatWithBotScreen}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="Cart"
           component={Cart}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Payment"
+          component={Payment}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -15,7 +15,8 @@ import {
 
 import CartItem from "@components/CartItem";
 import Button from "@components/Button";
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation } from "@react-navigation/native";
+import VoucherSelect from "@components/VoucherSelect";
 
 export default function Cart() {
   const navigation = useNavigation();
@@ -103,22 +104,7 @@ export default function Cart() {
         ) : (
           <>
             <View style={styles.voucherContainer}>
-              <View style={styles.voucherTitle}>
-                <MaterialCommunityIcons
-                  name="ticket-confirmation-outline"
-                  size={24}
-                  color="#241E92"
-                />
-                <Text style={styles.title}>Shop Voucher</Text>
-              </View>
-              <TouchableOpacity style={styles.voucherSelection}>
-                <Text style={styles.smallText}>Chọn hoặc nhập mã</Text>
-                <MaterialIcons
-                  name="keyboard-arrow-right"
-                  size={24}
-                  color="#241E92"
-                />
-              </TouchableOpacity>
+              <VoucherSelect />
             </View>
             <View style={styles.line}></View>
             <View style={styles.totalContainer}>
@@ -140,7 +126,7 @@ export default function Cart() {
                 <Button
                   title="Mua ngay"
                   borderRadius={4}
-                  onPress={() => navigation.navigate("Login")}
+                  onPress={() => navigation.navigate("Payment")}
                 />
               </View>
             </View>
@@ -197,25 +183,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     gap: 10,
   },
-  voucherContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  voucherTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  voucherSelection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  smallText: {
-    fontSize: 12,
-    lineHeight: 21,
-    color: "#241E92",
-  },
   line: {
     height: 1,
     backgroundColor: "#CFCED6",
@@ -229,6 +196,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight:"400"
   },
   totalRight: {
     flexDirection: "row",
