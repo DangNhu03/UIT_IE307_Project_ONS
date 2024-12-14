@@ -10,6 +10,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useAuthContext } from "@contexts/AuthContext";
+import { API_URL } from '../../../url';
 import VoucherList from '@components/VoucherItem';
 import ArrowBack from "@components/ArrowBack";
 
@@ -23,7 +24,8 @@ export default function Vouchers() {
   const [activeTab, setActiveTab] = useState('all'); // Quản lý tab đang active
   const { user } = useAuthContext();
   const user_id = user && user[0]?._id;
-  const API_URL = 'http://192.168.137.1:5000';
+
+  const Tab = createMaterialTopTabNavigator();
 
   useEffect(() => {
     axios

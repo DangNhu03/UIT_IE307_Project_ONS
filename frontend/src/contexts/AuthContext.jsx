@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import { createContext, useContext } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '../../../url';
 
 // Tạo Context
 export const AuthContext = createContext();
@@ -20,7 +21,6 @@ export const authReducer = (state, action) => {
 // Provider
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, { user: null });
-    const API_URL = 'http://192.168.137.1:5000';
 
     // Hàm đồng bộ thông tin người dùng từ server
     const syncUserInfo = async (user) => {

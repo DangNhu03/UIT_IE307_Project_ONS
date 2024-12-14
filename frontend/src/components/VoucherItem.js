@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from "react
 import { useAuthContext } from "@contexts/AuthContext";
 import axios from "axios";
 import { Alert } from "react-native";
+import { API_URL } from '../../../url';
 import { format } from "date-fns";
 
 const Voucher = ({ data, isSaved, onSave }) => {
-    let API_URL = 'http://192.168.137.1:5000';
     const { user } = useAuthContext();
     const user_id = user && user[0]?._id;
 

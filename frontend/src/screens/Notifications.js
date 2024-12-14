@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import ArrowBack from "@components/ArrowBack";
 import Noti from '@components/NotiItem';
 import axios from 'axios';
-
+import { API_URL } from '../../../url';
 export default function Notifications() {
-  const API_URL = 'http://192.168.137.1:5000';
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
