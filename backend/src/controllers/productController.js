@@ -1,8 +1,6 @@
 const Category = require('../models/categoriesModels');
 const Product = require('../models/productsModels');
 
-
-
 // POST: Thêm mới danh mục
 const postCategories = async (req, res) => {
     try {
@@ -114,6 +112,35 @@ const getAllProduct = async (req, res) => {
     }
 };
 
+// GET: Lấy tất cả sản phẩm theo danh mục
+const getProductsByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.categoryId; // Lấy categoryId từ tham số URL
+
+        // Tìm tất cả sản phẩm thuộc danh mục này và lấy thông tin category
+        const products = await Product.find({ cate_id: categoryId }).populate('cate_id');
+
+        // Kiểm tra nếu không có sản phẩm nào
+        if (products.length === 0) {
+            return res.status(404).json({
+                message: "No products found in this category"
+            });
+        }
+
+        // Trả về danh sách sản phẩm
+        res.status(200).json({
+            message: "Products retrieved successfully",
+            products
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to retrieve products",
+            error: error.message
+        });
+    }
+};
+
+
 // PUT: Chỉnh sửa sản phẩm theo ID
 const updateProduct = async (req, res) => {
     try {
@@ -185,4 +212,5 @@ module.exports = {
     postProduct,
     getAllProduct,
     updateProduct,
+    getProductsByCategory
 };

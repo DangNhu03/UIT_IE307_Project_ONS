@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from "react
 import { useAuthContext } from "@contexts/AuthContext";
 import axios from "axios";
 import { Alert } from "react-native";
+import { format } from "date-fns";
 
 const Voucher = ({ data, isSaved, onSave }) => {
     let API_URL = 'http://192.168.137.1:5000';
@@ -62,8 +63,8 @@ const Voucher = ({ data, isSaved, onSave }) => {
                     <Text style={styles.condition}>Đơn tối thiểu {formatNumber(data.vouc_min_order_value)}</Text>
                     <Text style={styles.expire}>
                         {data.vouc_is_active
-                            ? `HSD: ${data.vouc_end_date}`
-                            : `Có hiệu lực từ: ${data.vouc_start_date}`}
+                            ? `HSD: ${format(new Date(data.vouc_end_date), "dd.MM.yyyy")}`
+                            : `Có hiệu lực từ: ${format(new Date(data.vouc_start_date), "dd.MM.yyyy")}`}
                     </Text>
                 </View>
                 {data.vouc_is_active ? (

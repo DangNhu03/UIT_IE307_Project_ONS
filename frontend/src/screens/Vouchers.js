@@ -7,12 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import VoucherList from '@components/VoucherItem';
 import { MaterialIcons } from '@expo/vector-icons';
-import ArrowBack from "@components/ArrowBack";
 import axios from 'axios';
 import { useAuthContext } from "@contexts/AuthContext";
+import VoucherList from '@components/VoucherItem';
+import ArrowBack from "@components/ArrowBack";
 
 export default function Vouchers() {
   const [loading, setLoading] = useState(true);
@@ -21,11 +20,10 @@ export default function Vouchers() {
   const [myVoucher, setMyVoucher] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSave, setIsSave] = useState(false); // Trạng thái isSave
+  const [activeTab, setActiveTab] = useState('all'); // Quản lý tab đang active
   const { user } = useAuthContext();
   const user_id = user && user[0]?._id;
   const API_URL = 'http://192.168.137.1:5000';
-
-  const Tab = createMaterialTopTabNavigator();
 
   useEffect(() => {
     axios
@@ -61,153 +59,87 @@ export default function Vouchers() {
     setIsSave(!isSave);
   };
 
-  const AllScreen = () => {
-    const filteredVouchers = vouchers.filter((v) =>
+  // Hàm lọc voucher theo mã
+  const filterVouchers = (vouchersList) => {
+    return vouchersList.filter((v) =>
       v.vouc_code.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    return (
-      loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <VoucherList
-          vouchers={filteredVouchers}
-          myVoucher={myVoucher}
-          onUpdateSavedVouchers={handleUpdateSavedVouchers}
-        />
-      )
-    );
-  };
-
-  const NotStartedScreen = () => {
-    const filteredVouchers = voucherNotStarted.filter((v) =>
-      v.vouc_code.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    return (
-      loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <VoucherList vouchers={filteredVouchers} />
-      )
-    );
-  };
-
-  const MyVoucherScreen = () => {
-    const filteredVouchers = myVoucher.filter((v) =>
-      v.vouc_code.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    return (
-      loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <VoucherList vouchers={filteredVouchers} myVoucher={myVoucher} />
-      )
     );
   };
 
   return (
     <View style={styles.container}>
       <ArrowBack title="Ưu đãi" />
+      
+      {/* Tabs Header */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+          onPress={() => setActiveTab('all')}
+        >
+          <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>Tất cả ({vouchers.length})</Text>
+        </TouchableOpacity>
+        
+        {/* Đường ngăn cách giữa các tab */}
+        <View style={styles.separator}></View>
 
-      {/* Tab Navigation */}
-      <Tab.Navigator
-        screenOptions={{
-          tabBarIndicatorStyle: {
-            height: 3,
-            backgroundColor: '#FF71CD',
-          },
-          tabBarLabelStyle: {
-            fontSize: 14,
-            lineHeight: 16,
-            textAlign: 'center',
-            paddingBottom: 5,
-          },
-          tabBarActiveTintColor: '#FF71CD',
-          tabBarInactiveTintColor: '#241E92',
-          tabBarStyle: {
-            height: 40,
-            backgroundColor: '#FFF',
-            elevation: 0,
-          },
-        }}
-      >
-        <Tab.Screen
-          name="All"
-          children={() => (
-            <View style={styles.tabContent}>
-              {/* Search Bar */}
-              <View style={styles.searchBar}>
-                <View style={styles.searchBarContainer}>
-                  <TextInput
-                    placeholder="Nhập mã voucher..."
-                    style={styles.searchBarInput}
-                    value={searchQuery}
-                    onChangeText={(text) => setSearchQuery(text)}
-                  />
-                  <TouchableOpacity>
-                    <MaterialIcons name="search" size={24} color="white" style={styles.searchBarIcon} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* All Screen Content */}
-              <AllScreen />
-            </View>
-          )}
-          options={{ title: `Tất cả (${vouchers.length})` }}
-        />
-        <Tab.Screen
-          name="NotStarted"
-          children={() => (
-            <View style={styles.tabContent}>
-              {/* Search Bar */}
-              <View style={styles.searchBar}>
-                <View style={styles.searchBarContainer}>
-                  <TextInput
-                    placeholder="Nhập mã voucher..."
-                    style={styles.searchBarInput}
-                    value={searchQuery}
-                    onChangeText={(text) => setSearchQuery(text)}
-                  />
-                  <TouchableOpacity>
-                    <MaterialIcons name="search" size={24} color="white" style={styles.searchBarIcon} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Not Started Screen Content */}
-              <NotStartedScreen />
-            </View>
-          )}
-          options={{ title: `Sắp diễn ra (${voucherNotStarted.length})` }}
-        />
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'notStarted' && styles.activeTab]}
+          onPress={() => setActiveTab('notStarted')}
+        >
+          <Text style={[styles.tabText, activeTab === 'notStarted' && styles.activeTabText]}>Sắp diễn ra ({voucherNotStarted.length})</Text>
+        </TouchableOpacity>
+        
+        {/* Tab "Mã của tôi" chỉ hiển thị nếu có user */}
         {user && (
-          <Tab.Screen
-            name="MyVoucher"
-            children={() => (
-              <View style={styles.tabContent}>
-                {/* Search Bar */}
-                <View style={styles.searchBar}>
-                  <View style={styles.searchBarContainer}>
-                    <TextInput
-                      placeholder="Nhập mã voucher..."
-                      style={styles.searchBarInput}
-                      value={searchQuery}
-                      onChangeText={(text) => setSearchQuery(text)}
-                    />
-                    <TouchableOpacity>
-                      <MaterialIcons name="search" size={24} color="white" style={styles.searchBarIcon} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* My Voucher Screen Content */}
-                <MyVoucherScreen />
-              </View>
-            )}
-            options={{ title: `Mã của tôi (${myVoucher.length})` }}
-          />
+          <>
+            <View style={styles.separator}></View>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'myVoucher' && styles.activeTab]}
+              onPress={() => setActiveTab('myVoucher')}
+            >
+              <Text style={[styles.tabText, activeTab === 'myVoucher' && styles.activeTabText]}>Mã của tôi ({myVoucher.length})</Text>
+            </TouchableOpacity>
+          </>
         )}
-      </Tab.Navigator>
+      </View>
+
+      {/* Search Bar */}
+      <View style={styles.searchBar}>
+        <View style={styles.searchBarContainer}>
+          <TextInput
+            placeholder="Nhập mã voucher..."
+            style={styles.searchBarInput}
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+          />
+          <TouchableOpacity>
+            <MaterialIcons name="search" size={24} color="white" style={styles.searchBarIcon} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Tab Content */}
+      <View style={styles.tabContent}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <>
+            {activeTab === 'all' && (
+              <VoucherList
+                vouchers={filterVouchers(vouchers)}
+                myVoucher={myVoucher}
+                onUpdateSavedVouchers={handleUpdateSavedVouchers}
+              />
+            )}
+            {activeTab === 'notStarted' && (
+              <VoucherList vouchers={filterVouchers(voucherNotStarted)} />
+            )}
+            {activeTab === 'myVoucher' && (
+              <VoucherList vouchers={filterVouchers(myVoucher)} myVoucher={myVoucher} />
+            )}
+          </>
+        )}
+      </View>
     </View>
   );
 }
@@ -217,12 +149,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#241E92",  // Background color for the whole container
     paddingTop: 40,
-    // marginBottom:10
   },
-  tabContent: {
-    flex: 1,
-    backgroundColor: "#241E92",  // Apply background color to the content area
-    // marginBottom: 10,  // Adjust bottom padding if necessary
+  tabsContainer: {
+    flexDirection: 'row',
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFF',
+  },
+  tab: {},
+  activeTab: {
+    borderBottomColor: '#FF71CD', // Màu cho tab đang active
+
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#241E92',
+    lineHeight: 21,
+    fontWeight:'500'
+  },
+  activeTabText: {
+    color: '#FF71CD',
+    fontWeight:'bold'
   },
   searchBar: {
     width: 390,
@@ -255,5 +203,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
+  },
+  tabContent: {
+    flex: 1,
+    backgroundColor: "#241E92",  // Apply background color to the content area
+  },
+  separator: {
+    width: 1, // Chiều rộng đường ngăn cách
+    height: 25, // Chiều cao đường ngăn cách
+    backgroundColor: '#D3D3D3', // Màu của đường ngăn cách
   },
 });

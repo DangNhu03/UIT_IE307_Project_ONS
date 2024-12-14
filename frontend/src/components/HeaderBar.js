@@ -18,8 +18,8 @@ import { useAuthContext } from "@contexts/AuthContext";
 
 const badgeCount = 3;
 const HeaderBar = ({ onSearch }) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const route = useRoute();
+  const [searchQuery, setSearchQuery] = useState(route.params?.searchQuery || "");
   const navigation = useNavigation();
   const { user } = useAuthContext();
 
@@ -45,7 +45,7 @@ const HeaderBar = ({ onSearch }) => {
         <TextInput
           placeholder="Tìm kiếm sản phẩm..."
           style={styles.searchBarInput}
-          value={route.params?.searchQuery || searchQuery}
+          value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
           onSubmitEditing={handleSearch} // Tìm kiếm khi nhấn Enter
         />
