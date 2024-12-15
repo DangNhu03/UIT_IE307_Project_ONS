@@ -59,6 +59,9 @@ export default function Login() {
     }
   };
 
+  const forgotPassWord =()=>{
+    navigation.navigate("ForgotPassword");
+  }
   const handleInputChange = (field, value) => {
     if (field === "phone") setPhone(value);
     if (field === "password") setPassword(value);
@@ -100,8 +103,7 @@ export default function Login() {
             />
           }
         />
-        {/* Chưa làm */}
-        <TouchableOpacity style={styles.forgotPasswordContainer}>
+        <TouchableOpacity style={styles.forgotPasswordContainer} onPress={forgotPassWord}>
           <Text style={styles.forgotPasswordText}>Bạn quên mật khẩu?</Text>
         </TouchableOpacity>
 

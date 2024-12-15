@@ -34,6 +34,7 @@ import ContactUs from "@screens/accounts/ContactUs";
 import DeleteAccount from "@screens/accounts/DeleteAccount";
 
 import ChatWithBotScreen from "@screens/Chat.js";
+import ForgotPassword from "@screens/ForgotPassword.js";
 
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
@@ -259,6 +260,11 @@ const StackNavigator = () => {
           <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPassword}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

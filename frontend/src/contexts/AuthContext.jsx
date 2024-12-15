@@ -12,6 +12,7 @@ export const authReducer = (state, action) => {
         case 'LOGIN':
             return { user: action.payload };
         case 'LOGOUT':
+            AsyncStorage.removeItem("user").catch(err => console.error("Lỗi khi xóa AsyncStorage:", err));
             return { user: null };
         default:
             return state;

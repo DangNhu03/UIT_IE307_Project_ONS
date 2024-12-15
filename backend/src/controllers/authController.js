@@ -48,7 +48,6 @@ const postUser = async (req, res) => {
   }
 };
 
-
 // POST: Đăng nhập
 const loginUser = async (req, res) => {
   try {
@@ -81,7 +80,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // GET: Lấy tất cả người dùng
 const getAllUser = async (req, res) => {
   try {
@@ -112,10 +110,14 @@ const addVoucher = async (req, res) => {
     }
 
     // Kiểm tra xem voucher đã có trong danh sách voucher của người dùng chưa
-    const voucherExists = user.list_vouchers.some(item => item.voucher_id.toString() === voucher_id.toString());
+    const voucherExists = user.list_vouchers.some(
+      (item) => item.voucher_id.toString() === voucher_id.toString()
+    );
 
     if (voucherExists) {
-      return res.status(400).json({ message: "Voucher already added to the user" });
+      return res
+        .status(400)
+        .json({ message: "Voucher already added to the user" });
     }
 
     // Thêm voucher vào danh sách voucher của người dùng
@@ -123,13 +125,16 @@ const addVoucher = async (req, res) => {
     await user.save(); // Lưu người dùng sau khi cập nhật
 
     // Trả về thông báo thành công và dữ liệu người dùng mới
-    res.status(201).json({ message: "Voucher added to user successfully", user });
+    res
+      .status(201)
+      .json({ message: "Voucher added to user successfully", user });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to add voucher to user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to add voucher to user", error: error.message });
   }
 };
-
 
 // GET: Lấy thông tin người dùng thông qua id
 const getUserById = async (req, res) => {
@@ -140,8 +145,8 @@ const getUserById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    
-    const user = await User.findById(id)
+
+    const user = await User.findById(id);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -163,8 +168,8 @@ const getListVouchers = async (req, res) => {
   try {
     // Tìm người dùng và populate voucher_id
     const user = await User.findById(user_id).populate({
-      path: 'list_vouchers.voucher_id', // Populate voucher_id
-      model: 'vouchers', // Tên model 'vouchers'
+      path: "list_vouchers.voucher_id", // Populate voucher_id
+      model: "vouchers", // Tên model 'vouchers'
     });
 
     if (!user) {
@@ -172,7 +177,7 @@ const getListVouchers = async (req, res) => {
     }
 
     // Chỉ lấy thông tin từ voucher_id và trả về dưới dạng mảng
-    const vouchers = user.list_vouchers.map(item => item.voucher_id);
+    const vouchers = user.list_vouchers.map((item) => item.voucher_id);
 
     // Trả về danh sách voucher
     res.status(200).json({
@@ -182,12 +187,51 @@ const getListVouchers = async (req, res) => {
     console.log(JSON.stringify(vouchers, null, 2)); // Log ra để kiểm tra
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to fetch vouchers", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch vouchers", error: error.message });
   }
 };
 
+// Tìm user thông qua số điện thoại
+const findUserByPhone = async (req, res) => {
+  let { phone } = req.params; // Lấy số điện thoại từ tham số URL
+  try {
+    // Tìm user theo số điện thoại
+    const user = await User.findOne({ user_phone: phone });
 
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
 
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Lỗi tìm kiếm người dùng:", error);
+    return res.status(500).json({ message: "Có lỗi xảy ra, vui lòng thử lại" });
+  }
+};
+const forgotPassword = async (req, res) => {
+  const { phone } = req.params; 
+  const { newPassword } = req.body; 
+
+  try {
+    const user = await User.findOne({ user_phone: phone });
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.user_pass = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Mật khẩu đã được cập nhật thành công" });
+
+  } catch (error) {
+    console.error("Lỗi trong quá trình xử lý quên mật khẩu:", error);
+    return res.status(500).json({ message: "Có lỗi xảy ra, vui lòng thử lại" });
+  }
+};
 
 module.exports = {
   postUser,
@@ -196,4 +240,6 @@ module.exports = {
   getListVouchers,
   getUserById,
   loginUser,
+  findUserByPhone,
+  forgotPassword,
 };
