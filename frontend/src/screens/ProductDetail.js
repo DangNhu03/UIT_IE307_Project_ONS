@@ -8,8 +8,12 @@ import {
     TouchableOpacity,
     FlatList,
     ActivityIndicator,
+    TextInput
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+    MaterialIcons,
+    AntDesign,
+} from "@expo/vector-icons";
 import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
 import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
@@ -17,9 +21,9 @@ import Svg, { Path, Mask, Rect, G, Defs, LinearGradient, Stop } from 'react-nati
 import ProductItem from '@components/ProductItem';
 import ReviewItem from '@components/ReviewItem';
 import Button from '@components/Button'
+import { API_URL } from '../../../url';
 
 const ProductDetail = () => {
-    const API_URL = 'http://192.168.137.1:5000';
     const navigation = useNavigation();
     const route = useRoute();
     const product = route.params?.product;
@@ -30,6 +34,8 @@ const ProductDetail = () => {
     console.log('productId ne: ', productId)
     const [selectedImage, setSelectedImage] = useState(0);
     const [relatedProducts, setRelatedProducts] = useState([])
+    const [selectedVariant, setSelectedVariant] = useState(0)
+    const [quantity, setQuantity] = useState(1); // Quản lý số lượng sản phẩm
     const [reviews, setReviews] = useState([])
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -62,6 +68,28 @@ const ProductDetail = () => {
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+    };
+
+    const increaseQuantity = () =>
+        setQuantity(quantity < 100 ? quantity + 1 : 100);
+    const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+    const handleQuantityChange = (text) => {
+        if (text === "" || isNaN(text)) {
+            setQuantity("");
+            return;
+        }
+
+        let newQuantity = parseInt(text, 10);
+        if (!isNaN(newQuantity)) {
+            if (newQuantity > 100) newQuantity = 100;
+            setQuantity(newQuantity > 0 ? newQuantity : 1);
+        }
+    };
+    const handleBlur = () => {
+        // Nếu giá trị hiện tại không hợp lệ, đặt lại về 1
+        if (!quantity || isNaN(quantity)) {
+            setQuantity(1);
+        }
     };
 
     return (
@@ -127,6 +155,50 @@ const ProductDetail = () => {
                         )}
                     </View>
                     <Text style={styles.descriptionText}>{product.prod_description}</Text>
+                </View>
+
+                {/* Phân loại, số lượnglượng*/}
+                <View style={styles.sectionContent}>
+                    <View style={styles.sectionVariant}>
+                        <Text style={styles.sectionTitle}>Phân loại</Text>
+                        <View style={styles.variantContainer}>
+                            {Array.isArray(product.prod_variations) && (
+                                product.prod_variations.map((variant, index) => (
+                                    <TouchableOpacity key={index}
+                                        onPress={() => setSelectedVariant(index)}
+                                        style={[
+                                            styles.variantItem,
+                                            selectedVariant === index && styles.activeVariantItem,
+                                        ]}>
+                                        <Text style={[styles.variantText, selectedVariant === index ? { color: '#FFF' } : { color: '#241E92' }]}>{variant.variant_name}</Text>
+                                    </TouchableOpacity>
+                                ))
+                            )}
+                        </View>
+                    </View>
+                    <View style={{ height: 1, backgroundColor: '#CFCED6', marginVertical: 10 }} />
+                    <View style={styles.sectionQuantity}>
+                        <Text style={styles.sectionTitle}>Số lượng</Text>
+                        <View style={styles.quantityContainer}>
+                            <TouchableOpacity onPress={decreaseQuantity} style={styles.quantityItem}>
+                                {/* <AntDesign name="minus" size={14} color="#241E92" /> */}
+                                <Text style={styles.quantityInput}>-</Text>
+                            </TouchableOpacity>
+                            <View style={styles.line}></View>
+                            <TextInput
+                                style={styles.quantityInput}
+                                value={String(quantity)}
+                                keyboardType="numeric"
+                                onChangeText={handleQuantityChange}
+                                onBlur={handleBlur}
+                            />
+                            <View style={styles.line}></View>
+                            <TouchableOpacity onPress={increaseQuantity} style={styles.quantityItem}>
+                                {/* <AntDesign name="plus" size={14} color="#241E92" /> */}
+                                <Text style={styles.quantityInput}>+</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
 
                 {/* Mô tả sản phẩm */}
@@ -210,7 +282,7 @@ const ProductDetail = () => {
             {/* Nút hành động */}
             <View style={styles.actionContainer}>
                 <Button title='Thêm vào giỏ hàng' backgroundColor='transparent' textColor='#241E92' borderColor='#E5A5FF' borderWidth={1} />
-                <Button title='Mua ngay' backgroundColor='#E5A5FF' />
+                <Button title='Mua ngay' />
             </View>
         </View>
     );
@@ -446,6 +518,63 @@ const styles = StyleSheet.create({
         backgroundColor: '#CFCED6',
         marginVertical: 10,  // Khoảng cách giữa các mục
     },
+    variantContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 10
+    },
+    variantItem: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: '#E5A5FF',
+        borderRadius: 4
+    },
+    activeVariantItem: {
+        backgroundColor: '#E5A5FF'
+    },
+    variantText: {
+        fontSize: 14,
+        lineHeight: 21,
+    },
+    quantityContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: "#EBEBEE",
+        borderRadius: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        gap: 10,
+        // width: 80,
+    },
+    line: {
+        height: 14,
+        width: 1,
+        backgroundColor: "#EBEBEE",
+    },
+    quantityInput: {
+        fontSize: 14,
+        lineHeight: 21,
+        fontWeight: "bold",
+        color: "#241E92",
+        padding: 0,
+        textAlign: "center",
+    },
+    quantityItem: {
+        justifyContent: 'center'
+    },
+    sectionQuantity: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    sectionVariant: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'center'
+    }
 });
 
 export default ProductDetail;

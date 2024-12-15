@@ -36,11 +36,15 @@ const HeaderBar = ({ onSearch }) => {
   const handleCartPress = () => {
       navigation.navigate("Cart");
   };
+  const handleClickLogo = () => {
+    navigation.navigate("Home");
+  };
 
   return (
     <View style={styles.headerContainer}>
-      <Image style={styles.logo} source={require("../assets/imgs/logo.png")} />
-
+      <TouchableOpacity onPress={handleClickLogo}>
+      <Image style={styles.logo} source={require("../assets/imgs/logo.png")}/>
+      </TouchableOpacity>
       <View style={styles.searchBarContainer}>
         <TextInput
           placeholder="Tìm kiếm sản phẩm..."

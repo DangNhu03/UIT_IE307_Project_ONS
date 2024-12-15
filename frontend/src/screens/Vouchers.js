@@ -25,15 +25,14 @@ export default function Vouchers() {
   const { user } = useAuthContext();
   const user_id = user && user[0]?._id;
 
-  const Tab = createMaterialTopTabNavigator();
+  // const Tab = createMaterialTopTabNavigator();
 
   useEffect(() => {
     axios
       .get(`${API_URL}/vouchers`, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
-        setVouchers(response.data);
-        const notStarted = response.data.filter(v => new Date(v.vouc_start_date) > new Date());
-        setVoucherNotStarted(notStarted);
+        setVouchers(response.data.filter(v => new Date(v.vouc_end_date) > new Date()));
+        setVoucherNotStarted(response.data.filter(v => new Date(v.vouc_start_date) > new Date()));
         setLoading(false);
       })
       .catch((error) => {

@@ -4,7 +4,7 @@ import { TouchableOpacity, Text, StyleSheet, Image, View } from "react-native";
 export default function Button({
   title,
   onPress,
-  backgroundColor = "#FF71CD",
+  backgroundColor = "#E5A5FF",
   textColor = "#FFFFFF",
   width,
   borderRadius,

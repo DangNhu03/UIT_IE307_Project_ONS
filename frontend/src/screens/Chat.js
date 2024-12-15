@@ -29,8 +29,7 @@ const ChatWithBotScreen = () => {
           // Cập nhật danh sách tin nhắn vào state
           setMessages(messageData);
         } catch (error) {
-          console.error(error);
-          Alert.alert("Lỗi", "Không thể lấy lịch sử tin nhắn.");
+          console.log("Lỗi ở Chat", error);
         }
       };
 
