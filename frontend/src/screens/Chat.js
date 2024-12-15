@@ -29,8 +29,7 @@ const ChatWithBotScreen = () => {
           // Cập nhật danh sách tin nhắn vào state
           setMessages(messageData);
         } catch (error) {
-          console.error(error);
-          Alert.alert("Lỗi", "Không thể lấy lịch sử tin nhắn.");
+          console.log("Lỗi ở Chat", error);
         }
       };
 
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     paddingTop: 40,
-    backgroundColor: "#FFE1FF",
+    backgroundColor: "#FFF",
     // gap:20
   },
   // title: {

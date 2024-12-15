@@ -1,13 +1,18 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
 const ProductItem = ({ data }) => {
+    const navigation = useNavigation();
     const imageUrl = data.prod_image && data.prod_image.length > 0 ? data.prod_image[0] : require("../assets/favicon.png");
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
     };
     return (
-        <View style={styles.container}>
+        <TouchableOpacity
+            style={styles.container}
+            onPress={() => navigation.navigate('ProductDetail', { product: data })}
+        >
             <View style={styles.container1}>
                 <View style={styles.imageContainer}>
                     <Image
@@ -36,16 +41,16 @@ const ProductItem = ({ data }) => {
                 </View>
                 {/* Popularity Bar */}
                 <View style={styles.progressBarContainer}>
-                <View style={styles.progressBar}>
-                        <View style={[styles.progress, { width: `${data.prod_sold/data.prod_stock*100}%` }]} />
+                    <View style={styles.progressBar}>
+                        <View style={[styles.progress, { width: `${data.prod_sold / data.prod_stock * 100}%` }]} />
                         <View style={styles.content}>
                             <Text style={styles.icon}>🔥</Text>
-                            <Text style={styles.percentage}>{Math.round(data.prod_sold/data.prod_stock*100)}%</Text>
+                            <Text style={styles.percentage}>{Math.round(data.prod_sold / data.prod_stock * 100)}%</Text>
                         </View>
                     </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 

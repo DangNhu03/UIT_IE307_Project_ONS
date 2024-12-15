@@ -4,10 +4,12 @@ import { TouchableOpacity, Text, StyleSheet, Image, View } from "react-native";
 export default function Button({
   title,
   onPress,
-  backgroundColor = "#FF71CD",
+  backgroundColor = "#E5A5FF",
   textColor = "#FFFFFF",
   width,
   borderRadius,
+  borderColor,
+  borderWidth,
   icon, // Prop icon có thể là một React element hoặc nguồn ảnh
 }) {
   const hasIcon = !!icon;
@@ -20,6 +22,8 @@ export default function Button({
           backgroundColor,
           width: width || "auto",
           borderRadius: borderRadius || 8,
+          borderColor:borderColor || 'transp,arent',
+          borderWidth: borderWidth || 0
         },
       ]}
       onPress={onPress}
@@ -56,7 +60,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "normal",
+    lineHeight:21
   },
   icon: {
     width: 30,

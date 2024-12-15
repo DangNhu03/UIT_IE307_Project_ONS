@@ -18,8 +18,8 @@ import { useAuthContext } from "@contexts/AuthContext";
 
 const badgeCount = 3;
 const HeaderBar = ({ onSearch }) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const route = useRoute();
+  const [searchQuery, setSearchQuery] = useState(route.params?.searchQuery || "");
   const navigation = useNavigation();
   const { user } = useAuthContext();
 
@@ -36,16 +36,20 @@ const HeaderBar = ({ onSearch }) => {
   const handleCartPress = () => {
       navigation.navigate("Cart");
   };
+  const handleClickLogo = () => {
+    navigation.navigate("Home");
+  };
 
   return (
     <View style={styles.headerContainer}>
-      <Image style={styles.logo} source={require("../assets/imgs/logo.png")} />
-
+      <TouchableOpacity onPress={handleClickLogo}>
+      <Image style={styles.logo} source={require("../assets/imgs/logo.png")}/>
+      </TouchableOpacity>
       <View style={styles.searchBarContainer}>
         <TextInput
           placeholder="Tìm kiếm sản phẩm..."
           style={styles.searchBarInput}
-          value={route.params?.searchQuery || searchQuery}
+          value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
           onSubmitEditing={handleSearch} // Tìm kiếm khi nhấn Enter
         />

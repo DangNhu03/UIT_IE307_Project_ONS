@@ -13,6 +13,7 @@ import Cart from "@screens/Cart";
 import Payment from "@screens/Payment";
 import Login from "@screens/Login";
 import Register from "@screens/Register";
+import ProductDetail from "@screens/ProductDetail.js";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -253,6 +254,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Payment"
           component={Payment}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

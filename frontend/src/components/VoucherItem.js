@@ -4,6 +4,7 @@ import { useAuthContext } from "@contexts/AuthContext";
 import axios from "axios";
 import { Alert } from "react-native";
 import { API_URL } from '../../../url';
+import { format } from "date-fns";
 
 const Voucher = ({ data, isSaved, onSave }) => {
     const { user } = useAuthContext();
@@ -30,14 +31,14 @@ const Voucher = ({ data, isSaved, onSave }) => {
             }
         }
     };
-    const onPressRemind=()=>{
+    const onPressRemind = () => {
         Alert.alert(
             "Thành công",
             "Chúng tôi sẽ gửi thông báo cho bạn khi mã bắt đầu có hiệu lực!",
             [{ text: "OK" }],
             { cancelable: false }
-          );          
-  
+        );
+
     }
 
     const formatNumber = (number) => {
@@ -61,18 +62,18 @@ const Voucher = ({ data, isSaved, onSave }) => {
                     </Text>
                     <Text style={styles.condition}>Đơn tối thiểu {formatNumber(data.vouc_min_order_value)}</Text>
                     <Text style={styles.expire}>
-                        {data.vouc_is_active
-                            ? `HSD: ${data.vouc_end_date}`
-                            : `Có hiệu lực từ: ${data.vouc_start_date}`}
+                        {new Date(data.vouc_start_date) > new Date()
+                            ? `Có hiệu lực từ: ${format(new Date(data.vouc_start_date), "dd.MM.yyyy")}`
+                            : `HSD: ${format(new Date(data.vouc_end_date), "dd.MM.yyyy")}`}
                     </Text>
                 </View>
-                {data.vouc_is_active ? (
-                    <TouchableOpacity onPress={onPress} style={styles.button}>
-                        <Text style={styles.textButton}>{isSaved ? "Dùng ngay" : "Lưu mã"}</Text>
-                    </TouchableOpacity>
-                ) : (
+                {new Date(data.vouc_start_date) > new Date() ? (
                     <TouchableOpacity onPress={onPressRemind} style={styles.button}>
                         <Text style={styles.textButton}>Nhắc tôi</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={onPress} style={styles.button}>
+                        <Text style={styles.textButton}>{isSaved ? "Dùng ngay" : "Lưu mã"}</Text>
                     </TouchableOpacity>
                 )
                 }

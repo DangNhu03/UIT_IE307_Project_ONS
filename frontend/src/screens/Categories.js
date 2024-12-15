@@ -30,7 +30,7 @@ export default function Categories() {
   const { user } = useAuthContext();
   const route = useRoute();
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Lấy searchQuery từ params nếu có
   useEffect(() => {
     if (route.params?.searchQuery) {
@@ -174,7 +174,7 @@ export default function Categories() {
         ) : (
           <View style={styles.productListContainer}>
             <ScrollView contentContainerStyle={styles.productList}>
-              {/* <View style={styles.productListSvg}> */}
+              {/* <View style={styles.productListSvgContainer}> */}
               <Svg width="100%" height="100%" style={styles.productListSvg}>
                 <Defs>
                   <LinearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -234,19 +234,19 @@ const styles = StyleSheet.create({
     // paddingTop: 5,
     // marginBottom: 10,
   },
+  productListSvgContainer: {},
   productListSvg: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    // flex:1
   },
   productItemsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    // flex:1
+    flex:1
   },
   productItem: {
     position: 'relative',
