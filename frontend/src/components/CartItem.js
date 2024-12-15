@@ -6,33 +6,63 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import { TextInput } from "react-native";
-const CartItem = ({ product }) => {
-  const [quantity, setQuantity] = useState(1); // Quản lý số lượng sản phẩm
-  const [isSelected, setIsSelected] = useState(false); // Trạng thái đã chọn
+const CartItem = ({ product, updateCartChanges ,isSelected, toggleItemSelection,handleItemDelete }) => {
+  const [quantity, setQuantity] = useState(product.quantity);
+  const [isItemSelected, setIsItemSelected] = useState(false);
 
-  const toggleSelection = () => setIsSelected(!isSelected);
+  const toggleSelection = () => {
+    // Kiểm tra xem sản phẩm có variant_id không
+    const productKey = product.variant_id
+      ? `${product.product_id}_${product.variant_id}`
+      : product.product_id;
+  
+    toggleItemSelection(product.product_id, product.variant_id || null);
+  };
+  
+  // console.log(quantity);
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
+  };
+  const increaseQuantity = () => {
+    const newQuantity = quantity < 100 ? quantity + 1 : 100;
+    setQuantity(newQuantity);
+    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
+  };
 
-  const increaseQuantity = () =>
-    setQuantity(quantity < 100 ? quantity + 1 : 100);
-  const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+  const decreaseQuantity = () => {
+    const newQuantity = quantity > 1 ? quantity - 1 : 1;
+    setQuantity(newQuantity);
+    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
+  };
+
   const handleQuantityChange = (text) => {
     if (text === "" || isNaN(text)) {
-      setQuantity("");
+      setQuantity(""); 
       return;
     }
 
     let newQuantity = parseInt(text, 10);
-    if (!isNaN(newQuantity)) {
-      if (newQuantity > 100) newQuantity = 100;
-      setQuantity(newQuantity > 0 ? newQuantity : 1);
-    }
+   
+    if (newQuantity > 100) newQuantity = 100;
+    
+    setQuantity(newQuantity > 0 ? newQuantity : 1);
+    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
   };
+
   const handleBlur = () => {
-    // Nếu giá trị hiện tại không hợp lệ, đặt lại về 1
-    if (!quantity || isNaN(quantity)) {
-      setQuantity(1);
+    
+    if (quantity === "" || isNaN(quantity) || quantity <= 0) {
+      setQuantity(product.quantity); 
+    } else {
+      
+      updateCartChanges(product.product_id, product.variant_id, quantity); 
     }
   };
+
+  const handleDelete = () => {
+    handleItemDelete(product.product_id, product.variant_id);
+  };
+
   return (
     <View style={styles.container}>
       {/* Vòng tròn hoặc ô checkbox */}
@@ -45,9 +75,7 @@ const CartItem = ({ product }) => {
       </TouchableOpacity>
 
       <Image
-        source={{
-          uri: "https://product.hstatic.net/1000230347/product/artboard_1_copy_f85a03a6f7494317af18d21f556c1a00.jpg",
-        }}
+        source={{ uri: product.image }}
         style={styles.productImage}
       />
 
@@ -61,24 +89,34 @@ const CartItem = ({ product }) => {
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {product.name}
+                {product.prod_name}
               </Text>
-              <View style={styles.productCategory}>
-                <Text style={styles.categoryText}>{product.category}</Text>
-              </View>
+              {product.variant_name && (
+                <View style={styles.productCategory}>
+                  <Text style={styles.categoryText}>
+                    {product.variant_name}
+                  </Text>
+                </View>
+              )}
             </View>
-            <View>
+            <TouchableOpacity onPress={handleDelete}>
               <MaterialCommunityIcons
                 name="trash-can-outline"
                 size={24}
                 color="#241E92"
               />
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.priceQuantityContainer}>
             <View style={styles.productPriceContainer}>
-              <Text style={styles.price}>{product.price} đ</Text>
-              <Text style={styles.priceNotDiscount}>{product.price} đ</Text>
+              <Text style={styles.price}>
+                {formatCurrency(
+                  product.price * (1 - product.prod_discount / 100)
+                )}
+              </Text>
+              <Text style={styles.priceNotDiscount}>
+                {formatCurrency(product.price)}
+              </Text>
             </View>
             {/* Số lượng và các nút điều chỉnh */}
             <View style={styles.quantityContainer}>
@@ -127,9 +165,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
   },
-  detailProductContainer:{
-    flexDirection:"row",
-    justifyContent:"space-between",
+  detailProductContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   productName: {
     fontSize: 16,
