@@ -6,6 +6,7 @@ import StackNavigator from "@navigation/Navigator";
 // import store from "./store";
 // import { UserContext } from "./UserContext"
 import {AuthContextProvider} from "@contexts/AuthContext"
+import Toast from 'react-native-toast-message';
 export default function App() {
   return (
     <>
@@ -13,6 +14,7 @@ export default function App() {
         <UserContext> */}
       <AuthContextProvider>
         <StackNavigator />
+        <Toast />
       </AuthContextProvider>
       {/* <ModalPortal /> */}
       {/* </UserContext>

@@ -21,6 +21,8 @@ import { useNavigation } from "@react-navigation/native";
 import VoucherSelect from "@components/VoucherSelect";
 import { useAuthContext } from "@contexts/AuthContext";
 import { API_URL } from "../../../url";
+import { useDeleteToCart } from "@hooks/useDeleteToCart";
+import { useAddToCart } from "@hooks/useAddToCart";
 
 export default function Cart() {
   const navigation = useNavigation();
@@ -31,35 +33,60 @@ export default function Cart() {
   const [selectedItems, setSelectedItems] = useState({});
   const [cartData, setcartData] = useState([]); // State lưu sản phẩm giỏ hàng
   const toggleEditMode = () => setIsEditing(!isEditing);
-
+  const {
+    deleteItemFromCart,
+    deleteMultipleItemsFromCart,
+    loading,
+    deleteMultipleItemsNoLogin,
+    deleteItemNoLogin,
+  } = useDeleteToCart(setcartData);
   const handleClickChat = () => {
     navigation.navigate("Chat");
   };
   const handleNavigateHome = () => {
-    navigation.navigate('Main');
+    navigation.navigate("Main");
   };
-  const user_id = user[0]._id;
-  console.log("used_id in cart", user_id);
 
-  const fetchCartProducts = async () => {
+  const { getCartNoLogin , updateCartQuantityNoLogin} = useAddToCart();
+  const fetchCartItems = async () => {
+    try {
+      const items = await getCartNoLogin();
+      console.log("Giỏ hàng:", items); // Kiểm tra dữ liệu giỏ hàng lấy về
+      if (Array.isArray(items)) {
+        setcartData(items); // Nếu là mảng, lưu vào state
+      } else {
+        setcartData([]); // Nếu không phải mảng, gán mảng trống
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy giỏ hàng:", error); // In lỗi nếu có
+      setcartData([]); // Gán mảng trống khi có lỗi
+    }
+  };
+
+  const fetchCartProducts = async (user_id) => {
     try {
       const response = await fetch(`${API_URL}/carts/${user_id}`);
       const data = await response.json();
-
       if (response.ok) {
         setcartData(data.cart || []); // Set the fetched data as cart items
       } else {
-        setError(data.message || "Unable to fetch cart items");
+        console.error(data.message || "Unable to fetch cart items");
       }
     } catch (err) {
-      setError("Network error while fetching cart items");
-    } finally {
-      setIsLoading(false);
+      console.error("Network error while fetching cart items");
+      // } finally {
+      //   setIsLoading(false);
     }
   };
+
+  // Dùng useEffect để gọi hàm fetch giỏ hàng tùy theo điều kiện
   useEffect(() => {
-    fetchCartProducts();
-  }, [user_id]);
+    if (user && Array.isArray(user) && user.length > 0) {
+      fetchCartProducts(user[0]._id);
+    } else {
+      fetchCartItems();
+    }
+  }, [user]);
 
   const debounceTimeout = useRef(null);
 
@@ -67,6 +94,13 @@ export default function Cart() {
   const updateCartChanges = async (productId, variantId, newQuantity) => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
+    }
+    const user_id =
+      user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
+
+    if (!user_id) {
+      updateCartQuantityNoLogin(productId, variantId, newQuantity);
+      return;
     }
 
     debounceTimeout.current = setTimeout(async () => {
@@ -136,112 +170,28 @@ export default function Cart() {
       return newState;
     });
   };
-
-  const handleDelete = async () => {
-    const itemsToDelete = [];
-
-    // Collect product_id and variant_id of selected items
-    Object.keys(selectedItems).forEach((key) => {
-      if (selectedItems[key]) {
-        const [productId, variantId] = key.split("_");
-        itemsToDelete.push({
-          product_id: productId,
-          variant_id: variantId || null,
-        });
-      }
-    });
-
-    if (itemsToDelete.length === 0) {
-      alert("Chưa có sản phẩm nào được chọn.");
-      return;
-    }
-
+  const handleDeleteMultiple = async () => {
     try {
-      for (const item of itemsToDelete) {
-        const response = await fetch(`${API_URL}/carts/${user_id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id,
-            product_id: item.product_id,
-            variant_id: item.variant_id,
-          }),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-          Alert.alert(
-            "Thành công",
-            "Sản phẩm đã được xóa khỏi giỏ hàng.",
-            [
-              {
-                text: "OK",
-              },
-            ],
-            { cancelable: true }
-          );
-          setcartData((prevCart) =>
-            prevCart.filter(
-              (cartItem) =>
-                cartItem.product_id._id !== item.product_id ||
-                cartItem.variant_id !== item.variant_id
-            )
-          );
-        } else {
-          alert(result.message || "Có lỗi xảy ra khi xóa sản phẩm.");
-        }
+      if (user && Array.isArray(user) && user.length > 0) {
+        await deleteMultipleItemsFromCart(selectedItems);
+        await fetchCartProducts(user[0]._id);
+      } else {
+        await deleteMultipleItemsNoLogin(selectedItems);
+        await fetchCartItems();
       }
-
-      fetchCartProducts();
-      // Clear selection after deletion
       setSelectedItems({});
-    } catch (err) {
-      console.error("Error deleting items:", err);
-      alert("Lỗi mạng khi xóa sản phẩm.");
+    } catch (error) {
+      console.error("Error in deleting multiple items:", error);
     }
   };
 
-  const handleItemDelete = async (productId, variantId = null) => {
-    try {
-      const bodyData = {
-        user_id,
-        product_id: productId,
-      };
-
-      // Add variant_id if it exists
-      if (variantId) {
-        bodyData.variant_id = variantId;
-      }
-
-      const response = await fetch(`${API_URL}/carts/${user_id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        Alert.alert(
-          "Thành công",
-          "Sản phẩm đã được xóa khỏi giỏ hàng.",
-          [
-            {
-              text: "OK",
-            },
-          ],
-          { cancelable: true }
-        );
-      } else {
-        alert(result.message || "Error deleting item");
-      }
-      fetchCartProducts();
-    } catch (err) {
-      console.error("Error details:", err);
-      alert(`Network error while deleting item: ${err.message || err}`);
+  const handleDeleteSingle = (productId, variantId = null) => {
+    if (user && Array.isArray(user) && user.length > 0) {
+      deleteItemFromCart(productId, variantId).then(() =>
+        fetchCartProducts(user[0]._id)
+      );
+    } else {
+      deleteItemNoLogin(productId, variantId).then(() => fetchCartItems());
     }
   };
 
@@ -305,7 +255,7 @@ export default function Cart() {
                     ] || false
                   } // Kiểm tra nếu có variant_id thì sử dụng khóa kết hợp
                   toggleItemSelection={toggleItemSelection}
-                  handleItemDelete={handleItemDelete}
+                  handleDeleteSingle={handleDeleteSingle}
                 />
               )}
             />
@@ -335,7 +285,7 @@ export default function Cart() {
                     title="Xóa"
                     borderRadius={4}
                     width={60}
-                    onPress={handleDelete}
+                    onPress={handleDeleteMultiple}
                   />
                 </View>
               </View>
@@ -472,6 +422,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom:20,
+    marginBottom: 20,
   },
 });

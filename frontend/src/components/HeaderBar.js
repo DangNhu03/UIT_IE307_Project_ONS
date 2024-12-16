@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -15,17 +15,60 @@ import {
 import { useRoute } from "@react-navigation/native"; // Dùng để nhận params
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 import { useAuthContext } from "@contexts/AuthContext";
+import { API_URL } from "../../../url";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const badgeCount = 3;
 const HeaderBar = ({ onSearch }) => {
+  const { user, dispatch, totalQuantity, totalQuantityNoLogin } =
+    useAuthContext();
   const route = useRoute();
-  const [searchQuery, setSearchQuery] = useState(route.params?.searchQuery || "");
+  const [searchQuery, setSearchQuery] = useState(
+    route.params?.searchQuery || ""
+  );
   const navigation = useNavigation();
-  const { user } = useAuthContext();
+  const [isFetching, setIsFetching] = useState(false);
+  const fetchCartQuantity = async () => {
+    try {
+      setIsFetching(true);
+
+      if (user && Array.isArray(user) && user.length > 0 && user[0]?._id) {
+        const user_id = user[0]._id;
+        const res = await fetch(`${API_URL}/carts/quantity/${user_id}`);
+        if (!res.ok) throw new Error("Lỗi khi lấy dữ liệu giỏ hàng.");
+        const data = await res.json();
+
+        console.log("Số lượng giỏ hàng đã đăng nhập:", data.totalQuantity);
+        dispatch({
+          type: "UPDATE_CART_QUANTITY",
+          payload: data.totalQuantity || 0,
+        });
+      } else {
+        console.log("Người dùng chưa đăng nhập, kiểm tra AsyncStorage");
+
+        const storedQuantity = await AsyncStorage.getItem("cartNouserQuantity");
+        const quantityNoLogin = storedQuantity ? JSON.parse(storedQuantity) : 0;
+
+        console.log("Số lượng giỏ hàng chưa đăng nhập:", quantityNoLogin);
+        dispatch({
+          type: "UPDATE_CART_QUANTITY_NOLOGIN",
+          payload: quantityNoLogin,
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy số lượng giỏ hàng:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartQuantity();
+  }, []);
 
   const handleSearch = () => {
     if (onSearch) {
-      onSearch(searchQuery.trim()); // Gửi từ khóa tìm kiếm lên component cha
+      onSearch(searchQuery.trim());
       setSearchQuery;
     }
   };
@@ -34,7 +77,7 @@ const HeaderBar = ({ onSearch }) => {
   };
 
   const handleCartPress = () => {
-      navigation.navigate("Cart");
+    navigation.navigate("Cart");
   };
   const handleClickLogo = () => {
     navigation.navigate("Home");
@@ -43,7 +86,10 @@ const HeaderBar = ({ onSearch }) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={handleClickLogo}>
-      <Image style={styles.logo} source={require("../assets/imgs/logo.png")}/>
+        <Image
+          style={styles.logo}
+          source={require("../assets/imgs/logo.png")}
+        />
       </TouchableOpacity>
       <View style={styles.searchBarContainer}>
         <TextInput
@@ -70,6 +116,24 @@ const HeaderBar = ({ onSearch }) => {
             size={24}
             color="#241E92"
           />
+          {isFetching ? (
+            <></>
+          ) : (
+            <>
+              {user &&
+              Array.isArray(user) &&
+              user.length > 0 &&
+              totalQuantity > 0 ? (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{totalQuantity}</Text>
+                </View>
+              ) : totalQuantityNoLogin > 0 ? (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{totalQuantityNoLogin}</Text>
+                </View>
+              ) : null}
+            </>
+          )}
         </TouchableOpacity>
         <TouchableOpacity onPress={handleClickChat}>
           <Ionicons name="chatbox-ellipses-outline" size={24} color="#241E92" />

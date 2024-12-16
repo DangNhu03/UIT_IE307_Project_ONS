@@ -185,12 +185,34 @@ const removeProductFromCart = async (req, res) => {
       .json({ message: "Product removed from cart successfully", cart });
   } catch (err) {
     console.error(err);
-    return res
-      .status(500)
-      .json({
-        message: "Error removing product from cart",
-        error: err.message,
-      });
+    return res.status(500).json({
+      message: "Error removing product from cart",
+      error: err.message,
+    });
+  }
+};
+const getQuantityInCart = async (req, res) => {
+  try {
+    // Lấy user_id từ tham số URL
+    const { user_id } = req.params;
+
+    // Tìm giỏ hàng của người dùng dựa trên user_id
+    const cart = await Cart.findOne({ user_id });
+
+    // Kiểm tra xem giỏ hàng có tồn tại không
+    if (!cart) {
+      return res.status(404).json({ message: "Giỏ hàng không tồn tại" });
+    }
+
+    // Tính tổng số lượng sản phẩm trong giỏ hàng
+    const totalQuantity = cart.list_products.length;
+
+    // Trả về tổng số lượng sản phẩm
+    return res.status(200).json({ totalQuantity });
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    console.error(error);
+    return res.status(500).json({ message: "Lỗi server", error });
   }
 };
 
@@ -199,4 +221,5 @@ module.exports = {
   getProductInCart,
   updateQuantityInCart,
   removeProductFromCart,
+  getQuantityInCart,
 };

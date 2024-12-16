@@ -6,19 +6,28 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import { TextInput } from "react-native";
-const CartItem = ({ product, updateCartChanges ,isSelected, toggleItemSelection,handleItemDelete }) => {
+import { API_URL } from "../../../url";
+import { useNavigation } from "@react-navigation/native";
+const CartItem = ({
+  product,
+  updateCartChanges,
+  isSelected,
+  toggleItemSelection,
+  handleDeleteSingle,
+}) => {
   const [quantity, setQuantity] = useState(product.quantity);
   const [isItemSelected, setIsItemSelected] = useState(false);
+  const navigation = useNavigation();
 
   const toggleSelection = () => {
     // Kiểm tra xem sản phẩm có variant_id không
     const productKey = product.variant_id
       ? `${product.product_id}_${product.variant_id}`
       : product.product_id;
-  
+
     toggleItemSelection(product.product_id, product.variant_id || null);
   };
-  
+
   // console.log(quantity);
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
@@ -26,41 +35,63 @@ const CartItem = ({ product, updateCartChanges ,isSelected, toggleItemSelection,
   const increaseQuantity = () => {
     const newQuantity = quantity < 100 ? quantity + 1 : 100;
     setQuantity(newQuantity);
-    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
+    updateCartChanges(product.product_id, product.variant_id, newQuantity);
   };
 
   const decreaseQuantity = () => {
     const newQuantity = quantity > 1 ? quantity - 1 : 1;
     setQuantity(newQuantity);
-    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
+    updateCartChanges(product.product_id, product.variant_id, newQuantity);
   };
 
   const handleQuantityChange = (text) => {
     if (text === "" || isNaN(text)) {
-      setQuantity(""); 
+      setQuantity("");
       return;
     }
 
     let newQuantity = parseInt(text, 10);
-   
+
     if (newQuantity > 100) newQuantity = 100;
-    
+
     setQuantity(newQuantity > 0 ? newQuantity : 1);
-    updateCartChanges(product.product_id, product.variant_id, newQuantity); 
+    updateCartChanges(product.product_id, product.variant_id, newQuantity);
   };
 
   const handleBlur = () => {
-    
     if (quantity === "" || isNaN(quantity) || quantity <= 0) {
-      setQuantity(product.quantity); 
+      setQuantity(product.quantity);
     } else {
-      
-      updateCartChanges(product.product_id, product.variant_id, quantity); 
+      updateCartChanges(product.product_id, product.variant_id, quantity);
     }
   };
 
   const handleDelete = () => {
-    handleItemDelete(product.product_id, product.variant_id);
+    handleDeleteSingle(product.product_id, product.variant_id);
+  };
+
+  const handleClickCartItem = async (productId) => {
+    const product_id = productId;
+    try {
+      const response = await fetch(`${API_URL}/products/${product_id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch product");
+      }
+
+      const data = await response.json();
+
+      console.log("Product detailsnene:", data);
+      navigation.navigate('ProductDetail', { product: data.product });
+
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
   };
 
   return (
@@ -74,23 +105,24 @@ const CartItem = ({ product, updateCartChanges ,isSelected, toggleItemSelection,
         />
       </TouchableOpacity>
 
-      <Image
-        source={{ uri: product.image }}
-        style={styles.productImage}
-      />
+      <Image source={{ uri: product.image }} style={styles.productImage} />
 
       <View style={styles.productContainer}>
         {/* Thông tin sản phẩm */}
         <View style={styles.productInfo}>
           <View style={styles.detailProductContainer}>
             <View>
-              <Text
-                style={styles.productName}
-                numberOfLines={1}
-                ellipsizeMode="tail"
+              <TouchableOpacity
+                onPress={() => handleClickCartItem(product.product_id)}
               >
-                {product.prod_name}
-              </Text>
+                <Text
+                  style={styles.productName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {product.prod_name}
+                </Text>
+              </TouchableOpacity>
               {product.variant_name && (
                 <View style={styles.productCategory}>
                   <Text style={styles.categoryText}>
@@ -168,13 +200,16 @@ const styles = StyleSheet.create({
   detailProductContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    // paddingRight:10,
   },
   productName: {
+    flex: 1,
     fontSize: 16,
     fontWeight: "400",
     color: "#000",
     lineHeight: 21,
     paddingBottom: 5,
+    width: "200",
   },
   productCategory: {
     borderColor: "#E5A5FF",
