@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   link: {
-    color: "#f0f",
+    color: "#E5A5FF",
     fontWeight: "bold",
     marginLeft: 5,
   },
