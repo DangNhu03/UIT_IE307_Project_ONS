@@ -10,5 +10,8 @@ router.post("/api/users/vouchers", auth.addVoucher);
 router.get("/api/user/:user_id/vouchers", auth.getListVouchers)
 router.get("/api/user/phone/:phone", auth.findUserByPhone)
 router.post("/api/user/password/:phone", auth.forgotPassword)
+router.put("/api/update_user/:id", auth.updateUser)
+router.put("/api/update_password/:id", auth.updatePassword)
+router.post("/api/verify_password", auth.verifyPassword)
 
 module.exports = router;

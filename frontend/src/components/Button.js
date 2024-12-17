@@ -10,6 +10,7 @@ export default function Button({
   borderRadius,
   borderColor,
   borderWidth,
+  fontSize,
   icon, // Prop icon có thể là một React element hoặc nguồn ảnh
 }) {
   const hasIcon = !!icon;
@@ -41,7 +42,7 @@ export default function Button({
           ))}
 
         {/* Text */}
-        <Text style={[styles.buttonText, { color: textColor }]}>{title}</Text>
+        <Text style={[styles.buttonText, { color: textColor, fontSize: fontSize || 16 }]}>{title}</Text>
       </View>
     </TouchableOpacity>
   );

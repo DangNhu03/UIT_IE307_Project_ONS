@@ -195,22 +195,22 @@ const StackNavigator = () => {
         <Stack.Screen
           name="PersonalInfo"
           component={PersonalInfo}
-          // options={{ headerShown: false }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Address"
           component={Address}
-          // options={{ headerShown: false }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="LinkAccount"
           component={LinkAccount}
-          // options={{ headerShown: false }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="ChangePassword"
           component={ChangePassword}
-          // options={{ headerShown: false }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="FAQ"

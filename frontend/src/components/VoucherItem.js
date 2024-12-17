@@ -5,9 +5,11 @@ import axios from "axios";
 import { Alert } from "react-native";
 import { API_URL } from '../../../url';
 import { format } from "date-fns";
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const Voucher = ({ data, isSaved, onSave ,onUseVoucher}) => {
     const { user } = useAuthContext();
+    const navigation = useNavigation();
     const user_id = user && user[0]?._id;
 
     const onPress = async () => {
@@ -42,6 +44,26 @@ const Voucher = ({ data, isSaved, onSave ,onUseVoucher}) => {
         );
 
     }
+    const onPressNoUser = () => {
+        Alert.alert(
+              "Đăng nhập",
+              "Bạn cần đăng nhập để thực hiện chức năng này!",
+              [
+                {
+                  text: "Hủy",
+                  style: "cancel",
+                },
+                {
+                  text: "Đồng ý",
+                  onPress: () => {
+                    navigation.navigate("Login");
+                  },
+                },
+              ],
+              { cancelable: true }
+            );
+    }
+    
 
     const formatNumber = (number) => {
         if (number >= 1000 && number % 1000 === 0) {
@@ -69,7 +91,7 @@ const Voucher = ({ data, isSaved, onSave ,onUseVoucher}) => {
                             : `HSD: ${format(new Date(data.vouc_end_date), "dd.MM.yyyy")}`}
                     </Text>
                 </View>
-                {new Date(data.vouc_start_date) > new Date() ? (
+                {user ? (new Date(data.vouc_start_date) > new Date() ? (
                     <TouchableOpacity onPress={onPressRemind} style={styles.button}>
                         <Text style={styles.textButton}>Nhắc tôi</Text>
                     </TouchableOpacity>
@@ -77,7 +99,15 @@ const Voucher = ({ data, isSaved, onSave ,onUseVoucher}) => {
                     <TouchableOpacity onPress={onPress} style={styles.button}>
                         <Text style={styles.textButton}>{isSaved ? "Dùng ngay" : "Lưu mã"}</Text>
                     </TouchableOpacity>
-                )
+                )) : (new Date(data.vouc_start_date) > new Date() ? (
+                    <TouchableOpacity onPress={onPressNoUser} style={styles.button}>
+                        <Text style={styles.textButton}>Nhắc tôi</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={onPressNoUser} style={styles.button}>
+                        <Text style={styles.textButton}>Lưu mã</Text>
+                    </TouchableOpacity>
+                ))
                 }
 
             </View>

@@ -12,15 +12,21 @@ export default function Input({
   toggleSecureEntry,
   showSecureEntryIcon = false,
   iconComponent,
+  borderWidth,
+  borderColor,
+  fontSize,
   ...props
 }) {
   return (
     <View style={styles.container}>
-      <View style={[styles.inputContainer, showToggle && styles.flexRow]}>
+      <View style={[styles.inputContainer, {
+        borderWidth: borderWidth ? borderWidth : 0,
+        borderColor: borderColor ? borderColor : 'transparent'
+      }, showToggle && styles.flexRow]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { fontSize: fontSize ? fontSize : 16 }]}
           placeholder={placeholder}
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#CFCED6"
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
@@ -44,12 +50,14 @@ const styles = StyleSheet.create({
     height: 42,
     backgroundColor: "#fff",
     borderRadius: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     justifyContent: "center",
   },
   input: {
     fontSize:14,
     flex: 1,
+    color: '#3B394A',
+    lineHeight: 21
   },
   flexRow: {
     flexDirection: "row",
