@@ -1,16 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { API_URL } from "../../../../url"; 
 
-const PaymentMethod = () => {
-  const [selectedMethod, setSelectedMethod] = useState(null);
+const PaymentMethod = ({ onPaymentMethodChange }) => {
+  const [selectedMethod, setSelectedMethod] = useState(null); 
+  const [paymentMethods, setPaymentMethods] = useState([]); 
+  const [loading, setLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleSelection = (method) => setSelectedMethod(method);
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await fetch(`${API_URL}/orders/paymentmethods`);
+        const data = await response.json();
+        // console.log("Fetched payment methods:", data);
+
+        if (data.paymentMethods && Array.isArray(data.paymentMethods)) {
+          setPaymentMethods(data.paymentMethods);
+        } else {
+          console.error(
+            "Invalid data format: Expected 'paymentMethods' to be an array"
+          );
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching payment methods:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPaymentMethods();
+  }, []);
+
+  const handleSelection = (method) => {
+    setSelectedMethod(method); 
+    onPaymentMethodChange(method); 
+  };
+
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   return (
     <View>
+      {/* Header Section */}
       <TouchableOpacity onPress={toggleExpand} style={styles.paymentContainer}>
         <View style={styles.paymentTitle}>
           <MaterialCommunityIcons
@@ -20,65 +52,40 @@ const PaymentMethod = () => {
           />
           <Text style={styles.title}>Phương thức thanh toán</Text>
         </View>
-        <TouchableOpacity style={styles.paymentSelection}>
+        <View style={styles.paymentSelection}>
           <MaterialIcons
             name={isExpanded ? "keyboard-arrow-down" : "keyboard-arrow-right"}
             size={24}
             color="#241E92"
           />
-        </TouchableOpacity>
+        </View>
       </TouchableOpacity>
+
       {isExpanded && (
         <View style={styles.insideContainer}>
-          <View style={styles.itemContainer}>
-            <TouchableOpacity
-              style={styles.circle}
-              onPress={() => handleSelection("COD")}
-            >
-              <MaterialIcons
-                name={
-                  selectedMethod === "COD"
-                    ? "radio-button-checked"
-                    : "radio-button-unchecked"
-                }
-                size={24}
-                color="#241E92"
-              />
-            </TouchableOpacity>
-            <Text style={styles.title}>
-              Thanh toán tiền khi nhận hàng (COD)
-            </Text>
-          </View>
-          <View style={styles.onlineContainer}>
-            <View style={styles.itemContainer}>
-              <TouchableOpacity
-                style={styles.circle}
-                onPress={() => handleSelection("Online")}
-              >
-                <MaterialIcons
-                  name={
-                    selectedMethod === "Online"
-                      ? "radio-button-checked"
-                      : "radio-button-unchecked"
-                  }
-                  size={24}
-                  color="#241E92"
-                />
-              </TouchableOpacity>
-              <Text style={styles.title}>Thanh toán trực tuyến</Text>
-            </View>
-            <TouchableOpacity style={styles.onlineSelection}>
-              <MaterialIcons
-                name={
-                  selectedMethod === "Online"
-                    ? "keyboard-arrow-down"
-                    : "keyboard-arrow-right"
-                }
-                size={24}
-                color="#241E92"
-              />
-            </TouchableOpacity>
-          </View>
+          {loading ? (
+            <Text>Đang tải...</Text>
+          ) : (
+            paymentMethods.map((method) => (
+              <View key={method._id} style={styles.itemContainer}>
+                <TouchableOpacity
+                  style={styles.circle}
+                  onPress={() => handleSelection(method)} 
+                >
+                  <MaterialIcons
+                    name={
+                      selectedMethod && selectedMethod._id === method._id
+                        ? "radio-button-checked"
+                        : "radio-button-unchecked"
+                    }
+                    size={24}
+                    color="#241E92"
+                  />
+                </TouchableOpacity>
+                <Text style={styles.title}>{method.pay_name}</Text>
+              </View>
+            ))
+          )}
         </View>
       )}
     </View>
@@ -114,12 +121,6 @@ const styles = StyleSheet.create({
   },
   circle: {
     marginRight: 10,
-  },
-  onlineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingRight: 5,
   },
 });
 

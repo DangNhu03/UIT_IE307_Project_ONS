@@ -1,15 +1,12 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
+};
 const ItemProduct = ({ product }) => {
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          uri: "https://product.hstatic.net/1000230347/product/artboard_1_copy_f85a03a6f7494317af18d21f556c1a00.jpg",
-        }}
-        style={styles.productImage}
-      />
+      <Image source={{ uri: product.image }} style={styles.productImage} />
 
       <View style={styles.productContainer}>
         {/* Thông tin sản phẩm */}
@@ -21,17 +18,21 @@ const ItemProduct = ({ product }) => {
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {product.name}
+                {product.prod_name}
               </Text>
               <View style={styles.productCategory}>
-                <Text style={styles.categoryText}>{product.category}</Text>
+                <Text style={styles.categoryText}>{product.variant_name}</Text>
               </View>
             </View>
           </View>
           <View style={styles.priceQuantityContainer}>
             <View style={styles.productPriceContainer}>
-              <Text style={styles.price}>{product.price} đ</Text>
-              <Text style={styles.priceNotDiscount}>{product.price} đ</Text>
+              <Text style={styles.price}>
+                {formatCurrency(
+                  product.price * (1 - product.prod_discount / 100)
+                )}
+              </Text>
+              <Text style={styles.priceNotDiscount}>{formatCurrency(product.price)}</Text>
             </View>
             {/* Số lượng và các nút điều chỉnh */}
             <Text style={styles.quantityContainer}>x{product.quantity}</Text>
@@ -49,8 +50,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     borderRadius: 4,
-    borderBottomWidth: 1, 
-    borderBottomColor:"#ccc"
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   productImage: {
     height: 101,

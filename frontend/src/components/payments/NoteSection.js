@@ -9,13 +9,13 @@ import {
 } from "react-native";
 import Button from "@components/Button";
 
-const NoteSection = () => {
+const NoteSection = ({ onNoteChange }) => {
   const [note, setNote] = useState("Để lại lời nhắn cho shop");
   const [isModalVisible, setModalVisible] = useState(false);
   const [newNote, setNewNote] = useState("");
   useEffect(() => {
     if (note === "Để lại lời nhắn cho shop") {
-      setNewNote(""); 
+      setNewNote("");
     }
   }, [note]);
 
@@ -28,9 +28,12 @@ const NoteSection = () => {
 
   const handleSaveNote = () => {
     if (newNote && newNote.trim()) {
-      setNote(newNote); 
+      setNote(newNote);
+      if (onNoteChange) {
+        onNoteChange(newNote);
+      }
     } else {
-      setNote("Để lại lời nhắn cho shop"); 
+      setNote("Để lại lời nhắn cho shop");
     }
     setModalVisible(false);
   };

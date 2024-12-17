@@ -18,7 +18,6 @@ import {
 import CartItem from "@components/CartItem";
 import Button from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
-import VoucherSelect from "@components/VoucherSelect";
 import { useAuthContext } from "@contexts/AuthContext";
 import { API_URL } from "../../../url";
 import { useDeleteToCart } from "@hooks/useDeleteToCart";
@@ -47,19 +46,20 @@ export default function Cart() {
     navigation.navigate("Main");
   };
 
-  const { getCartNoLogin , updateCartQuantityNoLogin} = useAddToCart();
+  const { getCartNoLogin, updateCartQuantityNoLogin } = useAddToCart();
+  const [totalPrice, setTotalPrice] = useState(0);
   const fetchCartItems = async () => {
     try {
       const items = await getCartNoLogin();
-      console.log("Giỏ hàng:", items); // Kiểm tra dữ liệu giỏ hàng lấy về
+      console.log("Giỏ hàng:", items); 
       if (Array.isArray(items)) {
-        setcartData(items); // Nếu là mảng, lưu vào state
+        setcartData(items); 
       } else {
-        setcartData([]); // Nếu không phải mảng, gán mảng trống
+        setcartData([]);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy giỏ hàng:", error); // In lỗi nếu có
-      setcartData([]); // Gán mảng trống khi có lỗi
+      console.error("Lỗi khi lấy giỏ hàng:", error); 
+      setcartData([]); 
     }
   };
 
@@ -130,13 +130,14 @@ export default function Cart() {
                 : item
             )
           );
+          fetchCartProducts(user_id);
         } else {
           console.error("Error updating cart:", result.message);
         }
       } catch (err) {
         console.error("Network error while updating cart:", err);
       }
-    }, 3000);
+    }, 500);
   };
 
   const toggleSelection = () => {
@@ -187,14 +188,35 @@ export default function Cart() {
 
   const handleDeleteSingle = (productId, variantId = null) => {
     if (user && Array.isArray(user) && user.length > 0) {
-      deleteItemFromCart(productId, variantId).then(() =>
-        fetchCartProducts(user[0]._id)
-      );
+      deleteItemFromCart(productId, variantId).then(() => {
+        fetchCartProducts(user[0]._id);
+      });
     } else {
-      deleteItemNoLogin(productId, variantId).then(() => fetchCartItems());
+      deleteItemNoLogin(productId, variantId).then(() => {
+        fetchCartItems();
+      });
     }
   };
 
+  const calculateTotalPrice = () => {
+    return cartData.reduce((total, item) => {
+      const key = item.variant_id
+        ? `${item.product_id}_${item.variant_id}`
+        : item.product_id;
+
+      if (selectedItems[key]) {
+        console.log(item.price * (1 - item.prod_discount / 100), item.quantity);
+        const price = item.price * (1 - item.prod_discount / 100) || 0;
+        const quantity = item.quantity || 0;
+        return total + price * quantity;
+      }
+      return total;
+    }, 0);
+  };
+  useEffect(() => {
+    const newTotalPrice = calculateTotalPrice();
+    setTotalPrice(newTotalPrice);
+  }, [selectedItems, cartData]);
   return (
     <View style={styles.container}>
       <ArrowBack
@@ -291,10 +313,10 @@ export default function Cart() {
               </View>
             ) : (
               <>
-                <View style={styles.voucherContainer}>
+                {/* <View style={styles.voucherContainer}>
                   <VoucherSelect />
-                </View>
-                <View style={styles.line}></View>
+                </View> */}
+                {/* <View style={styles.line}></View> */}
                 <View style={styles.totalContainer}>
                   <View style={styles.totalLeft}>
                     <TouchableOpacity onPress={toggleSelection}>
@@ -315,12 +337,47 @@ export default function Cart() {
                   <View style={styles.totalRight}>
                     <View style={styles.totalPrice}>
                       <Text style={styles.smallText}>Tổng</Text>
-                      <Text style={styles.totalText}>300000000đ</Text>
+                      <Text style={styles.totalText}>
+                        {totalPrice.toLocaleString("vi-VN")}đ
+                      </Text>
                     </View>
                     <Button
                       title="Mua ngay"
                       borderRadius={4}
-                      onPress={() => navigation.navigate("Payment")}
+                      onPress={() => {
+                        // Lọc các key của các sản phẩm đã chọn trong listProduct
+                        const selectedKeys = Object.keys(selectedItems).filter(
+                          (key) => selectedItems[key] // Lọc các sản phẩm đã chọn
+                        );
+
+                        // Lấy thông tin các sản phẩm đã chọn từ cartData
+                        const selectedProducts = cartData.filter((item) => {
+                          const key = item.variant_id
+                            ? `${item.product_id}_${item.variant_id}`
+                            : item.product_id;
+                          return selectedKeys.includes(key);
+                        });
+                        console.log(selectedProducts);
+
+                        if (selectedProducts.length === 0) {
+                          Alert.alert(
+                            "Thông báo",
+                            "Vui lòng chọn ít nhất một sản phẩm để mua.",
+                            [
+                              {
+                                text: "OK",
+                                onPress: () => console.log("OK Pressed"),
+                              },
+                            ],
+                            { cancelable: true }
+                          );
+                        } else {
+                          navigation.navigate("Payment", {
+                            listProduct: selectedProducts,
+                            totalPrice:totalPrice
+                          });
+                        }
+                      }}
                     />
                   </View>
                 </View>

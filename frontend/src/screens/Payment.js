@@ -7,6 +7,7 @@ import DetailPayment from "@components/payments/DetailPayment";
 import { useAuthContext } from "@contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
+import { useRoute } from "@react-navigation/native";
 import DeliveryAddress from "@components/payments/DeliveryAddress";
 import ItemProduct from "@components/payments/ItemProduct";
 import NoteSection from "@components/payments/NoteSection";
@@ -21,60 +22,191 @@ import {
   Alert,
   TextInput,
 } from "react-native";
+import { API_URL } from "../../../url";
 
 export default function Payment() {
-  const products = [
-    {
-      id: 1,
-      name: "Sản phẩm A",
-      price: 100000,
-      category: "Danh mục 1",
-      quantity: 3,
-    },
-    {
-      id: 2,
-      name: "Sản phẩm B",
-      price: 200000,
-      category: "Danh mục 2",
-      quantity: 2,
-    },
-    {
-      id: 3,
-      name: "Sản phẩm C",
-      price: 300000,
-      category: "Danh mục 3",
-      quantity: 1,
-    },
-  ];
+  const navigation = useNavigation();
+  const route = useRoute(); 
+  const { listProduct, totalPrice, voucher } = route.params || {};
+  console.log("Selected Products in Payment:", listProduct);
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [note, setNote] = useState("");
+  const voucherDiscount = voucher?.vouc_discount_value || 0;
+  const [totalPricePayment, setTotalPricePayment] = useState(0);
+  const { user } = useAuthContext();
+
+  const handleDeliveryAddress = (address) => {
+    setSelectedAddress(address);
+    console.log("Received delivery address:", address);
+  };
+  const handleDeliveryMethodChange = (method) => {
+    setSelectedDeliveryMethod(method);
+    console.log("Selected delivery method: ", method);
+  };
+
+  const handlePaymentMethodChange = (method) => {
+    setSelectedPaymentMethod(method);
+    console.log("Selected payment method: ", method);
+  };
+  const handleNoteChange = (newNote) => {
+    setNote(newNote);
+    console.log("Updated note:", newNote);
+  };
+  console.log("voucher", voucher);
+  const handleTotalPricePayment = (totalPricePayment) => {
+    setTotalPricePayment(totalPricePayment);
+  };
+
+  const validateOrderDetails = () => {
+    if (!selectedAddress) {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng thêm địa chỉ giao hàng!",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+      return false;
+    }
+
+    if (!selectedDeliveryMethod) {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng chọn phương thức vận chuyển!",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+      return false;
+    }
+    if (!selectedPaymentMethod) {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng chọn phương thức thanh toán!",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!validateOrderDetails()) return;
+    const user_id =
+      user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
+    // console.log("All information is selected, proceed to place the order.");
+    // console.log("user_id", user_id);
+    // console.log("Received delivery address:", selectedAddress);
+    // console.log("Selected delivery method: ", selectedDeliveryMethod);
+    // console.log("Selected payment method: ", selectedPaymentMethod);
+    // console.log("voucher", voucher);
+    // console.log("totalPrice", totalPrice);
+    // console.log("totalPricePayment", totalPricePayment);
+    // console.log("note:", note);
+    // console.log("listProduct", listProduct);
+    const orderData = {
+      user_id,
+      order_status: "Mới đặt", 
+      order_total_price: totalPrice,
+      order_final_price: totalPricePayment,
+      order_delivery_id: selectedDeliveryMethod._id,
+      order_payment_id: selectedPaymentMethod._id,
+      order_note: note,
+      shipping_cost: selectedDeliveryMethod.deli_cost,
+      voucher_id: voucher ? voucher._id : null, 
+      loca_id: selectedAddress._id, 
+      list_items: listProduct.map((product) => ({
+        product_id: product.product_id, 
+        variant_id: product.variant_id, 
+        prod_name: product.prod_name, 
+        prod_discount: product.prod_discount, 
+        image: product.image, 
+        variant_name: product.variant_name, 
+        price: product.price, 
+        quantity: product.quantity,
+      })),
+    };
+    console.log(orderData)
+    try {
+      const response = await fetch(`${API_URL}/orders/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log("Order created successfully:", data);
+        Alert.alert(
+          "Thành công",
+          "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("Main"); 
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+
+      } else {
+        console.error("Failed to create order:", data.message);
+        Alert.alert("Error", data.message);
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      Alert.alert("Error", "An error occurred while placing the order.");
+    }
+    
+  };
   return (
     <View style={styles.container}>
       <ArrowBack title="Thanh toán" />
       <ScrollView>
         <View style={styles.contentContainer}>
           {/* dia chi nhan hang */}
-          <DeliveryAddress />
+          <DeliveryAddress onAddressFetched={handleDeliveryAddress} />
           <View style={styles.productContainer}>
-            <View style={styles.productList}>
-              {products.map((product) => (
-                <ItemProduct key={product.id} product={product} />
-              ))}
-            </View>
-            <NoteSection />
+            {Array.isArray(listProduct) && listProduct.length > 0 ? (
+              listProduct.map((product,index) => (
+                <ItemProduct key={index} product={product} />
+              ))
+            ) : (
+              <Text>No products available</Text>
+            )}
+            <NoteSection onNoteChange={handleNoteChange} />
           </View>
           {/* Phương thức vận chuyển và thanh toán */}
           <View style={styles.methodContainer}>
-            <VoucherSelect />
+            <VoucherSelect
+              totalPrice={totalPrice}
+              listProduct={listProduct}
+              voucherDisplayPayment={voucher || null}
+            />
             <View style={styles.lineContainer}>
               <View style={styles.line}></View>
             </View>
-            <PaymentMethod />
+            <PaymentMethod onPaymentMethodChange={handlePaymentMethodChange} />
             <View style={styles.lineContainer}>
               <View style={styles.line}></View>
             </View>
-            <DeliveryMethod />
+            <DeliveryMethod
+              onDeliveryMethodChange={handleDeliveryMethodChange}
+            />
           </View>
           {/*Chi tiết thanh toán  */}
-          <DetailPayment />
+          <DetailPayment
+            totalPrice={totalPrice}
+            selectedDeliveryMethod={selectedDeliveryMethod}
+            voucherDiscount={voucherDiscount}
+            onTotalPricePayment={handleTotalPricePayment}
+          />
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
@@ -82,12 +214,14 @@ export default function Payment() {
           <View style={styles.totalRight}>
             <View style={styles.totalPrice}>
               <Text style={styles.smallText}>Tổng</Text>
-              <Text style={styles.totalText}>300000000đ</Text>
+              <Text style={styles.totalText}>
+                {totalPricePayment.toLocaleString("vi-VN")}đ
+              </Text>
             </View>
             <Button
-              title="Mua ngay"
+              title="Đặt hàng"
               borderRadius={4}
-              // onPress={() => navigation.navigate("Payment")}
+              onPress={handlePlaceOrder}
             />
           </View>
         </View>

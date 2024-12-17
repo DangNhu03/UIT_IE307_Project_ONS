@@ -1,15 +1,66 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { useAuthContext } from "@contexts/AuthContext";
+import { API_URL } from "../../../../url";
 
-export default function DeliveryAddress() {
-  const inforAddress = {
-    name: "Bùi Yến Giàu",
-    phone: "0348918222",
-    detail_address: "KTX khu B ĐHQG",
-    address: "Phường Linh Trung, thành phố Thủ Đức, TP.HCM",
-  };
+export default function DeliveryAddress({ onAddressFetched }) {
+  const { user } = useAuthContext();
+  const [deliveryAddress, setDeliveryAddress] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const user_id =
+    user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
 
+  useEffect(() => {
+    const fetchDeliveryAddress = async () => {
+      try {
+        if (!user_id) {
+          setLoading(false);
+          return;
+        }
+        const response = await fetch(
+          `${API_URL}/accounts/locations/${user_id}`
+        );
+        // const response = await fetch(
+        //   `${API_URL}/accounts/locations/67613fb9494ae56e693702bf`
+        // );
+        const data = await response.json();
+        console.log("Fetched data cua delivery address: ", data);
+
+        if (data.length > 0) {
+          setDeliveryAddress(data[0]);
+          if (onAddressFetched) {
+            onAddressFetched(data[0]);
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching delivery address:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchDeliveryAddress();
+  }, [user_id]);
+
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color="#241E92" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View>
@@ -19,21 +70,39 @@ export default function DeliveryAddress() {
           color="#241E92"
         />
       </View>
-      <View style={styles.centerContainer}>
-        <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
-        <View style={styles.address}>
-          <View style={styles.inforUser}>
-            <Text style={styles.addressText}>{inforAddress.name}</Text>
-            <View style={styles.line}></View>
-            <Text style={styles.addressText}>{inforAddress.phone}</Text>
+      {deliveryAddress ? (
+        <View style={styles.centerContainer}>
+          <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
+          <View style={styles.address}>
+            <View style={styles.inforUser}>
+              <Text style={styles.addressText}>
+                {deliveryAddress.loca_per_name}
+              </Text>
+              <View style={styles.line}></View>
+              <Text style={styles.addressText}>
+                {deliveryAddress.loca_phone}
+              </Text>
+            </View>
+            <Text style={styles.addressText}>
+              {deliveryAddress.loca_address}
+            </Text>
           </View>
-          <Text style={styles.addressText}>{inforAddress.detail_address}</Text>
-          <Text style={styles.addressText}>{inforAddress.address}</Text>
         </View>
-      </View>
-      <View style={styles.rightContainer}>
+      ) : (
+        <>
+          <View style={styles.centerContainer}>
+            <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
+            <TouchableOpacity>
+              <Text style={styles.titleTextCenter}>
+                + Thêm địa chỉ nhận hàng
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+      {/* <View style={styles.rightContainer}>
         <MaterialIcons name="keyboard-arrow-right" size={24} color="#241E92" />
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -45,7 +114,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius:4
+    borderRadius: 4,
   },
   centerContainer: {
     flex: 1,
@@ -75,5 +144,10 @@ const styles = StyleSheet.create({
   rightContainer: {
     flexDirection: "column",
     justifyContent: "center",
+  },
+  titleTextCenter: {
+    fontSize: 16,
+    color: "#241E92",
+    textAlign: "center",
   },
 });
