@@ -100,6 +100,7 @@ export default function Cart() {
 
     if (!user_id) {
       updateCartQuantityNoLogin(productId, variantId, newQuantity);
+      fetchCartItems()
       return;
     }
 

@@ -127,7 +127,7 @@ const ProductDetail = () => {
       const variant_id = product.prod_variations[selectedVariant]?._id;
       addToCart(product_id, variant_id, quantity);
     } else {
-      console.log(selectedVariant);
+      console.log("no user",product);
       addToCartNoLogin(product, selectedVariant, quantity);
     }
   };
