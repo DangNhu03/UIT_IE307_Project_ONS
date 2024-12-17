@@ -211,8 +211,8 @@ const findUserByPhone = async (req, res) => {
   }
 };
 const forgotPassword = async (req, res) => {
-  const { phone } = req.params; 
-  const { newPassword } = req.body; 
+  const { phone } = req.params;
+  const { newPassword } = req.body;
 
   try {
     const user = await User.findOne({ user_phone: phone });
@@ -233,6 +233,103 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+// PUT: Cập nhật thông tin người dùng
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, phone, email } = req.body;
+  console.log(req.body)
+
+  try {
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Tìm người dùng trong cơ sở dữ liệu
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Cập nhật các trường thông tin của người dùng nếu có thay đổi
+    if (name) user.user_name = name;
+    if (phone) user.user_phone = phone;
+    if (email) user.user_email = email;
+
+    // Lưu lại thông tin người dùng sau khi cập nhật
+    await user.save();
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Failed to update user", error: error.message });
+  }
+};
+
+// PUT: Cập nhật password người dùng
+const updatePassword = async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  try {
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Tìm người dùng trong cơ sở dữ liệu
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Nếu có mật khẩu mới, sẽ mã hóa và cập nhật mật khẩu
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.user_pass = await bcrypt.hash(password, salt);
+    }
+
+    // Lưu lại thông tin người dùng sau khi cập nhật
+    await user.save();
+
+    res.status(200).json({
+      message: "Password updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).json({ message: "Failed to update password", error: error.message });
+  }
+};
+
+const verifyPassword = async (req, res) => {
+  const { userId, currentPassword } = req.body;
+
+  try {
+    // Truy vấn user từ database
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại." });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.user_pass);
+    console.log(isMatch);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Mật khẩu hiện tại không đúng." });
+    }
+
+    res.status(200).json({ message: "Mật khẩu hợp lệ." });
+  } catch (error) {
+    console.error("Lỗi xác minh mật khẩu:", error);
+    res.status(500).json({ message: "Lỗi server, vui lòng thử lại." });
+  }
+}
+
 module.exports = {
   postUser,
   getAllUser,
@@ -242,4 +339,7 @@ module.exports = {
   loginUser,
   findUserByPhone,
   forgotPassword,
+  updateUser,
+  updatePassword,
+  verifyPassword
 };
