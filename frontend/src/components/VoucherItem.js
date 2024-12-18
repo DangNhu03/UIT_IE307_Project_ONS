@@ -7,13 +7,15 @@ import { API_URL } from '../../../url';
 import { format } from "date-fns";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
-const Voucher = ({ data, isSaved, onSave }) => {
+const Voucher = ({ data, isSaved, onSave ,onUseVoucher}) => {
     const { user } = useAuthContext();
     const navigation = useNavigation();
     const user_id = user && user[0]?._id;
 
     const onPress = async () => {
-        if (!isSaved) {
+        if (isSaved) {
+            onUseVoucher(data);
+        }else{
             try {
                 await axios.post(
                     `${API_URL}/api/users/vouchers`,
@@ -113,7 +115,7 @@ const Voucher = ({ data, isSaved, onSave }) => {
     );
 };
 
-const VoucherList = ({ vouchers, myVoucher = [], onUpdateSavedVouchers }) => {
+const VoucherList = ({ vouchers, myVoucher = [], onUpdateSavedVouchers , onUseVoucher }) => {
     const handleSave = (voucher, isSaved) => {
         if (isSaved) {
             onUpdateSavedVouchers([...myVoucher, voucher]); // Thêm voucher vào danh sách đã lưu
@@ -137,6 +139,7 @@ const VoucherList = ({ vouchers, myVoucher = [], onUpdateSavedVouchers }) => {
                         data={item}
                         isSaved={myVoucher.some((voucher) => voucher._id === item._id)} // Kiểm tra nếu đã lưu
                         onSave={(isSaved) => handleSave(item, isSaved)} // Truyền toàn bộ đối tượng voucher
+                        onUseVoucher={onUseVoucher}
                     />
                 )}
                 ListEmptyComponent={<Text style={styles.emptyText}>Không có voucher nào</Text>}

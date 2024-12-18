@@ -94,7 +94,6 @@ export function useAddToCart() {
           found = true;
         }
       });
-
       // Nếu sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới vào
       if (!found) {
         const cartItem = {
@@ -102,14 +101,14 @@ export function useAddToCart() {
           variant_id: variant_id || null,
           prod_name: product.prod_name,
           prod_discount: product.prod_discount,
-          image: selectedVariant
+          image: variant_id
             ? product.prod_variations[selectedVariant]?.variant_image
             : product.prod_image[0],
           stock: product.prod_stock,
-          variant_name: selectedVariant
+          variant_name: variant_id
             ? product.prod_variations[selectedVariant]?.variant_name
             : null,
-          price: selectedVariant
+          price: variant_id
             ? product.prod_variations[selectedVariant]?.variant_price
             : product.prod_price,
           quantity: quantity,

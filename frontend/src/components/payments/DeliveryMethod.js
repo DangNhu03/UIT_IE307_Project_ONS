@@ -1,12 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { API_URL } from "../../../../url";
 
-const DeliveryMethod = () => {
+const DeliveryMethod = ({ onDeliveryMethodChange }) => {
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [deliveryMethods, setDeliveryMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSelection = (method) => setSelectedMethod(method);
+  useEffect(() => {
+    const fetchDeliveryMethods = async () => {
+      try {
+        const response = await fetch(`${API_URL}/orders/deliverymethods`); 
+        const data = await response.json();
+        // console.log("Fetched data cua delivery method: ", data); 
+
+        if (data.deliveryMethods && Array.isArray(data.deliveryMethods)) {
+          setDeliveryMethods(data.deliveryMethods);
+        } else {
+          console.error("Invalid data format: deliveryMethods is not an array");
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching delivery methods:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchDeliveryMethods();
+  }, []);
+
+  const handleSelection = (method) => {
+    setSelectedMethod(method._id); 
+    onDeliveryMethodChange(method); 
+  };
+
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   return (
@@ -20,54 +49,40 @@ const DeliveryMethod = () => {
           />
           <Text style={styles.title}>Phương thức vận chuyển</Text>
         </View>
-        <TouchableOpacity style={styles.deliverySelection}>
+        <View style={styles.deliverySelection}>
           <MaterialIcons
             name={isExpanded ? "keyboard-arrow-down" : "keyboard-arrow-right"}
             size={24}
             color="#241E92"
           />
-        </TouchableOpacity>
+        </View>
       </TouchableOpacity>
+
       {isExpanded && (
         <View style={styles.insideContainer}>
-          <View style={styles.itemContainer}>
-            <TouchableOpacity
-              style={styles.circle}
-              onPress={() => handleSelection("2h")}
-            >
-              <MaterialIcons
-                name={
-                  selectedMethod === "2h"
-                    ? "radio-button-checked"
-                    : "radio-button-unchecked"
-                }
-                size={24}
-                color="#241E92"
-              />
-            </TouchableOpacity>
-            <Text style={styles.title}>
-              Giao hàng nhanh trong 2h (Trễ tặng 100k)
-            </Text>
-          </View>
-          <View style={styles.onlineContainer}>
-            <View style={styles.itemContainer}>
-              <TouchableOpacity
-                style={styles.circle}
-                onPress={() => handleSelection("72h")}
-              >
-                <MaterialIcons
-                  name={
-                    selectedMethod === "72h"
-                      ? "radio-button-checked"
-                      : "radio-button-unchecked"
-                  }
-                  size={24}
-                  color="#241E92"
-                />
-              </TouchableOpacity>
-              <Text style={styles.title}>Giao hàng trong 72h</Text>
-            </View>
-          </View>
+          {loading ? (
+            <Text>Đang tải...</Text>
+          ) : (
+            deliveryMethods.map((method) => (
+              <View key={method._id} style={styles.itemContainer}>
+                <TouchableOpacity
+                  style={styles.circle}
+                  onPress={() => handleSelection(method)}
+                >
+                  <MaterialIcons
+                    name={
+                      selectedMethod === method._id
+                        ? "radio-button-checked"
+                        : "radio-button-unchecked"
+                    }
+                    size={24}
+                    color="#241E92"
+                  />
+                </TouchableOpacity>
+                <Text style={styles.title}>{method.deli_name}</Text>
+              </View>
+            ))
+          )}
         </View>
       )}
     </View>
@@ -103,12 +118,6 @@ const styles = StyleSheet.create({
   },
   circle: {
     marginRight: 10,
-  },
-  onlineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingRight: 5,
   },
 });
 

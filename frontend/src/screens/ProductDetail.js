@@ -128,7 +128,7 @@ const ProductDetail = () => {
       const variant_id = product.prod_variations[selectedVariant]?._id;
       addToCart(product_id, variant_id, quantity);
     } else {
-      console.log(selectedVariant);
+      console.log("no user",product);
       addToCartNoLogin(product, selectedVariant, quantity);
     }
   };
@@ -141,6 +141,43 @@ const ProductDetail = () => {
     navigation.navigate("Cart");
   };
 
+  const handleClickBuyNow = () => {
+    const product_id = productId;
+    const variant_id = product.prod_variations[selectedVariant]?._id;
+    const listProduct = [
+      {
+        product_id,
+        variant_id,
+        prod_name: product.prod_name,
+        prod_discount: String(product.prod_discount),
+        image: variant_id
+          ? product.prod_variations[selectedVariant].variant_image
+          : product.prod_image[0],
+        stock: variant_id
+          ? String(
+              product.prod_variations[selectedVariant].variant_stock_quantity
+            )
+          : String(product.prod_stock),
+        variant_name: variant_id
+          ? product.prod_variations[selectedVariant].variant_name
+          : null,
+        price: selectedVariant
+          ? product.prod_variations[selectedVariant].variant_price
+          : product.prod_price,
+        quantity,
+      },
+    ];
+    const totalPrice =
+      quantity *
+      Number(listProduct[0].price) *
+      (1 - Number(listProduct[0].prod_discount) / 100);
+    // console.log(listProduct);
+    // console.log(totalPrice);
+    navigation.navigate("Payment", {
+      listProduct: listProduct,
+      totalPrice: totalPrice,
+    });
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -443,7 +480,7 @@ const ProductDetail = () => {
           borderWidth={1}
           onPress={handleAdd}
         />
-        <Button title="Mua ngay" />
+        <Button title="Mua ngay" onPress={handleClickBuyNow} />
       </View>
     </View>
   );

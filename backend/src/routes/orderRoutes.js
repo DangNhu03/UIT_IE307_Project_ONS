@@ -7,7 +7,8 @@ router.post('/paymentmethods',order.postPaymentMethod)
 router.get('/paymentmethods',order.getAllPaymentMethod)
 router.post('/deliverymethods',order.postDeliveryMethod)
 router.get('/deliverymethods',order.getAllDeliveryMethod)
-// router.post('/add', order.addOrder);
+router.post('/add', order.addOrder);
+router.get('/', order.getAllOders);
 
 
 
