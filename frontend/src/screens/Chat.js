@@ -1,10 +1,11 @@
 import ArrowBack from "@components/ArrowBack";
 import Button from "@components/Button";
-import { AuthContext } from "@contexts/AuthContext"; // Giả sử bạn có AuthContext
+import { AuthContext } from "@contexts/AuthContext";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { API_URL } from '../../../url';
+
 const ChatWithBotScreen = () => {
   const [message, setMessage] = useState(""); // Tin nhắn người dùng nhập
   const [messages, setMessages] = useState([]); // Danh sách tin nhắn trong cuộc trò chuyện
@@ -13,6 +14,10 @@ const ChatWithBotScreen = () => {
   // Lấy thông tin người dùng từ AuthContext (giả sử có AuthContext)
   const { user } = useContext(AuthContext);
   const user_id = user && user[0]?._id;
+
+  // Tham chiếu tới FlatList để cuộn đến tin nhắn cuối
+  const flatListRef = useRef(null);
+
   useEffect(() => {
     if (user_id) {
       // Lấy lịch sử tin nhắn khi người dùng đăng nhập
@@ -36,6 +41,15 @@ const ChatWithBotScreen = () => {
       fetchMessages();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Cuộn đến tin nhắn cuối khi danh sách tin nhắn thay đổi (bao gồm lần đầu tiên)
+    if (messages.length > 0 && flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }, 100); // Đảm bảo cuộn sau khi FlatList đã render lần đầu
+    }
+  }, [messages]); // Mỗi khi messages thay đổi, cuộn đến cuối
 
   // Gửi tin nhắn đến bot
   const sendMessageToBot = async () => {
@@ -93,10 +107,18 @@ const ChatWithBotScreen = () => {
       <ArrowBack title="Trò chuyện" titleColor="#E5A5FF" />
       {/* <Text style={styles.title}>Trò chuyện với Bot</Text> */}
       <FlatList
+        ref={flatListRef} // Tham chiếu tới FlatList
         data={messages}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.messagesList}
+        onContentSizeChange={() => {
+          setTimeout(() => {
+            if (flatListRef.current) {
+              flatListRef.current.scrollToEnd({ animated: true });
+            }
+          }, 100);
+        }}
       />
 
       <TextInput

@@ -31,15 +31,23 @@ export default function Vouchers() {
     axios
       .get(`${API_URL}/vouchers`, { headers: { 'Content-Type': 'application/json' } })
       .then((response) => {
-        setVouchers(response.data.filter(v => new Date(v.vouc_end_date) > new Date()));
-        setVoucherNotStarted(response.data.filter(v => new Date(v.vouc_start_date) > new Date()));
+        const allVouchers = response.data;
+        setVoucherNotStarted(allVouchers.filter(v => new Date(v.vouc_start_date) > new Date()));
+
+        if (user) {
+          const usedVoucherIds = myVoucher.filter(v => v.is_used === true).map(v => v._id);
+          const availableVouchers = allVouchers.filter(v => !usedVoucherIds.includes(v._id));
+          setVouchers(availableVouchers.filter(v => new Date(v.vouc_end_date) > new Date()));
+        } else {
+          setVouchers(allVouchers.filter(v => new Date(v.vouc_end_date) > new Date()));
+        }
         setLoading(false);
       })
       .catch((error) => {
         console.error('Có lỗi xảy ra:', error);
         setLoading(false);
       });
-  }, [isSave]);
+  }, [isSave, myVoucher, user]);
 
   useEffect(() => {
     if (user_id) {
@@ -60,7 +68,6 @@ export default function Vouchers() {
     setIsSave(!isSave);
   };
 
-  // Hàm lọc voucher theo mã
   const filterVouchers = (vouchersList) => {
     return vouchersList.filter((v) =>
       v.vouc_code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -70,7 +77,7 @@ export default function Vouchers() {
   return (
     <View style={styles.container}>
       <ArrowBack title="Ưu đãi" />
-      
+
       {/* Tabs Header */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
@@ -79,7 +86,7 @@ export default function Vouchers() {
         >
           <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>Tất cả ({vouchers.length})</Text>
         </TouchableOpacity>
-        
+
         {/* Đường ngăn cách giữa các tab */}
         <View style={styles.separator}></View>
 
@@ -89,7 +96,7 @@ export default function Vouchers() {
         >
           <Text style={[styles.tabText, activeTab === 'notStarted' && styles.activeTabText]}>Sắp diễn ra ({voucherNotStarted.length})</Text>
         </TouchableOpacity>
-        
+
         {/* Tab "Mã của tôi" chỉ hiển thị nếu có user */}
         {user && (
           <>
@@ -98,7 +105,7 @@ export default function Vouchers() {
               style={[styles.tab, activeTab === 'myVoucher' && styles.activeTab]}
               onPress={() => setActiveTab('myVoucher')}
             >
-              <Text style={[styles.tabText, activeTab === 'myVoucher' && styles.activeTabText]}>Mã của tôi ({myVoucher.length})</Text>
+              <Text style={[styles.tabText, activeTab === 'myVoucher' && styles.activeTabText]}>Mã của tôi ({myVoucher.filter(v => v.is_used === false).length})</Text>
             </TouchableOpacity>
           </>
         )}
@@ -128,7 +135,7 @@ export default function Vouchers() {
             {activeTab === 'all' && (
               <VoucherList
                 vouchers={filterVouchers(vouchers)}
-                myVoucher={myVoucher}
+                myVoucher={myVoucher.filter(v => v.is_used === false)}
                 onUpdateSavedVouchers={handleUpdateSavedVouchers}
               />
             )}
@@ -136,7 +143,7 @@ export default function Vouchers() {
               <VoucherList vouchers={filterVouchers(voucherNotStarted)} />
             )}
             {activeTab === 'myVoucher' && (
-              <VoucherList vouchers={filterVouchers(myVoucher)} myVoucher={myVoucher} />
+              <VoucherList vouchers={filterVouchers(myVoucher.filter(v => v.is_used === false))} myVoucher={myVoucher.filter(v => v.is_used === false)} />
             )}
           </>
         )}
@@ -167,11 +174,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#241E92',
     lineHeight: 21,
-    fontWeight:'500'
+    fontWeight: '500'
   },
   activeTabText: {
     color: '#FF71CD',
-    fontWeight:'bold'
+    fontWeight: 'bold'
   },
   searchBar: {
     width: 390,

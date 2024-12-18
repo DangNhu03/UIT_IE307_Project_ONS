@@ -166,7 +166,7 @@ const getListVouchers = async (req, res) => {
   const { user_id } = req.params; // Lấy user_id từ URL
 
   try {
-    // Tìm người dùng và populate voucher_id
+    // Tìm người dùng và populate voucher_id mà không cần select các trường cụ thể
     const user = await User.findById(user_id).populate({
       path: "list_vouchers.voucher_id", // Populate voucher_id
       model: "vouchers", // Tên model 'vouchers'
@@ -176,13 +176,16 @@ const getListVouchers = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Chỉ lấy thông tin từ voucher_id và trả về dưới dạng mảng
-    const vouchers = user.list_vouchers.map((item) => item.voucher_id);
-
-    // Trả về danh sách voucher
+    // Kết hợp thông tin voucher và is_used trong cùng một đối tượng
+    const vouchers = user.list_vouchers.map((item) => ({
+      ...item.voucher_id.toObject(), // Chuyển đối tượng voucher_id thành một object thuần túy
+      is_used: item.is_used          // Thêm trường is_used vào bên ngoài đối tượng voucher
+    }));
+    
+    // Trả về danh sách voucher với trường is_used
     res.status(200).json({
       message: "List of vouchers fetched successfully",
-      vouchers, // Chỉ trả về danh sách voucher
+      vouchers, // Trả về danh sách voucher cùng với trạng thái is_used
     });
     console.log(JSON.stringify(vouchers, null, 2)); // Log ra để kiểm tra
   } catch (error) {
@@ -192,6 +195,8 @@ const getListVouchers = async (req, res) => {
       .json({ message: "Failed to fetch vouchers", error: error.message });
   }
 };
+
+
 
 // Tìm user thông qua số điện thoại
 const findUserByPhone = async (req, res) => {
