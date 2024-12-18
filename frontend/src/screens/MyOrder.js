@@ -29,7 +29,6 @@ export default function MyOrder() {
     { id: "2", title: "Đang xử lý" },
     { id: "3", title: "Thành công" },
     { id: "4", title: "Đã hủy" },
-    // { id: "5", title: "Đánh giá" },
   ];
 
   const fetchOrders = async (status) => {
@@ -246,7 +245,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   line: {
-    height: 20,
+    height: 24,
     width: 1,
     backgroundColor: "#CFCED6",
   },

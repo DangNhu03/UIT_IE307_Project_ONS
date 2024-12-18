@@ -21,22 +21,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Loading from "@screens/Loading";
 import { useState, useEffect } from "react";
-
-import PersonalInfo from "@screens/accounts/PersonalInfo";
-import Address from "@screens/accounts/Address";
-import LinkAccount from "@screens/accounts/LinkAccount";
-import ChangePassword from "@screens/accounts/ChangePassword";
-import FAQ from "@screens/accounts/FAQ";
-import ShoppingGuide from "@screens/accounts/ShoppingGuide";
-import TermsAndPolicies from "@screens/accounts/TermsAndPolicies";
-import AboutUs from "@screens/accounts/AboutUs";
-import ContactUs from "@screens/accounts/ContactUs";
-import DeleteAccount from "@screens/accounts/DeleteAccount";
-
 import ChatWithBotScreen from "@screens/Chat.js";
 import ForgotPassword from "@screens/ForgotPassword.js";
 import MyOrder from "@screens/MyOrder.js";
 import MyReview from "@screens/MyReview.js";
+import Support from "@screens/Support.js";
+import Setting from "@screens/Setting.js";
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -194,56 +184,6 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="PersonalInfo"
-          component={PersonalInfo}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Address"
-          component={Address}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="LinkAccount"
-          component={LinkAccount}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ChangePassword"
-          component={ChangePassword}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="FAQ"
-          component={FAQ}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ShoppingGuide"
-          component={ShoppingGuide}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="TermsAndPolicies"
-          component={TermsAndPolicies}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AboutUs"
-          component={AboutUs}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ContactUs"
-          component={ContactUs}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DeleteAccount"
-          component={DeleteAccount}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name="Chat"
           component={ChatWithBotScreen}
           options={{ headerShown: false }}
@@ -281,6 +221,16 @@ const StackNavigator = () => {
         <Stack.Screen
           name="MyReview"
           component={MyReview}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Support"
+          component={Support}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Setting"
+          component={Setting}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
