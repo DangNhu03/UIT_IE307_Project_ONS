@@ -38,19 +38,23 @@ export default function Vouchers() {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
-        setVouchers(
-          response.data.filter((v) => new Date(v.vouc_end_date) > new Date())
-        );
-        setVoucherNotStarted(
-          response.data.filter((v) => new Date(v.vouc_start_date) > new Date())
-        );
+        const allVouchers = response.data;
+        setVoucherNotStarted(allVouchers.filter(v => new Date(v.vouc_start_date) > new Date()));
+
+        if (user) {
+          const usedVoucherIds = myVoucher.filter(v => v.is_used === true).map(v => v._id);
+          const availableVouchers = allVouchers.filter(v => !usedVoucherIds.includes(v._id));
+          setVouchers(availableVouchers.filter(v => new Date(v.vouc_end_date) > new Date()));
+        } else {
+          setVouchers(allVouchers.filter(v => new Date(v.vouc_end_date) > new Date()));
+        }
         setLoading(false);
       })
       .catch((error) => {
         console.error("Có lỗi xảy ra:", error);
         setLoading(false);
       });
-  }, [isSave]);
+  }, [isSave, myVoucher, user]);
 
   useEffect(() => {
     if (user_id) {
@@ -71,7 +75,6 @@ export default function Vouchers() {
     setIsSave(!isSave);
   };
 
-  // Hàm lọc voucher theo mã
   const filterVouchers = (vouchersList) => {
     return vouchersList.filter((v) =>
       v.vouc_code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -142,14 +145,7 @@ export default function Vouchers() {
               ]}
               onPress={() => setActiveTab("myVoucher")}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === "myVoucher" && styles.activeTabText,
-                ]}
-              >
-                Mã của tôi ({myVoucher.length})
-              </Text>
+              <Text style={[styles.tabText, activeTab === 'myVoucher' && styles.activeTabText]}>Mã của tôi ({myVoucher.filter(v => v.is_used === false).length})</Text>
             </TouchableOpacity>
           </>
         )}
@@ -184,7 +180,7 @@ export default function Vouchers() {
             {activeTab === "all" && (
               <VoucherList
                 vouchers={filterVouchers(vouchers)}
-                myVoucher={myVoucher}
+                myVoucher={myVoucher.filter(v => v.is_used === false)}
                 onUpdateSavedVouchers={handleUpdateSavedVouchers}
                 onUseVoucher={handleUseVoucher}
               />
@@ -192,11 +188,8 @@ export default function Vouchers() {
             {activeTab === "notStarted" && (
               <VoucherList vouchers={filterVouchers(voucherNotStarted)} />
             )}
-            {activeTab === "myVoucher" && (
-              <VoucherList
-                vouchers={filterVouchers(myVoucher)}
-                myVoucher={myVoucher}
-              />
+            {activeTab === 'myVoucher' && (
+              <VoucherList vouchers={filterVouchers(myVoucher.filter(v => v.is_used === false))} myVoucher={myVoucher.filter(v => v.is_used === false)} />
             )}
           </>
         )}

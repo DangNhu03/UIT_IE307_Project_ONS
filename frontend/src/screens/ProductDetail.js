@@ -91,6 +91,7 @@ const ProductDetail = () => {
       })
       .catch((error) => {
         console.log("Có lỗi xảy ra khi lấy đánh giá:", error);
+        setReviews([])
         setLoading(false);
       });
   }, [product]);
