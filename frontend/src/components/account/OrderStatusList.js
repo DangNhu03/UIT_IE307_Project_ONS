@@ -1,10 +1,17 @@
 import React from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import ItemStatus from "./ItemStatus";
+import { useNavigation } from "@react-navigation/native";
 
 const OrderStatusList = ({ data }) => {
+  const navigation = useNavigation();
+
   const handlePress = (title) => {
-    alert(`Icon clicked: ${title}`);
+    if (title === "Đánh giá") {
+      navigation.navigate("MyReview");
+    } else {
+      navigation.navigate("MyOrder", { typeTitle: title });
+    }
   };
   return (
     <View style={styles.container}>
@@ -14,7 +21,11 @@ const OrderStatusList = ({ data }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <ItemStatus title={item.title} iconName={item.iconName} onPress={() => handlePress(item.title)}/>
+          <ItemStatus
+            title={item.title}
+            iconName={item.iconName}
+            onPress={() => handlePress(item.title)}
+          />
         )}
       />
     </View>
@@ -22,8 +33,7 @@ const OrderStatusList = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
 });
 
 export default OrderStatusList;

@@ -39,7 +39,7 @@ export default function Account() {
 
   const orderStatuses = [
     { id: "1", title: "Mới đặt", iconName: "clipboard-check-outline" },
-    { id: "2", title: "Đang xử lý", iconName: "loader" },
+    { id: "2", title: "Đang xử lý", iconName: "truck-fast-outline" },
     { id: "3", title: "Thành công", iconName: "package" },
     { id: "4", title: "Đã hủy", iconName: "autorenew" },
     { id: "5", title: "Đánh giá", iconName: "star-circle-outline" },

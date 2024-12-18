@@ -35,7 +35,8 @@ import DeleteAccount from "@screens/accounts/DeleteAccount";
 
 import ChatWithBotScreen from "@screens/Chat.js";
 import ForgotPassword from "@screens/ForgotPassword.js";
-
+import MyOrder from "@screens/MyOrder.js";
+import MyReview from "@screens/MyReview.js";
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -270,6 +271,16 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Vouchers"
           component={Vouchers}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyOrder"
+          component={MyOrder}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyReview"
+          component={MyReview}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
