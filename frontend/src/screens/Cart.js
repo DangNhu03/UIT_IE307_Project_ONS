@@ -70,7 +70,8 @@ export default function Cart() {
       if (response.ok) {
         setcartData(data.cart || []); // Set the fetched data as cart items
       } else {
-        console.error(data.message || "Unable to fetch cart items");
+        setcartData([]); 
+        // console.error(data.message || "Unable to fetch cart items");
       }
     } catch (err) {
       console.error("Network error while fetching cart items");

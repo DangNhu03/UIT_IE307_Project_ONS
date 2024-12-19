@@ -84,11 +84,7 @@ const getProductInCart = async (req, res) => {
   try {
     // Tìm giỏ hàng theo user_id
     const cart = await Cart.findOne({ user_id });
-
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-
+    
     // Trả về danh sách sản phẩm trong giỏ hàng
     res.status(200).json({
       message: "Cart retrieved successfully",

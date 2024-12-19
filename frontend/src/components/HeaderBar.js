@@ -56,7 +56,7 @@ const HeaderBar = ({ onSearch }) => {
         });
       }
     } catch (error) {
-      console.error("Lỗi khi lấy số lượng giỏ hàng:", error);
+      // console.error("Lỗi khi lấy số lượng giỏ hàng:", error);
     } finally {
       setIsFetching(false);
     }
