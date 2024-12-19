@@ -36,7 +36,10 @@ import AddAddress from "@screens/accounts/AddAddress";
 
 import ChatWithBotScreen from "@screens/Chat.js";
 import ForgotPassword from "@screens/ForgotPassword.js";
-
+import MyOrder from "@screens/MyOrder.js";
+import MyReview from "@screens/MyReview.js";
+import Support from "@screens/Support.js";
+import Setting from "@screens/Setting.js";
 import HeaderBar from "../components/HeaderBar.js";
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -194,56 +197,6 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="PersonalInfo"
-          component={PersonalInfo}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Address"
-          component={Address}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="LinkAccount"
-          component={LinkAccount}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ChangePassword"
-          component={ChangePassword}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="FAQ"
-          component={FAQ}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ShoppingGuide"
-          component={ShoppingGuide}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="TermsAndPolicies"
-          component={TermsAndPolicies}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AboutUs"
-          component={AboutUs}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ContactUs"
-          component={ContactUs}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DeleteAccount"
-          component={DeleteAccount}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name="Chat"
           component={ChatWithBotScreen}
           options={{ headerShown: false }}
@@ -276,6 +229,26 @@ const StackNavigator = () => {
           <Stack.Screen
           name="AddAddress"
           component={AddAddress}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyOrder"
+          component={MyOrder}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyReview"
+          component={MyReview}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Support"
+          component={Support}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Setting"
+          component={Setting}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

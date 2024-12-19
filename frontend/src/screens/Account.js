@@ -23,31 +23,35 @@ export default function Account() {
     user && Array.isArray(user) && user.length > 0 ? user[0].user_name : null;
 
   const settings = [
-    { id: "1", name: "Thông tin cá nhân", screen: "PersonalInfo" },
-    { id: "2", name: "Địa chỉ giao hàng", screen: "Address" },
-    { id: "3", name: "Tài khoản liên kết", screen: "LinkAccount" },
-    { id: "4", name: "Đổi mật khẩu", screen: "ChangePassword" },
+    { id: "1", name: "Thông tin cá nhân", screen: "PersonalInfo", iconName: "card-account-details-outline" },
+    { id: "2", name: "Địa chỉ giao hàng", screen: "Address", iconName: "home-outline" },
+    { id: "3", name: "Tài khoản liên kết", screen: "LinkAccount", iconName: "credit-card-plus-outline" },
+    { id: "4", name: "Đổi mật khẩu", screen: "ChangePassword", iconName: "sync-lock" },
   ];
-  const suppports = [
-    { id: "1", name: "Các câu hỏi thường gặp", screen: "FAQ" },
-    { id: "2", name: "Hướng dẫn mua hàng", screen: "ShoppingGuide" },
-    { id: "3", name: "Điều khoản/ Chính sách", screen: "TermsAndPolicies" },
-    { id: "4", name: "Giới thiệu", screen: "AboutUs" },
-    { id: "5", name: "Liên hệ", screen: "ContactUs" },
-    { id: "6", name: "Xóa tài khoản", screen: "DeleteAccount" },
+  const supports = [
+    { id: "1", name: "Các câu hỏi thường gặp", screen: "FAQ" , iconName: "chat-question-outline" },
+    { id: "2", name: "Hướng dẫn mua hàng", screen: "ShoppingGuide", iconName: "production-quantity-limits" },
+    { id: "3", name: "Điều khoản/ Chính sách", screen: "TermsAndPolicies", iconName: "book-open-outline" },
+    { id: "4", name: "Giới thiệu" , screen: "AboutUs", iconName: "apartment" },
+    { id: "5", name: "Liên hệ", screen: "ContactUs", iconName: "email-outline" },
+    { id: "6", name: "Xóa tài khoản", screen: "DeleteAccount", iconName: "no-accounts" },
   ];
 
   const orderStatuses = [
     { id: "1", title: "Mới đặt", iconName: "clipboard-check-outline" },
-    { id: "2", title: "Đang xử lý", iconName: "loader" },
+    { id: "2", title: "Đang xử lý", iconName: "truck-fast-outline" },
     { id: "3", title: "Thành công", iconName: "package" },
     { id: "4", title: "Đã hủy", iconName: "autorenew" },
     { id: "5", title: "Đánh giá", iconName: "star-circle-outline" },
   ];
 
-  const handlePress = (item) => {
-    const screen = item.screen;
-    navigation.navigate(screen);
+  const handlePressSupport = (item) => {
+    console.log(item)
+    navigation.navigate("Support", { supports:supports, nameScreen: item.name });
+  };
+  const handlePressSetting = (item) => {
+    console.log(item)
+    navigation.navigate("Setting", { settings:settings, nameScreen: item.name });
   };
 
   const handleLogout = () => {
@@ -114,7 +118,7 @@ export default function Account() {
             <View style={styles.line}></View>
             <View style={styles.settingContainer}>
               <Text style={styles.title}>Cài đặt</Text>
-              <InfoList data={settings} onPress={handlePress} />
+              <InfoList data={settings} onPress={handlePressSetting} />
             </View>
           </>
         )}
@@ -124,10 +128,10 @@ export default function Account() {
           <InfoList
             data={
               user && Array.isArray(user) && user.length > 0
-                ? suppports
-                : suppports.filter((item) => item.name !== "Xóa tài khoản")
+                ? supports
+                : supports.filter((item) => item.name !== "Xóa tài khoản")
             }
-            onPress={handlePress}
+            onPress={handlePressSupport}
           />
         </View>
         {user && Array.isArray(user) && user.length > 0 && (

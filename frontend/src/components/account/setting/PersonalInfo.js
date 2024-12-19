@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Button from "@components/Button";
 import Input from "@components/Input";
 import { useAuthContext } from "@contexts/AuthContext";
-import { API_URL } from "../../../../url";
+import { API_URL } from "../../../../../url";
 import axios from "axios";
 import ArrowBack from "@components/ArrowBack";
 
