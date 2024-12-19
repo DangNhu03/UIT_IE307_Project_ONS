@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Polygon } from 'react-native-svg';
 
-export default function CategoriesMini({ text }) {
+export default function CategoriesMini({ text, onClickCate}) {
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={onClickCate}>
             <View style={styles.hexagon}>
                 <Svg height="45" width="45" viewBox="0 0 100 100">
                     <Defs>
@@ -23,7 +23,7 @@ export default function CategoriesMini({ text }) {
             <View style={styles.textItem}>
                 <Text style={styles.text}>{text}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

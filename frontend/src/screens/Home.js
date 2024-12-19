@@ -84,17 +84,20 @@ export default function Home() {
       });
     });
   };
+  const handleClickCate = (cate) => {
+    navigation.navigate('Categories', { cate: cate })
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
       <View style={styles.container}>
-        <HeaderBar onSearch={handleSearch}/>
+        <HeaderBar onSearch={handleSearch} />
         <ScrollView ref={scrollViewRef}>
           <View style={styles.gridContainer}>
             {categories.map((category) => (
               <View key={category._id} style={styles.gridItem}>
                 <Text style={{ margin: 0, padding: 0 }}>
-                  <CategoriesMini text={category.cate_name} />
+                  <CategoriesMini text={category.cate_name} onClickCate={() => handleClickCate(category)} />
                 </Text>
               </View>
             ))}
