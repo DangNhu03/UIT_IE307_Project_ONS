@@ -20,15 +20,15 @@ import { useAuthContext } from "@contexts/AuthContext";
 import { useRoute } from '@react-navigation/native'; // Dùng để nhận params
 import { API_URL } from '../../../url';
 export default function Categories() {
-
+  const route = useRoute();
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]); // Sản phẩm đã sắp xếp
   const [loading, setLoading] = useState(true);
-  const [selectCategory, setSelectCategory] = useState(null)
+  const [selectCategory, setSelectCategory] = useState(route.params?.cate ? route.params.cate : null)
   const [sortOption, setSortOption] = useState("Nổi bật");   // Cách sắp xếp hiện tại
   const { user } = useAuthContext();
-  const route = useRoute();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   // Lấy searchQuery từ params nếu có
