@@ -76,7 +76,14 @@ export default function Support() {
             </View>
           ))}
         </View>
-        <View style={styles.bottomContainer}>{renderContent()}</View>
+        <View style={styles.gapContainer}></View>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.bottomContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderContent()}
+        </ScrollView>
       </View>
     </View>
   );
@@ -87,11 +94,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#241e92",
     alignItems: "center",
-    justifyContent: "flex-start",
     paddingTop: 40,
   },
   contentContainer: {
-    flex: 1,
     gap: 20,
     width: "100%",
     alignItems: "center",
@@ -103,16 +108,17 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     width: "100%",
   },
-
   itemWrapper: {
-    width: "33%",
+    width: "33.33333333%",
     alignItems: "center",
     marginBottom: 5,
   },
+  gapContainer: {
+    backgroundColor: "#241e92",
+    paddingTop: 20,
+    // width: "100%",
+    height: 20,
+  },
   bottomContainer: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

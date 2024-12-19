@@ -46,9 +46,14 @@ export default function Account() {
   ];
 
   const handlePressSupport = (item) => {
-    console.log(item)
-    navigation.navigate("Support", { supports:supports, nameScreen: item.name });
+    if (user && Array.isArray(user) && user.length > 0) {
+      navigation.navigate("Support", { supports: supports, nameScreen: item.name });
+    } else {
+      const filteredSupports = supports.filter((item) => item.name !== "Xóa tài khoản");
+      navigation.navigate("Support", { supports: filteredSupports, nameScreen: item.name });
+    }
   };
+  
   const handlePressSetting = (item) => {
     console.log(item)
     navigation.navigate("Setting", { settings:settings, nameScreen: item.name });
