@@ -152,133 +152,108 @@ export default function ChangePassword() {
 
 
   return (
-    <View style={styles.container}>
-      <ArrowBack title='Đổi mật khẩu'/>
-      <View
-        style={[
-          styles.inforUser,
-          user &&
-            Array.isArray(user) &&
-            user.length > 0 && { justifyContent: "flex-start" },
-        ]}
-      >
-        <Image
-  source={{ uri: user[0]?.user_avatar }}
-          style={styles.userImage}
-        />
-          <Text style={styles.userName}>{user[0]?.user_name}</Text>
-
-          
-      </View>
-      <View style={styles.formContainer}>
-        <View style={styles.formItem}>
-          <Text style={styles.formItemText}>Mật khẩu hiện tại:</Text>
-          <View style={styles.formInput}>
-            <Input
-              placeholder="Nhập mật khẩu cũ"
-              value={currentPassword}
-              onChangeText={(value) => handleInputChange("currentPassword", value)}
-              secureTextEntry={!showCurrentPassword}
-              errorMessage={errors.currentPassword}
-              showToggle
-              onFocus={() => handleFocus("currentPassword")}
-              onBlur={() => handleBlur("currentPassword")}
-              borderWidth={1}
-              borderColor={inputColors.currentPassword}
-              fontSize={14}
-              iconComponent={
-                <MaterialCommunityIcons
-                  name={showCurrentPassword ? "eye" : "eye-off"}
-                  size={24}
-                  color="#3B394A"
-                  onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-                />
-              }
-            />
-          </View>
-        </View>
-
-        <View style={styles.formItem}>
-          <Text style={styles.formItemText}>Mật khẩu mới:</Text>
-          <View style={styles.formInput}>
-            <Input
-              placeholder="Nhập mật khẩu mới"
-              value={password}
-              onChangeText={(value) => handleInputChange("password", value)}
-              secureTextEntry={!showPassword}
-              errorMessage={errors.password}
-              showToggle
-              onFocus={() => handleFocus("password")}
-              onBlur={() => handleBlur("password")}
-              borderWidth={1}
-              borderColor={inputColors.password}
-              fontSize={14}
-              iconComponent={
-                <MaterialCommunityIcons
-                  name={showPassword ? "eye" : "eye-off"}
-                  size={24}
-                  color="#3B394A"
-                  onPress={() => setShowPassword(!showPassword)}
-                />
-              }
-            />
-          </View>
-        </View>
-
-        <View style={styles.formItem}>
-          <Text style={styles.formItemText}>Xác nhận mật khẩu mới:</Text>
-          <View style={styles.formInput}>
-            <Input
-              placeholder="Nhập lại mật khẩu mới"
-              value={confirmPassword}
-              onChangeText={(value) => handleInputChange("confirmPassword", value)}
-              secureTextEntry={!showConfirmPassword}
-              errorMessage={errors.confirmPassword}
-              showToggle
-              onFocus={() => handleFocus("confirmPassword")}
-              onBlur={() => handleBlur("confirmPassword")}
-              borderWidth={1}
-              borderColor={inputColors.confirmPassword}
-              fontSize={14}
-              iconComponent={
-                <MaterialCommunityIcons
-                  name={showConfirmPassword ? "eye" : "eye-off"}
-                  size={24}
-                  color="#3B394A"
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                />
-              }
-            />
-          </View>
-        </View>
-
-        <View style={styles.buttonUpdateChange}>
-          <Button
-            title="Xác nhận"
+    <View style={styles.formContainer}>
+      <View style={styles.formItem}>
+        <Text style={styles.formItemText}>Mật khẩu hiện tại:</Text>
+        <View style={styles.formInput}>
+          <Input
+            placeholder="Nhập mật khẩu cũ"
+            value={currentPassword}
+            onChangeText={(value) => handleInputChange("currentPassword", value)}
+            secureTextEntry={!showCurrentPassword}
+            errorMessage={errors.currentPassword}
+            showToggle
+            onFocus={() => handleFocus("currentPassword")}
+            onBlur={() => handleBlur("currentPassword")}
+            borderWidth={1}
+            borderColor={inputColors.currentPassword}
             fontSize={14}
-            onPress={handleUpdate}
-            backgroundColor={isFormChanged ? undefined : "#EBEBEE"}
-            textColor={isFormChanged ? undefined : "#3B394A"}
-            // disabled={!isFormChanged}
-            // activeOpacity={!isFormChanged ? 1 : undefined}
+            iconComponent={
+              <MaterialCommunityIcons
+                name={showCurrentPassword ? "eye" : "eye-off"}
+                size={24}
+                color="#3B394A"
+                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+              />
+            }
           />
         </View>
+      </View>
+
+      <View style={styles.formItem}>
+        <Text style={styles.formItemText}>Mật khẩu mới:</Text>
+        <View style={styles.formInput}>
+          <Input
+            placeholder="Nhập mật khẩu mới"
+            value={password}
+            onChangeText={(value) => handleInputChange("password", value)}
+            secureTextEntry={!showPassword}
+            errorMessage={errors.password}
+            showToggle
+            onFocus={() => handleFocus("password")}
+            onBlur={() => handleBlur("password")}
+            borderWidth={1}
+            borderColor={inputColors.password}
+            fontSize={14}
+            iconComponent={
+              <MaterialCommunityIcons
+                name={showPassword ? "eye" : "eye-off"}
+                size={24}
+                color="#3B394A"
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            }
+          />
+        </View>
+      </View>
+
+      <View style={styles.formItem}>
+        <Text style={styles.formItemText}>Xác nhận mật khẩu mới:</Text>
+        <View style={styles.formInput}>
+          <Input
+            placeholder="Nhập lại mật khẩu mới"
+            value={confirmPassword}
+            onChangeText={(value) => handleInputChange("confirmPassword", value)}
+            secureTextEntry={!showConfirmPassword}
+            errorMessage={errors.confirmPassword}
+            showToggle
+            onFocus={() => handleFocus("confirmPassword")}
+            onBlur={() => handleBlur("confirmPassword")}
+            borderWidth={1}
+            borderColor={inputColors.confirmPassword}
+            fontSize={14}
+            iconComponent={
+              <MaterialCommunityIcons
+                name={showConfirmPassword ? "eye" : "eye-off"}
+                size={24}
+                color="#3B394A"
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              />
+            }
+          />
+        </View>
+      </View>
+
+      <View style={styles.buttonUpdateChange}>
+        <Button
+          title="Xác nhận"
+          fontSize={14}
+          onPress={handleUpdate}
+          backgroundColor={isFormChanged ? undefined : "#EBEBEE"}
+          textColor={isFormChanged ? undefined : "#3B394A"}
+        // disabled={!isFormChanged}
+        // activeOpacity={!isFormChanged ? 1 : undefined}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#241e92",
-    alignItems: "center",
-    paddingTop: 40,
-  },
   formContainer: {
+    // flex:1,
     backgroundColor: '#FFF',
     padding: 10,
-    alignSelf: 'stretch',
   },
   formItem: {
     alignItems: 'center',
@@ -296,28 +271,5 @@ const styles = StyleSheet.create({
   buttonUpdateChange: {
     paddingTop: 10,
     alignSelf: 'flex-end',
-  },
-  inforUser: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    justifyContent: "space-between",
-  },
-  userImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  authButtons: {
-    flexDirection: "row",
-    gap: 10,
   },
 });

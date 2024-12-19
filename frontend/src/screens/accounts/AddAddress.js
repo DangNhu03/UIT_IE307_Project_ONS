@@ -101,8 +101,6 @@ export default function AddAddress({ navigation, route }) {
     };
 
     const handleAddAddress = async () => {
-        if (!validateInputs()) return; // Kiểm tra tính hợp lệ của dữ liệu đầu vào
-
         if (
             !newAddress.loca_address_province ||
             !newAddress.loca_address_district ||
@@ -113,6 +111,7 @@ export default function AddAddress({ navigation, route }) {
             Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin bắt buộc.');
             return;
         }
+        if (!validateInputs()) return; // Kiểm tra tính hợp lệ của dữ liệu đầu vào
         // Cập nhật loca_address bằng cách kết hợp các giá trị địa chỉ
         const fullAddress = [
             newAddress?.loca_address_detail,

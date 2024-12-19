@@ -4,7 +4,7 @@ import ArrowBack from "@components/ArrowBack";
 import { useAuthContext } from "@contexts/AuthContext";
 import AddressItem from '@components/AddressItem';
 import axios from 'axios';
-import { API_URL } from "../../../../url";
+import { API_URL } from "../../../../../url";
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 
@@ -62,21 +62,6 @@ export default function Address() {
 
   return (
     <View style={styles.container}>
-      <ArrowBack title='Địa chỉ giao hàng' />
-      <View
-        style={[
-          styles.inforUser,
-          user &&
-          Array.isArray(user) &&
-          user.length > 0 && { justifyContent: "flex-start" },
-        ]}
-      >
-        <Image
-          source={{ uri: user[0]?.user_avatar }}
-          style={styles.userImage}
-        />
-        <Text style={styles.userName}>{user[0]?.user_name}</Text>
-      </View>
       <View style={styles.content}>
         {
           loading ? (
@@ -114,49 +99,24 @@ export default function Address() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#241e92",
-    alignItems: "center",
-    paddingTop: 40,
-  },
-  inforUser: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    justifyContent: "space-between",
-  },
-  userImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  authButtons: {
-    flexDirection: "row",
-    gap: 10,
+    alignItems: 'center',
+    // justifyContent:'center'
   },
   addressesContainer: {
-    flexGrow: 1,
-    gap: 10,
-    alignItems: 'center',
-    paddingHorizontal: 5,
-    paddingBottom: 10,
-    // flex:1
+    flexGrow: 1, // Để các phần tử bên trong phát triển linh hoạt
+    gap: 10, // Khoảng cách giữa các mục
+    alignItems: 'center', // Canh giữa nội dung theo chiều ngang
+    paddingHorizontal: 10, // Thêm khoảng cách hai bên
+    paddingBottom:10
   },
   addContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
     backgroundColor: 'white',
     paddingVertical: 20,
-    width: '100%'
+    width: '100%',
+    justifyContent:'center'
   },
   addText: {
     fontSize: 16,
@@ -164,8 +124,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

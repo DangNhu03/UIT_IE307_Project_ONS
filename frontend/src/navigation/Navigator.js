@@ -7,13 +7,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@screens/Home";
 import Vouchers from "@screens/Vouchers";
 import Categories from "@screens/Categories";
-import Notifications from "@screens/Notifications";
+import Notifications from "@screens/Notifications.js";
 import Account from "@screens/Account";
 import Cart from "@screens/Cart";
 import Payment from "@screens/Payment";
 import Login from "@screens/Login";
 import Register from "@screens/Register";
-import ProductDetail from "@screens/ProductDetail";
+import ProductDetail from "@screens/ProductDetail.js";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,26 +21,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Loading from "@screens/Loading";
 import { useState, useEffect } from "react";
-
-import PersonalInfo from "@screens/accounts/PersonalInfo";
-import Address from "@screens/accounts/Address";
-import LinkAccount from "@screens/accounts/LinkAccount";
-import ChangePassword from "@screens/accounts/ChangePassword";
-import FAQ from "@screens/accounts/FAQ";
-import ShoppingGuide from "@screens/accounts/ShoppingGuide";
-import TermsAndPolicies from "@screens/accounts/TermsAndPolicies";
-import AboutUs from "@screens/accounts/AboutUs";
-import ContactUs from "@screens/accounts/ContactUs";
-import DeleteAccount from "@screens/accounts/DeleteAccount";
-import AddAddress from "@screens/accounts/AddAddress";
-
 import ChatWithBotScreen from "@screens/Chat.js";
 import ForgotPassword from "@screens/ForgotPassword.js";
 import MyOrder from "@screens/MyOrder.js";
 import MyReview from "@screens/MyReview.js";
 import Support from "@screens/Support.js";
 import Setting from "@screens/Setting.js";
-import HeaderBar from "../components/HeaderBar.js";
+import AddAddress from "@screens/accounts/AddAddress.js";
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -226,11 +214,6 @@ const StackNavigator = () => {
           component={Vouchers}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
-          name="AddAddress"
-          component={AddAddress}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="MyOrder"
           component={MyOrder}
@@ -249,6 +232,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Setting"
           component={Setting}
+          options={{ headerShown: false }}
+        />
+                <Stack.Screen
+          name="AddAddress"
+          component={AddAddress}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

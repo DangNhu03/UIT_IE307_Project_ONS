@@ -129,25 +129,6 @@ export default function PersonalInfo() {
 
 
   return (
-    <View style={styles.container}>
-      <ArrowBack title='Thông tin cá nhân' />
-      <View
-        style={[
-          styles.inforUser,
-          user &&
-          Array.isArray(user) &&
-          user.length > 0 && { justifyContent: "flex-start" },
-        ]}
-      >
-        <Image
-          source={{ uri: user[0]?.user_avatar }}
-          style={styles.userImage}
-        />
-
-        <Text style={styles.userName}>{user[0]?.user_name}</Text>
-
-
-      </View>
       <View style={styles.formContainer}>
         <View style={styles.formItem}>
           <Text style={styles.formItemText}>Họ và tên:</Text>
@@ -210,21 +191,15 @@ export default function PersonalInfo() {
           />
         </View>
       </View>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#241e92",
-    alignItems: "center",
-    paddingTop: 40,
-  },
   formContainer: {
     backgroundColor: '#FFF',
     padding: 10,
     alignSelf: 'stretch',
+    justifyContent:'center'
   },
   formItem: {
     alignItems: 'center',
