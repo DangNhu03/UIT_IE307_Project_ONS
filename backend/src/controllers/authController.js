@@ -334,6 +334,33 @@ const verifyPassword = async (req, res) => {
     res.status(500).json({ message: "Lỗi server, vui lòng thử lại." });
   }
 }
+const deleteUser = async (req, res) => {
+  const { id: user_id } = req.params;
+
+  console.log("User ID received:", user_id);
+
+  // Kiểm tra xem user_id có hợp lệ không
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  try {
+    // Khởi tạo ObjectId với từ khóa `new`
+    const user = await User.findByIdAndDelete(new mongoose.Types.ObjectId(user_id));
+
+    if (!user) {
+      console.log("User not found in database:", user_id);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("User deleted successfully:", user);
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 module.exports = {
   postUser,
@@ -346,5 +373,6 @@ module.exports = {
   forgotPassword,
   updateUser,
   updatePassword,
-  verifyPassword
+  verifyPassword,
+  deleteUser
 };

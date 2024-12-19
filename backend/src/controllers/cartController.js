@@ -199,13 +199,7 @@ const getQuantityInCart = async (req, res) => {
     // Tìm giỏ hàng của người dùng dựa trên user_id
     const cart = await Cart.findOne({ user_id });
 
-    // Kiểm tra xem giỏ hàng có tồn tại không
-    if (!cart) {
-      return res.status(404).json({ message: "Giỏ hàng không tồn tại" });
-    }
-
-    // Tính tổng số lượng sản phẩm trong giỏ hàng
-    const totalQuantity = cart.list_products.length;
+    const totalQuantity = cart ? cart.list_products.length : 0;
 
     // Trả về tổng số lượng sản phẩm
     return res.status(200).json({ totalQuantity });

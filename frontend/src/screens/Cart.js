@@ -281,6 +281,7 @@ export default function Cart() {
                   handleDeleteSingle={handleDeleteSingle}
                 />
               )}
+              showsVerticalScrollIndicator={false}
             />
           </View>
 

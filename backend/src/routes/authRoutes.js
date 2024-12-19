@@ -13,5 +13,6 @@ router.post("/api/user/password/:phone", auth.forgotPassword)
 router.put("/api/update_user/:id", auth.updateUser)
 router.put("/api/update_password/:id", auth.updatePassword)
 router.post("/api/verify_password", auth.verifyPassword)
+router.delete("/api/user/:id", auth.deleteUser)
 
 module.exports = router;
