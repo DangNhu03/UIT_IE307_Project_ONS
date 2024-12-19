@@ -10,6 +10,8 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useAuthContext } from "@contexts/AuthContext";
 import { API_URL } from "../../../../url";
 import { useNavigation } from "@react-navigation/native";
+import { getAddressNoUser } from "@hooks/useOrderNoUser";
+import { updateCartWithOrderList } from "@hooks/useOrderNoUser";
 export default function DeliveryAddress({ onAddressFetched }) {
   const { user } = useAuthContext();
   const [deliveryAddress, setDeliveryAddress] = useState(null);
@@ -17,6 +19,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
   const navigation = useNavigation();
+  const fetchDeliveryAddressNoUser = async () => {
+    const addressList = await getAddressNoUser();
+    console.log(addressList);
+    setDeliveryAddress(addressList);
+    if (onAddressFetched) {
+      onAddressFetched(addressList);
+    }
+  };
   const fetchDeliveryAddress = async () => {
     try {
       if (!user_id) {
@@ -59,10 +69,17 @@ export default function DeliveryAddress({ onAddressFetched }) {
     );
   }
   const handleNavigateToAddAddress = () => {
-    navigation.navigate("AddAddress", {
-      user_id: user_id,
-      refreshData: fetchDeliveryAddress,
-    });
+    if (!user_id) {
+      navigation.navigate("AddAddress", {
+        user_id: "no_user",
+        refreshData: fetchDeliveryAddressNoUser,
+      });
+    } else {
+      navigation.navigate("AddAddress", {
+        user_id: user_id,
+        refreshData: fetchDeliveryAddress,
+      });
+    }
   };
   return (
     <View style={styles.container}>

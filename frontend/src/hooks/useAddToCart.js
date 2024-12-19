@@ -196,6 +196,52 @@ export function useAddToCart() {
     }
   };
 
+  const updateCartWithOrderList = async (orderListItems) => {
+    try {
+      let cartItems = JSON.parse(await AsyncStorage.getItem("cartNouser")) || [];
+      
+      orderListItems.forEach((orderItem) => {
+        const { product_id, variant_id, quantity, prod_name, prod_discount, image, price, variant_name } = orderItem;
+  
+        let found = false;
+        cartItems.forEach((item) => {
+          if (item.product_id === product_id && item.variant_id === variant_id) {
+            item.quantity = quantity;
+            found = true;
+          }
+        });
+  
+        if (!found) {
+          const newCartItem = {
+            product_id,
+            variant_id: variant_id || null,
+            prod_name,
+            prod_discount,
+            image,
+            price,
+            variant_name,
+            quantity,
+          };
+          cartItems.push(newCartItem);
+        }
+      });
+  
+      await AsyncStorage.setItem("cartNouser", JSON.stringify(cartItems));
+  
+      const totalQuantityNoLogin = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+      
+      await AsyncStorage.setItem("cartNouserQuantity", JSON.stringify(totalQuantityNoLogin));
+  
+      dispatch({
+        type: "UPDATE_CART_QUANTITY_NOLOGIN",
+        payload: totalQuantityNoLogin,
+      });
+  
+    } catch (error) {
+      console.log("Error updating cart:", error);
+    }
+  };
+  
   return {
     addToCart,
     loadingCart,
@@ -203,6 +249,7 @@ export function useAddToCart() {
     addToCartNoLogin,
     getCartNoLogin,
     updateCartQuantityNoLogin,
+    updateCartWithOrderList,
   };
 }
 

@@ -11,6 +11,8 @@ import { useRoute } from "@react-navigation/native";
 import DeliveryAddress from "@components/payments/DeliveryAddress";
 import ItemProduct from "@components/payments/ItemProduct";
 import NoteSection from "@components/payments/NoteSection";
+import { createOrderNoUser } from "@hooks/useOrderNoUser";
+
 import {
   FlatList,
   Image,
@@ -26,7 +28,7 @@ import { API_URL } from "../../../url";
 
 export default function Payment() {
   const navigation = useNavigation();
-  const route = useRoute(); 
+  const route = useRoute();
   const { listProduct, totalPrice, voucher } = route.params || {};
   console.log("Selected Products in Payment:", listProduct);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(null);
@@ -105,42 +107,89 @@ export default function Payment() {
     // console.log("totalPricePayment", totalPricePayment);
     // console.log("note:", note);
     // console.log("listProduct", listProduct);
-    const orderData = {
-      user_id,
-      order_status: "Mới đặt", 
-      order_total_price: totalPrice,
-      order_final_price: totalPricePayment,
-      order_delivery_id: selectedDeliveryMethod._id,
-      order_payment_id: selectedPaymentMethod._id,
-      order_note: note,
-      shipping_cost: selectedDeliveryMethod.deli_cost,
-      voucher_id: voucher ? voucher._id : null, 
-      loca_id: selectedAddress._id, 
-      list_items: listProduct.map((product) => ({
-        product_id: product.product_id, 
-        variant_id: product.variant_id, 
-        prod_name: product.prod_name, 
-        prod_discount: product.prod_discount, 
-        image: product.image, 
-        variant_name: product.variant_name, 
-        price: product.price, 
-        quantity: product.quantity,
-      })),
-    };
-    console.log(orderData)
-    try {
-      const response = await fetch(`${API_URL}/orders/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log("Order created successfully:", data);
+    if (user_id) {
+      const orderData = {
+        user_id,
+        order_status: "Mới đặt",
+        order_total_price: totalPrice,
+        order_final_price: totalPricePayment,
+        order_delivery_id: selectedDeliveryMethod._id,
+        order_payment_id: selectedPaymentMethod._id,
+        order_note: note,
+        shipping_cost: selectedDeliveryMethod.deli_cost,
+        voucher_id: voucher ? voucher._id : null,
+        loca_id: selectedAddress._id,
+        list_items: listProduct.map((product) => ({
+          product_id: product.product_id,
+          variant_id: product.variant_id,
+          prod_name: product.prod_name,
+          prod_discount: product.prod_discount,
+          image: product.image,
+          variant_name: product.variant_name,
+          price: product.price,
+          quantity: product.quantity,
+        })),
+      };
+      console.log(orderData);
+      try {
+        const response = await fetch(`${API_URL}/orders/add`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Order created successfully:", data);
+          Alert.alert(
+            "Thành công",
+            "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("Main");
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        } else {
+          console.error("Failed to create order:", data.message);
+          Alert.alert("Error", data.message);
+        }
+      } catch (error) {
+        console.error("Error creating order:", error);
+        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+      }
+    } else {
+      const orderData = {
+        order_status: "Mới đặt",
+        order_total_price: totalPrice,
+        order_final_price: totalPricePayment,
+        order_delivery_id: selectedDeliveryMethod._id,
+        order_payment_id: selectedPaymentMethod._id,
+        order_note: note,
+        shipping_cost: selectedDeliveryMethod.deli_cost,
+        voucher_id: voucher ? voucher._id : null,
+        loca_id: selectedAddress._id,
+        list_items: listProduct.map((product) => ({
+          product_id: product.product_id,
+          variant_id: product.variant_id,
+          prod_name: product.prod_name,
+          prod_discount: product.prod_discount,
+          image: product.image,
+          variant_name: product.variant_name,
+          price: product.price,
+          quantity: product.quantity,
+        })),
+      };
+      const isOrderCreated = await createOrderNoUser(orderData);
+
+      if (isOrderCreated) {
         Alert.alert(
           "Thành công",
           "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
@@ -148,22 +197,16 @@ export default function Payment() {
             {
               text: "OK",
               onPress: () => {
-                navigation.navigate("Main"); 
+                navigation.navigate("Main");
               },
             },
           ],
           { cancelable: false }
         );
-
       } else {
-        console.error("Failed to create order:", data.message);
-        Alert.alert("Error", data.message);
+        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
       }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      Alert.alert("Error", "An error occurred while placing the order.");
     }
-    
   };
   return (
     <View style={styles.container}>
@@ -174,7 +217,7 @@ export default function Payment() {
           <DeliveryAddress onAddressFetched={handleDeliveryAddress} />
           <View style={styles.productContainer}>
             {Array.isArray(listProduct) && listProduct.length > 0 ? (
-              listProduct.map((product,index) => (
+              listProduct.map((product, index) => (
                 <ItemProduct key={index} product={product} />
               ))
             ) : (

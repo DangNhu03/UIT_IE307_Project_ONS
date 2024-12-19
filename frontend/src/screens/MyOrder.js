@@ -13,6 +13,12 @@ import { useAuthContext } from "@contexts/AuthContext";
 import { API_URL } from "../../../url";
 import ListOrders from "@components/ListOrders";
 import { useNavigation } from "@react-navigation/native";
+import {
+  getOrdersByStatusNoUser,
+  UpdateOrderWithStatusNoUser,
+} from "@hooks/useOrderNoUser";
+import { useAddToCart } from "@hooks/useAddToCart";
+
 export default function MyOrder() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -24,6 +30,8 @@ export default function MyOrder() {
   const [loading, setLoading] = useState(false);
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
+  const { updateCartWithOrderList } = useAddToCart();
+
   const orderStatuses = [
     { id: "1", title: "Mới đặt" },
     { id: "2", title: "Đang xử lý" },
@@ -32,23 +40,32 @@ export default function MyOrder() {
   ];
 
   const fetchOrders = async (status) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${API_URL}/orders/status/${user_id}?status=${status}`
-      );
-      const result = await response.json();
+    if (user_id) {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `${API_URL}/orders/status/${user_id}?status=${status}`
+        );
+        const result = await response.json();
 
-      if (result.success) {
-        console.log("data nè", result.data);
-        setOrders(result.data);
+        if (result.success) {
+          console.log("data nè", result.data);
+          setOrders(result.data);
+        } else {
+          setOrders([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi fetch đơn hàng:", error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      const orders = await getOrdersByStatusNoUser(status);
+      if (orders.length > 0) {
+        setOrders(orders);
       } else {
         setOrders([]);
       }
-    } catch (error) {
-      console.error("Lỗi khi fetch đơn hàng:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,31 +101,48 @@ export default function MyOrder() {
         {
           text: "OK",
           onPress: async () => {
-            try {
-              setLoading(true);
-              const response = await fetch(`${API_URL}/orders/${order_id}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ order_status: "Đã hủy" }),
-              });
-              const result = await response.json();
+            if (user_id) {
+              try {
+                setLoading(true);
+                const response = await fetch(`${API_URL}/orders/${order_id}`, {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ order_status: "Đã hủy" }),
+                });
+                const result = await response.json();
 
-              if (response.status === 200) {
+                if (response.status === 200) {
+                  fetchOrders(
+                    orderStatuses.find((tab) => tab.id === activeTab)?.title
+                  );
+                } else {
+                  console.error(
+                    "Failed to cancel order:",
+                    result.message || "Unknown error"
+                  );
+                }
+              } catch (error) {
+                console.error("Error canceling order:", error);
+              } finally {
+                setLoading(false);
+              }
+            } else {
+              const order_status = "Đã hủy";
+              const result = await UpdateOrderWithStatusNoUser(
+                order_id,
+                order_status
+              );
+
+              if (result.success) {
+                console.log(result.message);
                 fetchOrders(
                   orderStatuses.find((tab) => tab.id === activeTab)?.title
                 );
               } else {
-                console.error(
-                  "Failed to cancel order:",
-                  result.message || "Unknown error"
-                );
+                console.log("Error:", result.message);
               }
-            } catch (error) {
-              console.error("Error canceling order:", error);
-            } finally {
-              setLoading(false);
             }
           },
         },
@@ -119,34 +153,39 @@ export default function MyOrder() {
 
   const onReBuyOrder = async (order) => {
     try {
-      for (const item of order.list_items) {
-        const { product_id, variant_id, quantity } = item;
+      if (user_id) {
+        for (const item of order.list_items) {
+          const { product_id, variant_id, quantity } = item;
 
-        const response = await fetch(`${API_URL}/carts/add`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            product_id: product_id,
-            user_id: user_id,
-            variant_id: variant_id || null,
-            quantity: quantity,
-          }),
-        });
+          const response = await fetch(`${API_URL}/carts/add`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              product_id: product_id,
+              user_id: user_id,
+              variant_id: variant_id || null,
+              quantity: quantity,
+            }),
+          });
 
-        const result = await response.json();
+          const result = await response.json();
 
-        if (response.status === 200) {
-          console.log("Added to cart successfully:", result);
-        } else {
-          console.error("Failed to add to cart:", result.message);
+          if (response.status === 200) {
+            console.log("Added to cart successfully:", result);
+          } else {
+            console.log("Failed to add to cart:", result.message);
+          }
         }
+      } else {
+        console.log(order.list_items);
+        updateCartWithOrderList(order.list_items);
       }
 
       navigation.navigate("Cart");
     } catch (error) {
-      console.error("Error while rebuying order:", error);
+      console.log("Error while rebuying order:", error);
     }
   };
   const onReviewOrder = (order) => {
