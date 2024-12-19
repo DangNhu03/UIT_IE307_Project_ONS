@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
   FlatList,
+  Image
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import ArrowBack from "@components/ArrowBack";
@@ -45,35 +46,49 @@ export default function Setting() {
   const renderContent = () => {
     switch (activeTab) {
       case "1":
-        return <Address />;
+        return <PersonalInfo />;
       case "2":
-        return <ChangePassword />;
+        return <Address />;
       case "3":
         return <LinkAccount />;
       case "4":
-        return <PersonalInfo />;
+        return <ChangePassword />;
     }
   };
 
   return (
     <View style={styles.container}>
-      <ArrowBack title="Cài đặt" />
-      <View styles={styles.contentContainer}>
-        <View style={styles.topContainer}>
-          {settings.map((item) => (
-            <View key={item.id} style={styles.itemWrapper}>
-              <ItemCircle
-                name={item.name}
-                iconName={item.iconName}
-                isActive={item.id === activeTab}
-                onPress={() => handlePress(item.id)}
-              />
-            </View>
-          ))}
-        </View>
-        <View style={styles.bottomContainer}>{renderContent()}</View>
+      <ArrowBack title='Cài đặt' />
+      <View
+        style={[
+          styles.inforUser,
+          user &&
+          Array.isArray(user) &&
+          user.length > 0 && { justifyContent: "flex-start" },
+        ]}
+      >
+        <Image
+          source={{ uri: user[0]?.user_avatar }}
+          style={styles.userImage}
+        />
+        <Text style={styles.userName}>{user[0]?.user_name}</Text>
       </View>
+      {/* <View styles={styles.contentContainer}> */}
+      <View style={styles.topContainer}>
+        {settings.map((item) => (
+          <View key={item.id} style={styles.itemWrapper}>
+            <ItemCircle
+              name={item.name}
+              iconName={item.iconName}
+              isActive={item.id === activeTab}
+              onPress={() => handlePress(item.id)}
+            />
+          </View>
+        ))}
+      </View>
+      <View style={styles.bottomContainer}>{renderContent()}</View>
     </View>
+    // </View>
   );
 }
 
@@ -86,19 +101,13 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   contentContainer: {
-    flex: 1,
-    gap: 20,
-    width: "100%",
-    alignItems: "center",
+    // alignItems: "center",
+    // justifyContent:'center',
   },
   topContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
     backgroundColor: "#fff",
-    paddingBottom: 10,
-    marginLeft: 10,
   },
-
   itemWrapper: {
     width: "25%",
     alignItems: "center",
@@ -106,8 +115,26 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     flex: 1,
-    width: "100%",
+    marginTop:20,
+    width:'100%'
+  },
+  inforUser: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    width: "100%",
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    justifyContent: "space-between",
+  },
+  userImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
   },
 });

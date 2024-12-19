@@ -1,4 +1,5 @@
 const User = require("../models/usersModels"); // Model của users
+const Locations = require("../models/locationsModels")
 const Voucher = require("../models/vouchersModels"); // Model của vouchers
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -195,8 +196,6 @@ const getListVouchers = async (req, res) => {
       .json({ message: "Failed to fetch vouchers", error: error.message });
   }
 };
-
-
 
 // Tìm user thông qua số điện thoại
 const findUserByPhone = async (req, res) => {

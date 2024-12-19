@@ -27,7 +27,8 @@ import MyOrder from "@screens/MyOrder.js";
 import MyReview from "@screens/MyReview.js";
 import Support from "@screens/Support.js";
 import Setting from "@screens/Setting.js";
-import HeaderBar from "../components/HeaderBar.js";
+import AddAddress from "@screens/accounts/AddAddress.js";
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -231,6 +232,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Setting"
           component={Setting}
+          options={{ headerShown: false }}
+        />
+                <Stack.Screen
+          name="AddAddress"
+          component={AddAddress}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

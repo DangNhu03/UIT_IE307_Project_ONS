@@ -43,7 +43,7 @@ const Noti = ({ data }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         width: 390,
         // minHeight:101,
         alignItems: 'center',
