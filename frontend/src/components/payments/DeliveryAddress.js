@@ -9,43 +9,40 @@ import {
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useAuthContext } from "@contexts/AuthContext";
 import { API_URL } from "../../../../url";
-
+import { useNavigation } from "@react-navigation/native";
 export default function DeliveryAddress({ onAddressFetched }) {
   const { user } = useAuthContext();
   const [deliveryAddress, setDeliveryAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
-
-  useEffect(() => {
-    const fetchDeliveryAddress = async () => {
-      try {
-        if (!user_id) {
-          setLoading(false);
-          return;
-        }
-        const response = await fetch(
-          `${API_URL}/accounts/locations/${user_id}`
-        );
-        // const response = await fetch(
-        //   `${API_URL}/accounts/locations/67613fb9494ae56e693702bf`
-        // );
-        const data = await response.json();
-        console.log("Fetched data cua delivery address: ", data);
-
-        if (data.length > 0) {
-          setDeliveryAddress(data[0]);
-          if (onAddressFetched) {
-            onAddressFetched(data[0]);
-          }
-        }
+  const navigation = useNavigation();
+  const fetchDeliveryAddress = async () => {
+    try {
+      if (!user_id) {
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching delivery address:", error);
-        setLoading(false);
+        return;
       }
-    };
+      const response = await fetch(`${API_URL}/accounts/locations/${user_id}`);
+      // const response = await fetch(
+      //   `${API_URL}/accounts/locations/67613fb9494ae56e693702bf`
+      // );
+      const data = await response.json();
+      console.log("Fetched data cua delivery address: ", data);
 
+      if (data.length > 0) {
+        setDeliveryAddress(data[0]);
+        if (onAddressFetched) {
+          onAddressFetched(data[0]);
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching delivery address:", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchDeliveryAddress();
   }, [user_id]);
 
@@ -61,6 +58,12 @@ export default function DeliveryAddress({ onAddressFetched }) {
       </View>
     );
   }
+  const handleNavigateToAddAddress = () => {
+    navigation.navigate("AddAddress", {
+      user_id: user_id,
+      refreshData: fetchDeliveryAddress,
+    });
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -92,7 +95,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
         <>
           <View style={styles.centerContainer}>
             <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleNavigateToAddAddress}>
               <Text style={styles.titleTextCenter}>
                 + Thêm địa chỉ nhận hàng
               </Text>
