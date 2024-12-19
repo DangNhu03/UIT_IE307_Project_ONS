@@ -11,6 +11,7 @@ export default function Button({
   borderColor,
   borderWidth,
   fontSize,
+  activeOpacity,
   icon, // Prop icon có thể là một React element hoặc nguồn ảnh
 }) {
   const hasIcon = !!icon;
@@ -28,7 +29,7 @@ export default function Button({
         },
       ]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={activeOpacity||0.7}
     >
       <View style={styles.content}>
         {/* Icon bên trái nếu có */}

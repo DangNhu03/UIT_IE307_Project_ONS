@@ -7,13 +7,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@screens/Home";
 import Vouchers from "@screens/Vouchers";
 import Categories from "@screens/Categories";
-import Notifications from "@screens/Notifications.js";
+import Notifications from "@screens/Notifications";
 import Account from "@screens/Account";
 import Cart from "@screens/Cart";
 import Payment from "@screens/Payment";
 import Login from "@screens/Login";
 import Register from "@screens/Register";
-import ProductDetail from "@screens/ProductDetail.js";
+import ProductDetail from "@screens/ProductDetail";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +32,7 @@ import TermsAndPolicies from "@screens/accounts/TermsAndPolicies";
 import AboutUs from "@screens/accounts/AboutUs";
 import ContactUs from "@screens/accounts/ContactUs";
 import DeleteAccount from "@screens/accounts/DeleteAccount";
+import AddAddress from "@screens/accounts/AddAddress";
 
 import ChatWithBotScreen from "@screens/Chat.js";
 import ForgotPassword from "@screens/ForgotPassword.js";
@@ -270,6 +271,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Vouchers"
           component={Vouchers}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="AddAddress"
+          component={AddAddress}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

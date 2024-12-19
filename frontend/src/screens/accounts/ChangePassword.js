@@ -259,7 +259,8 @@ export default function ChangePassword() {
             onPress={handleUpdate}
             backgroundColor={isFormChanged ? undefined : "#EBEBEE"}
             textColor={isFormChanged ? undefined : "#3B394A"}
-            disabled={!isFormChanged}
+            // disabled={!isFormChanged}
+            // activeOpacity={!isFormChanged ? 1 : undefined}
           />
         </View>
       </View>
