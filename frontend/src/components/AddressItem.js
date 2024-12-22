@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Import hook navigation
 import Button from "@components/Button";
 
-const AddressItem = ({ data, onSetDefault }) => {
+const AddressItem = ({ data, onSetDefault, onEdit, onDelete  }) => {
 
     return (
         <View style={styles.container}>
@@ -13,7 +13,7 @@ const AddressItem = ({ data, onSetDefault }) => {
                         <Text style={styles.nameText}>{data.loca_per_name}</Text>
                         {data.is_default === true && <Text style={styles.tagText}>Mặc định</Text>}
                     </View>
-                    <TouchableOpacity style={styles.delete}>
+                    <TouchableOpacity style={styles.delete} onPress={() => onDelete(data._id)}>
                         <Text style={styles.deleteText}>Xóa</Text>
                     </TouchableOpacity>
                 </View>
@@ -30,7 +30,7 @@ const AddressItem = ({ data, onSetDefault }) => {
                     activeOpacity={data.is_default===true ? 1 : undefined}
                     onPress={() => onSetDefault(data._id)} // Gọi hàm handleSetDefault khi nhấn
                 />
-                <Button title="Sửa"/>
+                <Button title="Sửa" onPress={() => onEdit(data)}/>
             </View>
         </View>
     );
