@@ -4,6 +4,7 @@ const formatCurrency = (amount) => {
   return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
 };
 const OrderItem = ({ product, typeTitle }) => {
+  console.log(product);
   return (
     <View style={styles.container}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
@@ -23,9 +24,13 @@ const OrderItem = ({ product, typeTitle }) => {
                 </Text>
                 <Text style={styles.textType}>{typeTitle}</Text>
               </View>
-              <View style={styles.productCategory}>
-                <Text style={styles.categoryText}>{product.variant_name}</Text>
-              </View>
+              {product.variant_name && (
+                <View style={styles.productCategory}>
+                  <Text style={styles.categoryText}>
+                    {product.variant_name}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
           <View style={styles.priceQuantityContainer}>

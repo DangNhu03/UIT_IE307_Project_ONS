@@ -20,9 +20,13 @@ const ItemProduct = ({ product }) => {
               >
                 {product.prod_name}
               </Text>
-              <View style={styles.productCategory}>
-                <Text style={styles.categoryText}>{product.variant_name}</Text>
-              </View>
+              {product.variant_name && (
+                <View style={styles.productCategory}>
+                  <Text style={styles.categoryText}>
+                    {product.variant_name}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
           <View style={styles.priceQuantityContainer}>
@@ -32,7 +36,9 @@ const ItemProduct = ({ product }) => {
                   product.price * (1 - product.prod_discount / 100)
                 )}
               </Text>
-              <Text style={styles.priceNotDiscount}>{formatCurrency(product.price)}</Text>
+              <Text style={styles.priceNotDiscount}>
+                {formatCurrency(product.price)}
+              </Text>
             </View>
             {/* Số lượng và các nút điều chỉnh */}
             <Text style={styles.quantityContainer}>x{product.quantity}</Text>

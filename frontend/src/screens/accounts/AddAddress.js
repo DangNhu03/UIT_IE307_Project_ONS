@@ -17,7 +17,7 @@ import Button from "@components/Button";
 import { addAddressNoUser } from "@hooks/useOrderNoUser";
 export default function AddAddress({ navigation, route }) {
   const { user_id } = route.params; // ID của người dùng được truyền qua route
-  const phoneRegex = /^[0-9]{10,11}$/;
+  const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
 
   const [newAddress, setNewAddress] = useState({
     loca_address: "",
