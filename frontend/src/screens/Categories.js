@@ -90,7 +90,12 @@ export default function Categories() {
   const handleSortChange = (option) => {
     setSortOption(option); // Cập nhật cách sắp xếp
   };
-
+  const normalizeString = (str) => {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
   const handleFilterAndSort = (category, sortOption) => {
     let filteredProducts = [...products];
 
@@ -98,7 +103,7 @@ export default function Categories() {
     filteredProducts = filteredProducts.filter((product) => {
       const matchesCategory = category ? product.cate_id._id === category._id : null; // Khớp danh mục (nếu có)
       const matchesSearch = searchQuery
-        ? product.prod_name.toLowerCase().includes(searchQuery.toLowerCase()) // Khớp tìm kiếm (nếu có)
+        ? normalizeString(product.prod_name).includes(normalizeString(searchQuery)) // Khớp tìm kiếm (nếu có)
         : null;
 
       // Lọc theo "hoặc" category hoặc searchQuery hoặc cả 2
@@ -143,7 +148,7 @@ export default function Categories() {
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
       <View style={styles.container}>
-        <HeaderBar onSearch={handleSearch} />
+      <HeaderBar onSearch={handleSearch} />
         <View>
           {!loading && categories.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>

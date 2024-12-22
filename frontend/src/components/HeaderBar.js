@@ -19,9 +19,9 @@ import { API_URL } from "../../../url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const badgeCount = 3;
-const HeaderBar = ({ onSearch }) => {
+const HeaderBar = ({ value, onSearch }) => {
   const { user, dispatch, totalQuantity, totalQuantityNoLogin } =
-    useAuthContext();
+  useAuthContext();
   const route = useRoute();
   const [searchQuery, setSearchQuery] = useState(
     route.params?.searchQuery || ""
@@ -95,7 +95,7 @@ const HeaderBar = ({ onSearch }) => {
         <TextInput
           placeholder="Tìm kiếm sản phẩm..."
           style={styles.searchBarInput}
-          value={searchQuery}
+          value={searchQuery||value}
           onChangeText={(text) => setSearchQuery(text)}
           onSubmitEditing={handleSearch} // Tìm kiếm khi nhấn Enter
         />
