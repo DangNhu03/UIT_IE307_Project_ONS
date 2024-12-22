@@ -157,7 +157,7 @@ export default function Categories() {
                   onPress={() => handleSelectCategory(cate)}
                 >
                   <CategoriesLarge
-                    text={cate.cate_name}
+                    data={cate}
                     color={selectCategory?.cate_name === cate.cate_name ? '#E5A5FF' : '#C5C0F2'}
                   />
                 </TouchableOpacity>

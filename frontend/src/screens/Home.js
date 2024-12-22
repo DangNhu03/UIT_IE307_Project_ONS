@@ -96,7 +96,7 @@ export default function Home() {
             {categories.map((category) => (
               <View key={category._id} style={styles.gridItem}>
                 <Text style={{ margin: 0, padding: 0 }}>
-                  <CategoriesMini text={category.cate_name} onClickCate={() => handleClickCate(category)} />
+                  <CategoriesMini data={category} onClickCate={() => handleClickCate(category)} />
                 </Text>
               </View>
             ))}

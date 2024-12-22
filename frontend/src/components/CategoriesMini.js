@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Polygon } from 'react-native-svg';
 
-export default function CategoriesMini({ text, onClickCate}) {
+export default function CategoriesMini({ data, onClickCate }) {
     return (
         <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={onClickCate}>
             <View style={styles.hexagon}>
-                <Svg height="45" width="45" viewBox="0 0 100 100">
+                {/* <Svg height="45" width="45" viewBox="0 0 100 100">
                     <Defs>
                         <LinearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
                             <Stop offset="0%" stopColor="#FFF8DB" stopOpacity="1" />
@@ -18,10 +18,15 @@ export default function CategoriesMini({ text, onClickCate}) {
                         points="50,0 93,25 93,75 50,100 7,75 7,25"
                         fill="url(#grad)"
                     />
-                </Svg>
+                </Svg> */}
+                <Image source={{
+                    uri:
+                        data.cate_img,
+                }}
+                    style={styles.cateImage} />
             </View>
             <View style={styles.textItem}>
-                <Text style={styles.text}>{text}</Text>
+                <Text style={styles.text}>{data.cate_name}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -55,5 +60,12 @@ const styles = StyleSheet.create({
         fontSize: 9,
         lineHeight: 21,
         fontWeight: 500
+    },
+    cateImage:{
+        width:45,
+        height:45,
+        borderRadius:8,
+        borderWidth:1,
+        borderColor:'#E5A5FF'
     }
 });
