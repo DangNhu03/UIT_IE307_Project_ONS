@@ -95,130 +95,64 @@ export default function Payment() {
   const createOrder = async () => {
     const user_id =
       user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
-    const orderData = {
-      user_id,
-      order_status: "Mới đặt",
-      order_total_price: totalPrice,
-      order_final_price: totalPricePayment,
-      order_delivery_id: selectedDeliveryMethod._id,
-      order_payment_id: selectedPaymentMethod._id,
-      order_note: note,
-      shipping_cost: selectedDeliveryMethod.deli_cost,
-      voucher_id: voucher ? voucher._id : null,
-      loca_id: selectedAddress._id,
-      list_items: listProduct.map((product) => ({
-        product_id: product.product_id,
-        variant_id: product.variant_id,
-        prod_name: product.prod_name,
-        prod_discount: product.prod_discount,
-        image: product.image,
-        variant_name: product.variant_name,
-        price: product.price,
-        quantity: product.quantity,
-      })),
-    };
-    console.log(orderData);
-
-    try {
-      const response = await fetch(`${API_URL}/orders/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Order created successfully:", data);
-        Alert.alert(
-          "Thành công",
-          "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.navigate("Main");
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else {
-        console.error("Failed to create order:", data.message);
-        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
-      }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
-    }
-  };
-  useEffect(() => {
-    const handleDeepLink = ({ url }) => {
-      console.log("Redirected to:", url);
-
-      if (url) {
-        console.log("url:", url);
-        // Add your navigation logic here
-        const parsed = Linking.parse(url);
-        const resultCode = String(parsed.queryParams?.resultCode);
-        // Check if resultCode=0
-        if (resultCode === "0") {
-          createOrder();
-        }else if (resultCode !== "1006") {
-          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
-        }
-      }
-    }
-    // Listen for incoming links
-    const subscription = Linking.addEventListener("url", handleDeepLink);
-
-    return () => {
-      // Clean up listener
-      subscription.remove();
-    };
-  }, []);
-  const handlePlaceOrder = async () => {
-    if (!validateOrderDetails()) return;
-    const user_id =
-      user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
-    // console.log("All information is selected, proceed to place the order.");
-    // console.log("user_id", user_id);
-    // console.log("Received delivery address:", selectedAddress);
-    // console.log("Selected delivery method: ", selectedDeliveryMethod);
-    // console.log("Selected payment method: ", selectedPaymentMethod);
-    // console.log("voucher", voucher);
-    // console.log("totalPrice", totalPrice);
-    // console.log("totalPricePayment", totalPricePayment);
-    // console.log("note:", note);
-    // console.log("listProduct", listProduct);
     if (user_id) {
-      if (selectedPaymentMethod.pay_name === "Thanh toán trực tuyến") {
-        const momoResponse = await fetch(`${API_URL}/orders/payment`, {
+      const orderData = {
+        user_id,
+        order_status: "Mới đặt",
+        order_total_price: totalPrice,
+        order_final_price: totalPricePayment,
+        order_delivery_id: selectedDeliveryMethod._id,
+        order_payment_id: selectedPaymentMethod._id,
+        order_note: note,
+        shipping_cost: selectedDeliveryMethod.deli_cost,
+        voucher_id: voucher ? voucher._id : null,
+        loca_id: selectedAddress._id,
+        list_items: listProduct.map((product) => ({
+          product_id: product.product_id,
+          variant_id: product.variant_id,
+          prod_name: product.prod_name,
+          prod_discount: product.prod_discount,
+          image: product.image,
+          variant_name: product.variant_name,
+          price: product.price,
+          quantity: product.quantity,
+        })),
+      };
+      console.log(orderData);
+
+      try {
+        const response = await fetch(`${API_URL}/orders/add`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            amount: totalPricePayment,
-          }),
+          body: JSON.stringify(orderData),
         });
 
-        const momoData = await momoResponse.json();
-        const orderId = momoData.orderId;
-        console.log("Order ID:", orderId);
+        const data = await response.json();
 
-        if (momoData.resultCode === 0) {
-          console.log("MoMo shortLink:", momoData.shortLink);
-          Linking.openURL(momoData.shortLink).catch((err) =>
-            console.error("Failed to open MoMo payment URL", err)
+        if (response.ok) {
+          console.log("Order created successfully:", data);
+          Alert.alert(
+            "Thành công",
+            "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("Main");
+                },
+              },
+            ],
+            { cancelable: false }
           );
         } else {
-          console.log("Error creating MoMo payment.");
+          console.error("Failed to create order:", data.message);
+          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
         }
-      } else {
-        createOrder();
+      } catch (error) {
+        console.error("Error creating order:", error);
+        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
       }
     } else {
       const orderData = {
@@ -261,6 +195,70 @@ export default function Payment() {
       } else {
         Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
       }
+    }
+  };
+  useEffect(() => {
+    const handleDeepLink = ({ url }) => {
+      console.log("Redirected to:", url);
+
+      if (url) {
+        console.log("url:", url);
+        // Add your navigation logic here
+        const parsed = Linking.parse(url);
+        const resultCode = String(parsed.queryParams?.resultCode);
+        // Check if resultCode=0
+        if (resultCode === "0") {
+          createOrder();
+        } else if (resultCode !== "1006") {
+          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+        }
+      }
+    };
+    // Listen for incoming links
+    const subscription = Linking.addEventListener("url", handleDeepLink);
+
+    return () => {
+      // Clean up listener
+      subscription.remove();
+    };
+  }, []);
+  const handlePlaceOrder = async () => {
+    if (!validateOrderDetails()) return;
+    // console.log("All information is selected, proceed to place the order.");
+    // console.log("user_id", user_id);
+    // console.log("Received delivery address:", selectedAddress);
+    // console.log("Selected delivery method: ", selectedDeliveryMethod);
+    // console.log("Selected payment method: ", selectedPaymentMethod);
+    // console.log("voucher", voucher);
+    // console.log("totalPrice", totalPrice);
+    // console.log("totalPricePayment", totalPricePayment);
+    // console.log("note:", note);
+    // console.log("listProduct", listProduct);
+    if (selectedPaymentMethod.pay_name === "Thanh toán trực tuyến") {
+      const momoResponse = await fetch(`${API_URL}/orders/payment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: totalPricePayment,
+        }),
+      });
+
+      const momoData = await momoResponse.json();
+      const orderId = momoData.orderId;
+      console.log("Order ID:", orderId);
+
+      if (momoData.resultCode === 0) {
+        console.log("MoMo shortLink:", momoData.shortLink);
+        Linking.openURL(momoData.shortLink).catch((err) =>
+          console.error("Failed to open MoMo payment URL", err)
+        );
+      } else {
+        console.log("Error creating MoMo payment.");
+      }
+    } else {
+      createOrder();
     }
   };
   return (

@@ -40,35 +40,6 @@ export default function MyOrder() {
     { id: "4", title: "Đã hủy" },
   ];
 
-  // const fetchOrders = async (status) => {
-  //   if (user_id) {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch(
-  //         `${API_URL}/orders/status/${user_id}?status=${status}`
-  //       );
-  //       const result = await response.json();
-
-  //       if (result.success) {
-  //         console.log("data nè", result.data);
-  //         setOrders(result.data);
-  //       } else {
-  //         setOrders([]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Lỗi khi fetch đơn hàng:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   } else {
-  //     const orders = await getOrdersByStatusNoUser(status);
-  //     if (orders.length > 0) {
-  //       setOrders(orders);
-  //     } else {
-  //       setOrders([]);
-  //     }
-  //   }
-  // };
 
   const fetchOrders = async (status) => {
     if (user_id) {
@@ -95,8 +66,9 @@ export default function MyOrder() {
       setLoadingOrder(true);
       setOrders([]); // Xóa danh sách đơn hàng cũ
       const orders = await getOrdersByStatusNoUser(status);
+      // console.log("orders", orders);
       if (orders.length > 0) {
-        setLoadingOrder(orders);
+        setOrders(orders);
       } else {
         setLoadingOrder([]);
       }
