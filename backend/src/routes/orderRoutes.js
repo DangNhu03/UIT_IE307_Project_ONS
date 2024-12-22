@@ -11,6 +11,9 @@ router.post('/add', order.addOrder);
 router.get('/', order.getAllOders);
 router.get('/status/:user_id', order.getOrdersWithStatus);
 router.put('/:order_id', order.updateOrderWithStatus);
+router.post('/payment', order.onlinepPayment);
+router.post('/check-status-transaction', order.checkTransaction);
+router.post('/callback', order.checkPayment);
 
 
 

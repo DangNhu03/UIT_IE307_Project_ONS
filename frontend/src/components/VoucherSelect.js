@@ -1,11 +1,35 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useAuthContext } from "@contexts/AuthContext";
 const VoucherSelect = ({ totalPrice, listProduct, voucherDisplayPayment }) => {
+  const { user } = useAuthContext();
   const navigation = useNavigation();
+  const user_id =
+    user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
   const handleNavigate = () => {
-    navigation.navigate("Vouchers", { totalPrice, listProduct });
+    if (user_id) {
+      navigation.navigate("Vouchers", { totalPrice, listProduct });
+    } else {
+      Alert.alert(
+        "Đăng nhập",
+        "Bạn cần đăng nhập để thực hiện chức năng này!",
+        [
+          {
+            text: "Hủy",
+            style: "cancel",
+          },
+          {
+            text: "Đồng ý",
+            onPress: () => {
+              navigation.navigate("Login");
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    }
   };
   const formatNumber = (number) => {
     if (number >= 1000 && number % 1000 === 0) {
@@ -71,12 +95,12 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: "#241E92",
   },
-  havedVoucher:{
-    borderColor:"#E5A5FF",
-    borderWidth:1,
-    paddingHorizontal:5,
-    borderRadius:4,
-  }
+  havedVoucher: {
+    borderColor: "#E5A5FF",
+    borderWidth: 1,
+    paddingHorizontal: 5,
+    borderRadius: 4,
+  },
 });
 
 export default VoucherSelect;
