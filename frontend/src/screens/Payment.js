@@ -12,7 +12,6 @@ import DeliveryAddress from "@components/payments/DeliveryAddress";
 import ItemProduct from "@components/payments/ItemProduct";
 import NoteSection from "@components/payments/NoteSection";
 import { createOrderNoUser } from "@hooks/useOrderNoUser";
-import { Linking } from "react-native";
 import {
   FlatList,
   Image,
@@ -25,6 +24,7 @@ import {
   TextInput,
 } from "react-native";
 import { API_URL } from "../../../url";
+import * as Linking from "expo-linking";
 export default function Payment() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -71,15 +71,6 @@ export default function Payment() {
       return false;
     }
 
-    if (!selectedDeliveryMethod) {
-      Alert.alert(
-        "Thông báo",
-        "Vui lòng chọn phương thức vận chuyển!",
-        [{ text: "OK" }],
-        { cancelable: true }
-      );
-      return false;
-    }
     if (!selectedPaymentMethod) {
       Alert.alert(
         "Thông báo",
@@ -89,9 +80,105 @@ export default function Payment() {
       );
       return false;
     }
+    if (!selectedDeliveryMethod) {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng chọn phương thức vận chuyển!",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
+      return false;
+    }
     return true;
   };
 
+  const createOrder = async () => {
+    const user_id =
+      user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
+    const orderData = {
+      user_id,
+      order_status: "Mới đặt",
+      order_total_price: totalPrice,
+      order_final_price: totalPricePayment,
+      order_delivery_id: selectedDeliveryMethod._id,
+      order_payment_id: selectedPaymentMethod._id,
+      order_note: note,
+      shipping_cost: selectedDeliveryMethod.deli_cost,
+      voucher_id: voucher ? voucher._id : null,
+      loca_id: selectedAddress._id,
+      list_items: listProduct.map((product) => ({
+        product_id: product.product_id,
+        variant_id: product.variant_id,
+        prod_name: product.prod_name,
+        prod_discount: product.prod_discount,
+        image: product.image,
+        variant_name: product.variant_name,
+        price: product.price,
+        quantity: product.quantity,
+      })),
+    };
+    console.log(orderData);
+
+    try {
+      const response = await fetch(`${API_URL}/orders/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Order created successfully:", data);
+        Alert.alert(
+          "Thành công",
+          "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("Main");
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        console.error("Failed to create order:", data.message);
+        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+    }
+  };
+  useEffect(() => {
+    const handleDeepLink = ({ url }) => {
+      console.log("Redirected to:", url);
+
+      if (url) {
+        console.log("url:", url);
+        // Add your navigation logic here
+        const parsed = Linking.parse(url);
+        const resultCode = String(parsed.queryParams?.resultCode);
+        // Check if resultCode=0
+        if (resultCode === "0") {
+          createOrder();
+        }else if (resultCode !== "1006") {
+          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+        }
+      }
+    }
+    // Listen for incoming links
+    const subscription = Linking.addEventListener("url", handleDeepLink);
+
+    return () => {
+      // Clean up listener
+      subscription.remove();
+    };
+  }, []);
   const handlePlaceOrder = async () => {
     if (!validateOrderDetails()) return;
     const user_id =
@@ -108,61 +195,6 @@ export default function Payment() {
     // console.log("listProduct", listProduct);
     if (user_id) {
       if (selectedPaymentMethod.pay_name === "Thanh toán trực tuyến") {
-        const MAX_RETRY = 10;
-        const RETRY_INTERVAL = 5000; // 5 giây
-        let retryCount = 0;
-
-        const checkTransactionStatus = async () => {
-          try {
-            const response = await fetch(
-              `${API_URL}/orders/check-status-transaction`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  orderId: orderId,
-                }),
-              }
-            );
-
-            const transactionData = await response.json();
-            console.log("Transaction Data:", transactionData);
-
-            if (transactionData.resultCode === 0) {
-              console.log("Transaction completed successfully.");
-              return true; // Dừng kiểm tra khi giao dịch thành công
-            } else if (transactionData.resultCode !== 1006) {
-              console.log("Transaction failed.");
-              return true; // Dừng kiểm tra nếu có lỗi
-            }
-          } catch (error) {
-            console.error("Error checking transaction status:", error);
-          }
-
-          return false; // Tiếp tục kiểm tra nếu không có lỗi
-        };
-
-        const startTransactionCheck = async () => {
-          while (retryCount < MAX_RETRY) {
-            retryCount++;
-
-            // Gọi kiểm tra trạng thái giao dịch
-            const isTransactionComplete = await checkTransactionStatus();
-            if (isTransactionComplete) {
-              break; // Dừng kiểm tra khi giao dịch hoàn tất hoặc thất bại
-            }
-
-            // Chờ một khoảng thời gian trước khi thử lại
-            console.log(`Retry ${retryCount}/${MAX_RETRY}...`);
-            await new Promise((resolve) => setTimeout(resolve, RETRY_INTERVAL));
-          }
-
-          if (retryCount >= MAX_RETRY) {
-            console.log("Transaction check failed after max retries.");
-          }
-        };
         const momoResponse = await fetch(`${API_URL}/orders/payment`, {
           method: "POST",
           headers: {
@@ -179,11 +211,6 @@ export default function Payment() {
 
         if (momoData.resultCode === 0) {
           console.log("MoMo shortLink:", momoData.shortLink);
-
-          // Bắt đầu kiểm tra trạng thái giao dịch trước khi mở liên kết MoMo
-          startTransactionCheck();
-
-          // Mở liên kết MoMo cho thanh toán
           Linking.openURL(momoData.shortLink).catch((err) =>
             console.error("Failed to open MoMo payment URL", err)
           );
@@ -191,63 +218,7 @@ export default function Payment() {
           console.log("Error creating MoMo payment.");
         }
       } else {
-        const orderData = {
-          user_id,
-          order_status: "Mới đặt",
-          order_total_price: totalPrice,
-          order_final_price: totalPricePayment,
-          order_delivery_id: selectedDeliveryMethod._id,
-          order_payment_id: selectedPaymentMethod._id,
-          order_note: note,
-          shipping_cost: selectedDeliveryMethod.deli_cost,
-          voucher_id: voucher ? voucher._id : null,
-          loca_id: selectedAddress._id,
-          list_items: listProduct.map((product) => ({
-            product_id: product.product_id,
-            variant_id: product.variant_id,
-            prod_name: product.prod_name,
-            prod_discount: product.prod_discount,
-            image: product.image,
-            variant_name: product.variant_name,
-            price: product.price,
-            quantity: product.quantity,
-          })),
-        };
-        console.log(orderData);
-        try {
-          const response = await fetch(`${API_URL}/orders/add`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(orderData),
-          });
-
-          const data = await response.json();
-
-          if (response.ok) {
-            console.log("Order created successfully:", data);
-            Alert.alert(
-              "Thành công",
-              "Đặt hàng thành công. Bạn có thể tiếp tục mua sắm!",
-              [
-                {
-                  text: "OK",
-                  onPress: () => {
-                    navigation.navigate("Main");
-                  },
-                },
-              ],
-              { cancelable: false }
-            );
-          } else {
-            console.error("Failed to create order:", data.message);
-            Alert.alert("Error", data.message);
-          }
-        } catch (error) {
-          console.error("Error creating order:", error);
-          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
-        }
+        createOrder();
       }
     } else {
       const orderData = {

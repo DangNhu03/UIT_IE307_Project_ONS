@@ -217,8 +217,8 @@ const getOrdersWithStatus = async (req, res) => {
     const orders = await Order.find({
       user_id: user_id,
       order_status: status,
-    });
-
+    }).sort({ created_at: -1 });
+    
     if (orders.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng nào" });
     }
