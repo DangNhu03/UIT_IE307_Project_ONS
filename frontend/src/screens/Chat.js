@@ -1,57 +1,42 @@
 import ArrowBack from "@components/ArrowBack";
 import Button from "@components/Button";
-import { AuthContext } from "@contexts/AuthContext";
-import axios from "axios";
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import { API_URL } from '../../../url';
+import * as GoogleGenerativeAI from "@google/generative-ai";
+import * as Speech from "expo-speech";
+import { API_KEY } from "../../../url";
+import { storeAssistantPrompt } from "../assets/prompts";
+import axios from 'axios';
+import { API_URL } from "../../../url";
 
 const ChatWithBotScreen = () => {
   const [message, setMessage] = useState(""); // Tin nhắn người dùng nhập
   const [messages, setMessages] = useState([]); // Danh sách tin nhắn trong cuộc trò chuyện
   const [loading, setLoading] = useState(false); // Trạng thái loading
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showStopIcon, setShowStopIcon] = useState(false);
 
-  // Lấy thông tin người dùng từ AuthContext (giả sử có AuthContext)
-  const { user } = useContext(AuthContext);
-  const user_id = user && user[0]?._id;
-
-  // Tham chiếu tới FlatList để cuộn đến tin nhắn cuối
-  const flatListRef = useRef(null);
-
+  const flatListRef = useRef(null); // Tham chiếu FlatList để cuộn đến cuối
   useEffect(() => {
-    if (user_id) {
-      // Lấy lịch sử tin nhắn khi người dùng đăng nhập
-      const fetchMessages = async () => {
-        try {
-          const response = await axios.get(`${API_URL}/api/chat/messages/${user_id}`);
+    // Lời chào ban đầu
+    const startChat = async () => {
+      try {
+        const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-          // Trích xuất chỉ nội dung tin nhắn
-          const messageData = response.data.map((msg) => ({
-            content: msg.message, // Lấy nội dung tin nhắn
-            sender: msg.sender,   // Lưu thông tin người gửi
-          }));
+        const prompt = "Chào mừng bạn đến với cửa hàng của chúng tôi!";
+        const result = await model.generateContent(prompt);
+        const botResponse = result.response.text();
 
-          // Cập nhật danh sách tin nhắn vào state
-          setMessages(messageData);
-        } catch (error) {
-          console.log("Lỗi ở Chat", error);
-        }
-      };
+        setMessages([{ content: botResponse, sender: "bot" }]);
+      } catch (error) {
+        console.error("Lỗi khởi tạo chat:", error);
+      }
+    };
 
-      fetchMessages();
-    }
-  }, [user]);
+    startChat();
+  }, []);
 
-  useEffect(() => {
-    // Cuộn đến tin nhắn cuối khi danh sách tin nhắn thay đổi (bao gồm lần đầu tiên)
-    if (messages.length > 0 && flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current.scrollToEnd({ animated: true });
-      }, 100); // Đảm bảo cuộn sau khi FlatList đã render lần đầu
-    }
-  }, [messages]); // Mỗi khi messages thay đổi, cuộn đến cuối
-
-  // Gửi tin nhắn đến bot
   const sendMessageToBot = async () => {
     try {
       if (!message.trim()) {
@@ -59,38 +44,29 @@ const ChatWithBotScreen = () => {
         return;
       }
 
-      setMessages([...messages, { content: message, sender: "user" }]); // Thêm tin nhắn của người dùng vào danh sách
-      console.log('message: ', message)
-
+      setMessages([...messages, { content: message, sender: "user" }]); // Thêm tin nhắn người dùng
       setMessage(""); // Reset input
-
       setLoading(true);
 
-      // Gửi yêu cầu POST tới API, bao gồm sender và các thông tin khác
-      const response = await axios.post(`${API_URL}/api/chat/message`, {
-        message,
-        userId: user_id, // Gửi userId của người dùng
-        sender: "user", // Xác định người gửi là user
-      });
+      const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-      // Lấy phản hồi từ bot
-      const botResponse = response.data.botMessage?.message;
-      console.log('botResponse ne: ', botResponse)
+      const result = await model.generateContent(`${storeAssistantPrompt}\nNgười dùng hỏi: ${message}`); // Gửi prompt
+      const botResponse = result.response.text(); // Lấy phản hồi từ bot
 
-      // Thêm phản hồi từ bot vào danh sách tin nhắn
       setMessages((prevMessages) => [
         ...prevMessages,
         { content: botResponse, sender: "bot" },
       ]);
     } catch (error) {
-      console.error(error);
+      console.log("Lỗi gửi tin nhắn:", error);
       Alert.alert("Lỗi", "Không thể gửi tin nhắn tới bot.");
     } finally {
       setLoading(false);
     }
+    
   };
 
-  // Hiển thị tin nhắn
   const renderItem = ({ item }) => (
     <View
       style={[
@@ -98,14 +74,19 @@ const ChatWithBotScreen = () => {
         item.sender === "user" ? styles.userMessage : styles.botMessage,
       ]}
     >
-      <Text style={item.sender === "user" ? styles.userMessageText : styles.botMessageText}>{item.content}</Text>
+      <Text
+        style={
+          item.sender === "user" ? styles.userMessageText : styles.botMessageText
+        }
+      >
+        {item.content}
+      </Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
       <ArrowBack title="Trò chuyện" titleColor="#E5A5FF" />
-      {/* <Text style={styles.title}>Trò chuyện với Bot</Text> */}
       <FlatList
         ref={flatListRef} // Tham chiếu tới FlatList
         data={messages}
@@ -120,14 +101,18 @@ const ChatWithBotScreen = () => {
           }, 100);
         }}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Nhập tin nhắn..."
         value={message}
         onChangeText={setMessage}
       />
-      <Button title="Gửi" backgroundColor="#E5A5FF" onPress={sendMessageToBot} disabled={loading} />
+      <Button
+        title="Gửi"
+        backgroundColor="#E5A5FF"
+        onPress={sendMessageToBot}
+        disabled={loading}
+      />
     </View>
   );
 };
@@ -138,14 +123,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 40,
     backgroundColor: "#FFF",
-    // gap:20
   },
-  // title: {
-  //   fontSize: 20,
-  //   fontWeight: "bold",
-  //   marginBottom: 20,
-  //   textAlign: "center",
-  // },
   messagesList: {
     flexGrow: 1,
     marginBottom: 20,

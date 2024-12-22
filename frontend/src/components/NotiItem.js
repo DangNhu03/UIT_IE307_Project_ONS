@@ -43,7 +43,7 @@ const Noti = ({ data }) => {
 
 const styles = StyleSheet.create({
     container: {
-        // flexDirection: 'row',
+        flexDirection: 'row',
         width: 390,
         // minHeight:101,
         alignItems: 'center',
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     img: {
         width: 100,
         height: '100%',
-        resizeMode: 'cover',  
+        resizeMode: 'cover',
+        // resizeMode:'contain',  
         borderTopLeftRadius: 8,
         borderBottomLeftRadius: 8,
     },
@@ -62,13 +63,13 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         padding: 10,
         justifyContent: 'space-between',
-        // flexShrink: 1,  // Ensure content shrinks to avoid overflow
-        flex: 1,  // This allows contentContainer to take available space
+        flexShrink: 1,  // Ensure content shrinks to avoid overflow
+        // flex: 1,  // This allows contentContainer to take available space
     },
     content1: {
         flexDirection: 'column',
         justifyContent: 'center',
-        // alignSelf: 'stretch',
+        alignSelf: 'stretch',
         height: 52
     },
     title: {

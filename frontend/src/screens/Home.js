@@ -30,7 +30,6 @@ export default function Home() {
   const navigation = useNavigation();
   // Hàm handleSearch để gửi query lên trang Categories
   const handleSearch = (query) => {
-    // Chuyển đến trang Categories và truyền searchQuery qua params
     navigation.navigate('Categories', { searchQuery: query });
   };
 
