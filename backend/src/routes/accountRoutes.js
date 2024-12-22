@@ -6,5 +6,6 @@ router.post('/locations/:user_id',account.postLocation)
 router.get('/locations', account.getAllLocation)
 router.get('/locations/:user_id', account.getUserLocation)
 router.put('/locations/set-default/:user_id', account.setAddressDefault)
+router.get('/locations/default/:user_id', account.getUserDefaultLocation)
 
 module.exports = router;

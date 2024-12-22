@@ -128,10 +128,33 @@ const setAddressDefault = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// GET: Lấy địa điểm mặc định của người dùng cụ thể
+const getUserDefaultLocation = async (req, res) => {
+  try {
+    const { user_id } = req.params;  
+
+
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const defaultLocation = await Location.findOne({ user_id: user_id, is_default: true });
+
+    if (!defaultLocation) {
+      return res.status(404).json({ message: 'Default location not found' });
+    }
+
+    res.status(200).json(defaultLocation);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve default location', error: error.message });
+  }
+};
 
 module.exports={
     postLocation,
     getAllLocation,
     getUserLocation,
-    setAddressDefault
+    setAddressDefault,
+    getUserDefaultLocation,
 }
