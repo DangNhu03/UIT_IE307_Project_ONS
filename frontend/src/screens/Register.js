@@ -20,7 +20,8 @@ export default function Register() {
   const { register, loading, errorExist } = useRegister();
   const navigation = useNavigation();
   const validateInputs = () => {
-    const phoneRegex = /^[0-9]{10,11}$/;
+    const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -43,7 +44,7 @@ export default function Register() {
       setErrors({ phone: "Số điện thoại không được để trống." });
       return false;
     } else if (!phoneRegex.test(phone)) {
-      setErrors({ phone: "Số điện thoại phải có từ 10 đến 11 số." });
+      setErrors({ phone: "Số điện thoại không hợp lệ." });
       return false;
     }
 

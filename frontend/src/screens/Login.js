@@ -16,7 +16,7 @@ export default function Login() {
   const { logIn, loading } = useLogin();
   const navigation = useNavigation();
   const validateInputs = () => {
-    const phoneRegex = /^[0-9]{10,11}$/;
+    const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
 
     if (!phone && !password) {
       setErrors({
@@ -30,10 +30,9 @@ export default function Login() {
       setErrors({ phone: "Số điện thoại không được để trống." });
       return false;
     } else if (!phoneRegex.test(phone)) {
-      setErrors({ phone: "Số điện thoại phải có từ 10 đến 11 số." });
+      setErrors({ phone: "Số điện thoại không hợp lệ." });
       return false;
     }
-
     if (!password) {
       setErrors({ password: "Mật khẩu không được để trống." });
       return false;

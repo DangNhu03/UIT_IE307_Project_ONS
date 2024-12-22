@@ -58,7 +58,7 @@ export const AuthContextProvider = ({ children }) => {
       console.log("Thông tin người dùng từ API:", data);
       return [{ ...user[0], ...data }, user[1]];
     } catch (error) {
-      console.error("Lỗi khi cập nhật thông tin người dùng từ API:", error);
+      console.log("Lỗi khi cập nhật thông tin người dùng từ API:", error);
       return user; // Giữ nguyên thông tin nếu có lỗi
     }
   };
