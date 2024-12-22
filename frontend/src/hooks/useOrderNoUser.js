@@ -108,11 +108,12 @@ export const createOrderNoUser = async (orderData) => {
 export const getOrdersByStatusNoUser = async (status) => {
   try {
     let orders = JSON.parse(await AsyncStorage.getItem("ordersNoUser")) || [];
-
+    // console.log("Đơn hàng từ AsyncStorage:", orders);
+    // console.log("Trạng thái đơn hàng:", status);
     const filteredOrders = orders.filter(
       (order) => order.order_status === status
     );
-
+    // console.log("Đơn hàng đã lọc:", filteredOrders);
     return filteredOrders;
   } catch (error) {
     console.error("Có lỗi xảy ra khi lấy đơn hàng theo trạng thái:", error);

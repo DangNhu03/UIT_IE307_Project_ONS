@@ -28,6 +28,7 @@ export default function MyOrder() {
   const { user } = useAuthContext();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
   const { updateCartWithOrderList } = useAddToCart();
@@ -39,10 +40,12 @@ export default function MyOrder() {
     { id: "4", title: "Đã hủy" },
   ];
 
+
   const fetchOrders = async (status) => {
     if (user_id) {
       try {
-        setLoading(true);
+        setLoadingOrder(true); // Bắt đầu tải dữ liệu
+        setOrders([]); // Xóa danh sách đơn hàng cũ
         const response = await fetch(
           `${API_URL}/orders/status/${user_id}?status=${status}`
         );
@@ -57,15 +60,19 @@ export default function MyOrder() {
       } catch (error) {
         console.error("Lỗi khi fetch đơn hàng:", error);
       } finally {
-        setLoading(false);
+        setLoadingOrder(false); // Hoàn thành tải dữ liệu
       }
     } else {
+      setLoadingOrder(true);
+      setOrders([]); // Xóa danh sách đơn hàng cũ
       const orders = await getOrdersByStatusNoUser(status);
+      // console.log("orders", orders);
       if (orders.length > 0) {
         setOrders(orders);
       } else {
-        setOrders([]);
+        setLoadingOrder([]);
       }
+      setLoadingOrder(false);
     }
   };
 
@@ -231,15 +238,19 @@ export default function MyOrder() {
 
         <View style={styles.bottomContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <ListOrders
-              orders={orders}
-              activeTab={
-                orderStatuses.find((status) => status.id === activeTab)?.title
-              }
-              onCancelOrder={cancelOrder}
-              onReBuyOrder={onReBuyOrder}
-              onReviewOrder={onReviewOrder}
-            />
+            {loading ? (
+              <Text style={styles.loadingText}>Đang tải...</Text>
+            ) : (
+              <ListOrders
+                orders={orders}
+                activeTab={
+                  orderStatuses.find((status) => status.id === activeTab)?.title
+                }
+                onCancelOrder={cancelOrder}
+                onReBuyOrder={onReBuyOrder}
+                onReviewOrder={onReviewOrder}
+              />
+            )}
           </ScrollView>
         </View>
       </View>

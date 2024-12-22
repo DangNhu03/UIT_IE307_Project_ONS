@@ -25,7 +25,8 @@ let OrdersSchema = new mongoose.Schema({
             price: { type: Number, required: true }, 
             quantity: { type: Number, required: true }, 
         }
-    ]
+    ],
+    created_at: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model("orders", OrdersSchema);

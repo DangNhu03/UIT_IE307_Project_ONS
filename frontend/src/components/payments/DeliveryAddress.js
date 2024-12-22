@@ -33,17 +33,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
         setLoading(false);
         return;
       }
-      const response = await fetch(`${API_URL}/accounts/locations/${user_id}`);
-      // const response = await fetch(
-      //   `${API_URL}/accounts/locations/67613fb9494ae56e693702bf`
-      // );
+      const response = await fetch(`${API_URL}/accounts/locations/default/${user_id}`);
       const data = await response.json();
       console.log("Fetched data cua delivery address: ", data);
 
-      if (data.length > 0) {
-        setDeliveryAddress(data[0]);
+      if (data) {
+        setDeliveryAddress(data);
         if (onAddressFetched) {
-          onAddressFetched(data[0]);
+          onAddressFetched(data);
         }
       }
       setLoading(false);
@@ -81,6 +78,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
       });
     }
   };
+  console.log("deliveryAddress", deliveryAddress);
   return (
     <View style={styles.container}>
       <View>

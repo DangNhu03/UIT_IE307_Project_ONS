@@ -1,115 +1,3 @@
-// import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-// import React from "react";
-// import IconAndTitle from "@components/IconAndTitle";
-// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
-// export default function FAQ() {
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.itemContainer}>
-//         <IconAndTitle
-//           icon={
-//             <MaterialCommunityIcons
-//               name="chat-question-outline"
-//               size={24}
-//               color="#FF71CD"
-//             />
-//           }
-//           title="Câu hỏi thường gặp"
-//         />
-//         <View>
-//           <TouchableOpacity>
-//             <Text style={styles.normalText}>
-//               {"["}
-//               <Text style={styles.normalBoldText}>Đơn hàng</Text>
-//               {"] "}
-//               Tôi phải làm gì khi muốn thay đổi địa chỉ giao hàng?
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//         <View style={styles.line}></View>
-//         <View>
-//           <TouchableOpacity>
-//             <Text style={styles.normalText}>
-//               {"["}
-//               <Text style={styles.normalBoldText}>Bảo mật tài khoản</Text>
-//               {"] "}
-//               Làm gì khi muốn thay đổi mật khẩu của tôi?
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//         <View style={styles.line}></View>
-//         <View>
-//           <TouchableOpacity>
-//             <Text style={styles.normalText}>
-//               {"["}
-//               <Text style={styles.normalBoldText}>Thông tin vận chuyển</Text>
-//               {"] "}
-//               Làm sao để tra cứu thông tin vận chuyển?
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//         <View style={styles.line}></View>
-//         <View>
-//           <TouchableOpacity>
-//             <Text style={styles.normalText}>
-//               {"["}
-//               <Text style={styles.normalBoldText}>Tài khoản</Text>
-//               {"] "}
-//               Tôi không thể đăng ký/đăng nhập tài khoản do số điện thoại đã tồn
-//               tại?
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//         <View style={styles.line}></View>
-//         <View>
-//           <TouchableOpacity>
-//             <Text style={styles.normalText}>
-//               {"["}
-//               <Text style={styles.normalBoldText}>Thành viên</Text>
-//               {"] "}
-//               Tại sao tôi không áp dụng được các voucher khuyến mãi?
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//     width: "100%",
-//     padding: 10,
-//   },
-//   itemContainer: {
-//     width: "100%",
-//     gap: 20,
-//     flexDirection: "column",
-//     alignItems: "flex-start",
-//   },
-//   normalText: {
-//     fontSize: 16,
-//     fontWeight: "400",
-//     lineHeight: 21,
-//     color: "#3B394A",
-//   },
-//   normalBoldText: {
-//     fontSize: 16,
-//     fontWeight: "500",
-//     lineHeight: 21,
-//     color: "#241E92",
-//     textDecorationLine: "none",
-//   },
-//   line: {
-//     width: "100%",
-//     height: 1,
-//     backgroundColor: "#CFCED6",
-//   },
-// });
-
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import IconAndTitle from "@components/IconAndTitle";
@@ -149,8 +37,8 @@ export default function FAQ() {
           </TouchableOpacity>
           {openQuestion === "order" && (
             <Text style={styles.normalTextAns}>
-              Bạn có thể thay đổi địa chỉ giao hàng thông qua trang quản lý đơn
-              hàng hoặc liên hệ với chúng tôi để hỗ trợ.
+              Bạn có thể hủy đơn và đặt lại đơn hàng mới, hoặc liên hệ với chúng
+              tôi thông qua hotline: 1811 0702 để được hỗ trợ sớm nhất.
             </Text>
           )}
         </View>
@@ -167,8 +55,8 @@ export default function FAQ() {
           </TouchableOpacity>
           {openQuestion === "security" && (
             <Text style={styles.normalTextAns}>
-              Để thay đổi mật khẩu, bạn có thể vào phần cài đặt tài khoản và làm
-              theo hướng dẫn.
+              Để thay đổi mật khẩu, bạn có thể vào phần đổi mật khẩu tại mục cài
+              đặt của trang tài khoản và làm theo hướng dẫn.
             </Text>
           )}
         </View>
@@ -180,13 +68,14 @@ export default function FAQ() {
             <Text style={styles.normalText}>
               {"["}
               <Text style={styles.normalBoldText}>Thông tin vận chuyển</Text>
-              {"] "} Làm sao để tra cứu thông tin vận chuyển?
+              {"] "} Có mấy phương thức vận chuyển vận chuyển?
             </Text>
           </TouchableOpacity>
           {openQuestion === "shipping" && (
             <Text style={styles.normalTextAns}>
-              Bạn có thể tra cứu thông tin vận chuyển trong phần theo dõi đơn
-              hàng.
+              Chúng tôi cung cấp hai phương thức vận chuyển là giao hàng Giao
+              hàng nhanh trong 24h với phí vận chuyển là 30.000đ và giao hàng
+              trong 72h với phí vận chuyển là 10.000đ.
             </Text>
           )}
         </View>
@@ -204,26 +93,30 @@ export default function FAQ() {
           </TouchableOpacity>
           {openQuestion === "account" && (
             <Text style={styles.normalTextAns}>
-              Vui lòng thử lại với một số điện thoại khác hoặc liên hệ với chúng
-              tôi để được hỗ trợ.
+              Việc bạn không thể đăng ký/đăng nhập tài khoản do số điện thoại đã
+              tồn tại có thể do bạn đã đăng ký tài khoản trước đó. Bạn có thể
+              thử đăng nhập lại và dùng phuong thức quên mật khẩu hoặc liên hệ
+              với chúng tôi thông qua hotline: 1811 0702 để được hỗ trợ.
             </Text>
           )}
         </View>
         <View style={styles.line}></View>
 
-        {/* Câu hỏi Thành viên */}
+        {/* Câu hỏi Khuyến mãi */}
         <View>
           <TouchableOpacity onPress={() => toggleAnswer("member")}>
             <Text style={styles.normalText}>
               {"["}
-              <Text style={styles.normalBoldText}>Thành viên</Text>
+              <Text style={styles.normalBoldText}>Khuyến mãi</Text>
               {"] "} Tại sao tôi không áp dụng được các voucher khuyến mãi?
             </Text>
           </TouchableOpacity>
           {openQuestion === "member" && (
             <Text style={styles.normalTextAns}>
-              Bạn có thể kiểm tra lại điều kiện áp dụng voucher hoặc thử các mã
-              khác.
+              Vouchers khuyến mãi chỉ dành cho khách hàng có tài khoản, bạn cần
+              đăng ký/đăng nhập tài khoản để sử dụng các voucher khuyến mãi. Nếu
+              bạn đã có tài khoản thì do có thể do đơn hàng của bạn không đủ
+              điều kiện áp dụng voucher.
             </Text>
           )}
         </View>

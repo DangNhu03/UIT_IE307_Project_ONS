@@ -23,18 +23,63 @@ export default function Account() {
     user && Array.isArray(user) && user.length > 0 ? user[0].user_name : null;
 
   const settings = [
-    { id: "1", name: "Thông tin cá nhân", screen: "PersonalInfo", iconName: "card-account-details-outline" },
-    { id: "2", name: "Địa chỉ giao hàng", screen: "Address", iconName: "home-outline" },
-    { id: "3", name: "Tài khoản liên kết", screen: "LinkAccount", iconName: "credit-card-plus-outline" },
-    { id: "4", name: "Đổi mật khẩu", screen: "ChangePassword", iconName: "sync-lock" },
+    {
+      id: "1",
+      name: "Thông tin cá nhân",
+      screen: "PersonalInfo",
+      iconName: "card-account-details-outline",
+    },
+    {
+      id: "2",
+      name: "Địa chỉ giao hàng",
+      screen: "Address",
+      iconName: "home-outline",
+    },
+    {
+      id: "3",
+      name: "Tài khoản liên kết",
+      screen: "LinkAccount",
+      iconName: "credit-card-plus-outline",
+    },
+    {
+      id: "4",
+      name: "Đổi mật khẩu",
+      screen: "ChangePassword",
+      iconName: "sync-lock",
+    },
   ];
   const supports = [
-    { id: "1", name: "Các câu hỏi thường gặp", screen: "FAQ" , iconName: "chat-question-outline" },
-    { id: "2", name: "Hướng dẫn mua hàng", screen: "ShoppingGuide", iconName: "production-quantity-limits" },
-    { id: "3", name: "Điều khoản/ Chính sách", screen: "TermsAndPolicies", iconName: "book-open-outline" },
-    { id: "4", name: "Giới thiệu" , screen: "AboutUs", iconName: "apartment" },
-    { id: "5", name: "Liên hệ", screen: "ContactUs", iconName: "email-outline" },
-    { id: "6", name: "Xóa tài khoản", screen: "DeleteAccount", iconName: "no-accounts" },
+    {
+      id: "1",
+      name: "Các câu hỏi thường gặp",
+      screen: "FAQ",
+      iconName: "chat-question-outline",
+    },
+    {
+      id: "2",
+      name: "Hướng dẫn mua hàng",
+      screen: "ShoppingGuide",
+      iconName: "production-quantity-limits",
+    },
+    {
+      id: "3",
+      name: "Điều khoản/ Chính sách",
+      screen: "TermsAndPolicies",
+      iconName: "book-open-outline",
+    },
+    { id: "4", name: "Giới thiệu", screen: "AboutUs", iconName: "apartment" },
+    {
+      id: "5",
+      name: "Liên hệ",
+      screen: "ContactUs",
+      iconName: "email-outline",
+    },
+    {
+      id: "6",
+      name: "Xóa tài khoản",
+      screen: "DeleteAccount",
+      iconName: "no-accounts",
+    },
   ];
 
   const orderStatuses = [
@@ -47,16 +92,27 @@ export default function Account() {
 
   const handlePressSupport = (item) => {
     if (user && Array.isArray(user) && user.length > 0) {
-      navigation.navigate("Support", { supports: supports, nameScreen: item.name });
+      navigation.navigate("Support", {
+        supports: supports,
+        nameScreen: item.name,
+      });
     } else {
-      const filteredSupports = supports.filter((item) => item.name !== "Xóa tài khoản");
-      navigation.navigate("Support", { supports: filteredSupports, nameScreen: item.name });
+      const filteredSupports = supports.filter(
+        (item) => item.name !== "Xóa tài khoản"
+      );
+      navigation.navigate("Support", {
+        supports: filteredSupports,
+        nameScreen: item.name,
+      });
     }
   };
-  
+
   const handlePressSetting = (item) => {
-    console.log(item)
-    navigation.navigate("Setting", { settings:settings, nameScreen: item.name });
+    console.log(item);
+    navigation.navigate("Setting", {
+      settings: settings,
+      nameScreen: item.name,
+    });
   };
 
   const handleLogout = () => {
@@ -92,7 +148,13 @@ export default function Account() {
         ]}
       >
         <Image
-          source={require("../assets/avatar.jpg")}
+          source={{
+            uri:
+              user &&
+              Array.isArray(user) &&
+              user.length > 0 &&
+              user[0]?.user_avatar,
+          }}
           style={styles.userImage}
         />
         {user && Array.isArray(user) && user.length > 0 ? (

@@ -7,7 +7,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ArrowBack from "@components/ArrowBack";
 import { useRoute } from "@react-navigation/native";
 import { useAuthContext } from "@contexts/AuthContext";
@@ -31,6 +31,7 @@ export default function Support() {
   const [loading, setLoading] = useState(false);
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
+  const scrollViewRef = useRef(null);
   useEffect(() => {
     if (nameScreen) {
       const matchedTab = supports.find((status) => status.name === nameScreen);
@@ -41,6 +42,7 @@ export default function Support() {
   }, [nameScreen]);
   const handlePress = (id) => {
     setActiveTab(id);
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   const renderContent = () => {
@@ -78,6 +80,7 @@ export default function Support() {
         </View>
         <View style={styles.gapContainer}></View>
         <ScrollView
+          ref={scrollViewRef}
           style={styles.scrollContainer}
           contentContainerStyle={styles.bottomContainer}
           showsVerticalScrollIndicator={false}
@@ -119,6 +122,5 @@ const styles = StyleSheet.create({
     // width: "100%",
     height: 20,
   },
-  bottomContainer: {
-  },
+  bottomContainer: {},
 });
