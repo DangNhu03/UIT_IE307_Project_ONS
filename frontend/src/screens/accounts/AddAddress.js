@@ -79,7 +79,7 @@ export default function AddAddress({ navigation, route }) {
     //     newErrors.loca_phone = "Số điện thoại không được để trống.";
     // } else if
     if (!phoneRegex.test(newAddress.loca_phone)) {
-      newErrors.loca_phone = "Số điện thoại phải có từ 10 đến 11 số.";
+      newErrors.loca_phone = "Số điện thoại không hợp lệ.";
     }
 
     // if (!newAddress.loca_address_province) {
