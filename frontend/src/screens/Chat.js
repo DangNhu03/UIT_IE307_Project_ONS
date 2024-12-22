@@ -60,7 +60,11 @@ const ChatWithBotScreen = () => {
       ]);
     } catch (error) {
       console.log("Lỗi gửi tin nhắn:", error);
-      Alert.alert("Lỗi", "Không thể gửi tin nhắn tới bot.");
+      // Alert.alert("Lỗi", "Không thể gửi tin nhắn tới bot.");
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { content: "Xin lỗi, hãy đợi một xíu để tôi khôi phục năng lượng của mình nhé hihi", sender: "bot" },
+      ]);
     } finally {
       setLoading(false);
     }
