@@ -3,10 +3,10 @@ import { Image, StyleSheet, Text, View } from "react-native";
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
 };
-const OrderItem = ({ product, typeTitle }) => {
+const OrderItem = ({ product, typeTitle, borderBottomWidth = 1 }) => {
   console.log(product);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderBottomWidth }]}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
 
       <View style={styles.productContainer}>

@@ -14,6 +14,7 @@ router.put('/:order_id', order.updateOrderWithStatus);
 router.post('/payment', order.onlinepPayment);
 router.post('/check-status-transaction', order.checkTransaction);
 router.post('/callback', order.checkPayment);
+router.post('/no-review', order.getAllProductNotReview);
 
 
 

@@ -402,6 +402,23 @@ const checkTransaction = async (req, res) => {
   return res.status(200).json(result.data);
 };
 
+const getAllProductNotReview = async (req, res) => {
+  try {
+    const userId = req.body.user_id; 
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const orders = await Order.find({ user_id: userId, order_status: "Thành công" }, { list_items: 1 });
+
+    const allItems = orders.flatMap((order) => order.list_items);
+
+    return res.status(200).json({ success: true, data: allItems });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server Error", error });
+  }
+};
 module.exports = {
   postPaymentMethod,
   getAllPaymentMethod,
@@ -414,4 +431,5 @@ module.exports = {
   onlinepPayment,
   checkTransaction,
   checkPayment,
+  getAllProductNotReview,
 };
