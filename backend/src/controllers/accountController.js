@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // POST: Thêm địa điểm cho một người dùng cụ thể
 const postLocation = async (req, res) => {
-    const { user_id } = req.params;
+  const { user_id } = req.params;
   const {
     loca_address,
     loca_address_province,
@@ -13,17 +13,18 @@ const postLocation = async (req, res) => {
     loca_address_detail,
     loca_phone,
     loca_per_name,
-    is_default,
+    is_default
   } = req.body;
 
-  // Kiểm tra dữ liệu đầu vào
-  if (!loca_address_province || !loca_address_district || !loca_address_commue || !loca_phone || !loca_per_name) {
-    return res.status(400).json({ error: "Thiếu thông tin bắt buộc." });
-  }
-
   try {
+    // Kiểm tra xem người dùng có địa chỉ nào chưa
+    const existingLocations = await Location.find({ user_id });
+
+    // Nếu chưa có địa chỉ nào, đặt is_default = true
+    const isFirstLocation = existingLocations.length === 0;
+
     // Nếu địa chỉ được đánh dấu là mặc định, đặt is_default = false cho các địa chỉ khác của user
-    if (is_default) {
+    if (is_default || isFirstLocation) {
       await Location.updateMany(
         { user_id },
         { is_default: false }
@@ -40,7 +41,7 @@ const postLocation = async (req, res) => {
       loca_address_detail,
       loca_phone,
       loca_per_name,
-      is_default: is_default || false, // Mặc định là false nếu không được chỉ định
+      is_default: is_default || isFirstLocation, // Mặc định là true nếu là địa chỉ đầu tiên
     });
 
     // Lưu địa chỉ vào cơ sở dữ liệu
@@ -55,6 +56,7 @@ const postLocation = async (req, res) => {
     return res.status(500).json({ error: "Có lỗi xảy ra trên máy chủ." });
   }
 };
+
 
 // GET: Lấy tất cả các địa điểm
 const getAllLocation = async (req, res) => {
@@ -150,6 +152,92 @@ const getUserDefaultLocation = async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve default location', error: error.message });
   }
 };
+// Hàm chỉnh sửa địa chỉ
+const editAddress = async (req, res) => {
+  try {
+      const { user_id, address_id } = req.params; // Lấy user_id và address_id từ params
+      const address = req.body; // Lấy thông tin địa chỉ từ body
+      console.log(address)
+
+      // Kiểm tra ID hợp lệ
+      if (!mongoose.Types.ObjectId.isValid(user_id)) {
+          return res.status(400).json({ message: "ID người dùng không hợp lệ" });
+      }
+      if (!mongoose.Types.ObjectId.isValid(address_id)) {
+          return res.status(400).json({ message: "ID địa chỉ không hợp lệ" });
+      }
+
+      // Cập nhật địa chỉ
+      const updatedAddress = await Location.findOneAndUpdate(
+          { _id: address_id, user_id: user_id },
+          { ...address },
+          { new: true }
+      );
+
+      // Kiểm tra nếu không tìm thấy địa chỉ
+      if (!updatedAddress) {
+          return res.status(404).json({ message: "Không tìm thấy địa chỉ để cập nhật" });
+      }
+
+      // Trả về kết quả thành công
+      res.status(200).json({ message: "Cập nhật thành công", data: updatedAddress });
+  } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteAddress = async (req, res) => {
+  try {
+    const { user_id, address_id } = req.params; // Lấy user_id và address_id từ params
+
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(user_id)) {
+      return res.status(400).json({ message: "ID người dùng không hợp lệ" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(address_id)) {
+      return res.status(400).json({ message: "ID địa chỉ không hợp lệ" });
+    }
+
+    // Tìm địa chỉ bị xóa để kiểm tra trạng thái mặc định
+    const addressToDelete = await Location.findOne({ _id: address_id, user_id: user_id });
+
+    if (!addressToDelete) {
+      return res.status(404).json({ message: "Không tìm thấy địa chỉ để xóa" });
+    }
+
+    // Xóa địa chỉ
+    const deletedAddress = await Location.findOneAndDelete({
+      _id: address_id,
+      user_id: user_id,
+    });
+
+    if (!deletedAddress) {
+      return res.status(404).json({ message: "Không tìm thấy địa chỉ để xóa" });
+    }
+
+    // Nếu địa chỉ bị xóa là mặc định, đặt địa chỉ khác làm mặc định
+    if (addressToDelete.is_default) {
+      // Tìm địa chỉ đầu tiên còn lại trong danh sách và đặt làm mặc định
+      const newDefaultAddress = await Location.findOneAndUpdate(
+        { user_id: user_id },
+        { is_default: true },
+        { new: true, sort: { createdAt: 1 } } // Sắp xếp theo thời gian tạo
+      );
+
+      if (newDefaultAddress) {
+        console.log("Đã đặt địa chỉ mới làm mặc định:", newDefaultAddress);
+      }
+    }
+
+    // Trả về kết quả thành công
+    res.status(200).json({ message: "Xóa thành công", data: deletedAddress });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 module.exports={
     postLocation,
@@ -157,4 +245,6 @@ module.exports={
     getUserLocation,
     setAddressDefault,
     getUserDefaultLocation,
+    editAddress,
+    deleteAddress
 }

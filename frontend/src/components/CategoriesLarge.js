@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Polygon } from 'react-native-svg';
 
-export default function CategoriesLarge({ text, color }) {
+export default function CategoriesLarge({ data, color }) {
     return (
-        <View style={[styles.container, {backgroundColor:color||'#C5C0F2'}]}>
+        <View style={[styles.container, { backgroundColor: color || '#C5C0F2' }]}>
             <View style={styles.hexagon}>
-                <Svg height="70" width="70" viewBox="0 0 100 100">
+                {/* <Svg height="70" width="70" viewBox="0 0 100 100">
                     <Defs>
                         <LinearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
                             <Stop offset="0%" stopColor="#FFF8DB" stopOpacity="1" />
@@ -18,10 +18,15 @@ export default function CategoriesLarge({ text, color }) {
                         points="50,0 93,25 93,75 50,100 7,75 7,25"
                         fill="url(#grad)"
                     />
-                </Svg>
+                </Svg> */}
+                <Image source={{
+                    uri:
+                        data.cate_img,
+                }}
+                    style={styles.cateImage} />
             </View>
             <View style={styles.textItem}>
-                <Text style={styles.text}>{text}</Text>
+                <Text style={styles.text}>{data.cate_name}</Text>
             </View>
         </View>
     );
@@ -56,5 +61,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 21,
         fontWeight: 'bold'
+    },
+    cateImage: {
+        width: 70,
+        height: 70,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E5A5FF'
     }
 });

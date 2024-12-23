@@ -40,7 +40,6 @@ export default function MyOrder() {
     { id: "4", title: "Đã hủy" },
   ];
 
-
   const fetchOrders = async (status) => {
     if (user_id) {
       try {
@@ -195,12 +194,8 @@ export default function MyOrder() {
       console.log("Error while rebuying order:", error);
     }
   };
-  const onReviewOrder = (order) => {
-    if (!order) {
-      console.error("Order is not defined.");
-      return;
-    }
-    navigation.navigate("MyReview", { order });
+  const onReviewOrder = () => {
+    navigation.navigate("MyReview");
   };
 
   return (

@@ -60,6 +60,27 @@ export default function Address() {
       });
   };
 
+  const handleEditAddress = (address) => {
+    navigation.navigate('EditAddress', {
+      addressData: address, // Dữ liệu địa chỉ để chỉnh sửa
+      user_id: user_id,
+      refreshData: fetchAddresses, // Gọi lại fetchAddresses khi quay lại
+    });
+  };
+
+  const handleDeleteAddress = (addressId) => {
+    axios
+      .delete(`${API_URL}/accounts/locations/delete-address/${user_id}/${addressId}`)
+      .then((response) => {
+        console.log("Xóa địa chỉ thành công:", response.data);
+        fetchAddresses()
+      })
+      .catch((error) => {
+        console.error("Có lỗi xảy ra khi xóa địa chỉ:", error);
+      });
+  };
+
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -71,13 +92,26 @@ export default function Address() {
               contentContainerStyle={styles.addressesContainer}
               showsVerticalScrollIndicator={false}
             >
-              {addresses.map((address, index) => (
-                <View key={index}>
-                  <AddressItem
-                    data={address}
-                    onSetDefault={handleSetDefault} />
+              {addresses.length === 0 ? (
+                <View style={styles.noAddressContainer}>
+                  {/* <Image
+                    source={require("../../../assets/imgs/address.png")}
+                    style={{ resizeMode: 'contain' }}
+                  /> */}
+                  <Text style={styles.noAddress}>Bạn chưa có địa chỉ nào!</Text>
                 </View>
-              ))}
+              ) : (
+                addresses.map((address, index) => (
+                  <View key={index}>
+                    <AddressItem
+                      data={address}
+                      onSetDefault={handleSetDefault}
+                      onEdit={handleEditAddress}
+                      onDelete={handleDeleteAddress}
+                    />
+                  </View>
+                ))
+              )}
             </ScrollView>
           )
         }
@@ -107,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 10, // Khoảng cách giữa các mục
     alignItems: 'center', // Canh giữa nội dung theo chiều ngang
     paddingHorizontal: 10, // Thêm khoảng cách hai bên
-    paddingBottom:10
+    paddingBottom: 10,
   },
   addContainer: {
     flexDirection: 'row',
@@ -116,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingVertical: 20,
     width: '100%',
-    justifyContent:'center'
+    justifyContent: 'center'
   },
   addText: {
     fontSize: 16,
@@ -124,5 +158,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  noAddressContainer: {
+    flex: 1,                // Cho phép nội dung mở rộng toàn bộ không gian
+    justifyContent: 'center', // Căn giữa theo chiều dọc
+    alignItems: 'center',    // Căn giữa theo chiều ngang
+    padding: 10,             // Thêm khoảng cách bên trong
+  },
+  noAddress: {
+    fontSize: 16,
+    color: 'white',
+    textAlign: 'center',     // Căn giữa nội dung văn bản
+    // marginTop:20
   },
 });

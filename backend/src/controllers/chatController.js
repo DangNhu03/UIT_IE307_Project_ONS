@@ -11,22 +11,26 @@ const sendMessage = async (req, res) => {
         }
 
         // Lưu tin nhắn của người dùng vào cơ sở dữ liệu
-        const userMessage = await BotMessage.create({
+        const messages = await BotMessage.create({
             message,
             sender,
             userId,
         });
 
-        // Tạo phản hồi tự động từ bot
-        const botMessage = getBotResponse(message)
-        const botResponse = await BotMessage.create({
-            message: botMessage,
-            sender: "bot",
-            userId,
-        });
+        // // Tạo phản hồi tự động từ bot
+        // const botMessage = getBotResponse(message)
+        // const botResponse = await BotMessage.create({
+        //     message: botMessage,
+        //     sender: "bot",
+        //     userId,
+        // });
 
         // Trả về cả tin nhắn của bot
-        res.status(200).json({ userMessage, botMessage: botResponse });
+        res.status(200).json({
+            success: true,
+            message: "Tin nhắn đã được lưu.",
+            data: messages,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Đã xảy ra lỗi trong quá trình xử lý tin nhắn." });
@@ -52,7 +56,6 @@ const getUserChatHistory = async (req, res) => {
         if (!messages.length) {
             return res.status(404).json({ message: "Không có tin nhắn trong lịch sử." });
         }
-
         res.status(200).json(messages);
     } catch (error) {
         console.error(error);

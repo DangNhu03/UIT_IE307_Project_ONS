@@ -206,9 +206,11 @@ export default function Payment() {
         // Add your navigation logic here
         const parsed = Linking.parse(url);
         const resultCode = String(parsed.queryParams?.resultCode);
+        console.log('resultCode:', resultCode)
         // Check if resultCode=0
-        if (resultCode === "0") {
+        if (resultCode === '0' || resultCode === 0) {
           createOrder();
+          return;
         } else if (resultCode !== "1006") {
           Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
         }

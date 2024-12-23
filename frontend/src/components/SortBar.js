@@ -8,7 +8,8 @@ const SortBar = ({onSortChange}) => {
     { label: "Nổi bật", icon: null },
     { label: "Mới nhất", icon: null },
     { label: "Bán chạy", icon: null },
-    { label: "Giá ↑↓", icon: null },
+    // { label: "Giá ↑↓", icon: null },
+    { label: "Giá ↑", icon: null },
     { label: "Danh sách", icon: <MaterialIcons name="checklist" size={24} /> },
   ];
 

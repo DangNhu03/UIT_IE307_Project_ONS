@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeThumbnail: {
-    borderColor: "#FF71CD",
+    borderColor: "#241E92",
   },
   thumbnailImage: {
     borderRadius: 8,
