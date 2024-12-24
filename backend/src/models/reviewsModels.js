@@ -5,8 +5,8 @@ let Schema = mongoose.Schema;
 let ReviewsSchema = new Schema({
   user_id: { type: Schema.Types.ObjectId, ref: "users", required: true },
   revi_rating: { type: Number, required: true },
-  revi_content: { type: String, required: true },
-  revi_img: { type: [String], require: false },
+  revi_content: { type: String },
+  revi_img: { type: [String] },
   quantityLike: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
   prod_id: { type: Schema.Types.ObjectId, ref: "products", required: true },

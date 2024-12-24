@@ -8,6 +8,8 @@ const Cart = require("../models/cartsModels");
 const crypto = require("crypto");
 const axios = require("axios");
 const config = require('../config');
+const mongoose = require("mongoose");
+const Review = require("../models/reviewsModels");
 // POST: Thêm phương thức thanh toán
 const postPaymentMethod = async (req, res) => {
   try {
@@ -218,7 +220,7 @@ const getOrdersWithStatus = async (req, res) => {
       user_id: user_id,
       order_status: status,
     }).sort({ created_at: -1 });
-    
+
     if (orders.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng nào" });
     }
@@ -273,7 +275,7 @@ const onlinepPayment = async (req, res) => {
     autoCapture,
     lang,
   } = config;
-  const { amount } = req.body; 
+  const { amount } = req.body;
   // var amount = "10000";
   var orderId = partnerCode + new Date().getTime();
   var requestId = orderId;
@@ -402,6 +404,99 @@ const checkTransaction = async (req, res) => {
   return res.status(200).json(result.data);
 };
 
+const getAllProductNotReview = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    // Kiểm tra user_id hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(user_id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Tìm các đơn hàng thành công của user
+    const orders = await Order.find({
+      user_id: user_id,
+      order_status: "Thành công",
+    }).lean(); // Sử dụng lean để đơn giản hóa dữ liệu trả về
+    console.log("Đơn hàng nè: ", orders);
+
+    // Lọc các sản phẩm chưa được đánh giá và thêm order_id
+    const productsNotReviewed = orders.flatMap((order) =>
+      order.list_items
+        .filter((item) => item.is_reviewed === false)
+        .map((item) => ({
+          user_id: user_id,
+          order_id: order._id, // Thêm order_id
+          ...item, // Sao chép toàn bộ các trường trong item
+        }))
+    );
+
+    console.log("Sản phẩm chưa được đánh giá: ", productsNotReviewed);
+
+    // Trả về danh sách sản phẩm chưa được đánh giá
+    res.status(200).json({ success: true, data: productsNotReviewed });
+  } catch (error) {
+    console.error("Error fetching products not reviewed:", error);
+    res.status(500).json({ success: false, message: "Server Error", error });
+  }
+};
+
+
+const getAllProductRevieweded = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(user_id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const orders = await Order.find({
+      user_id: user_id,
+      order_status: "Thành công",
+    }).lean(); // Sử dụng lean để đơn giản hóa dữ liệu trả về
+
+    console.log("Đơn hàng nè: ", orders);
+
+    const productsReviewed = await Promise.all(
+      orders.flatMap((order) =>
+        order.list_items
+          .filter((item) => item.is_reviewed === true && item.review_id)
+          .map(async (item) => {
+            const review = await Review.findById(item.review_id)
+              .select("revi_rating revi_content revi_img created_at") // Chỉ chọn các trường cần thiết
+              .lean(); // Đảm bảo dữ liệu trả về là plain object
+
+            return review
+              ? {
+                order_id: order._id,
+                product_id: item.product_id,
+                product_name: item.prod_name,
+                variant_name: item.variant_name,
+                quantity: item.quantity,
+                image: item.image,
+                price: item.price,
+                review_rating: review.revi_rating,
+                review_date: review.created_at,
+                review_content: review.revi_content,
+                review_image: review.revi_img,
+              }
+              : null;
+          })
+      )
+    );
+
+    const filteredProducts = productsReviewed.filter(Boolean);
+
+    console.log("Sản phẩm đã đánh giá: ", filteredProducts);
+
+    res.status(200).json({ success: true, data: filteredProducts });
+  } catch (error) {
+    console.error("Error fetching products reviewed:", error);
+    res.status(500).json({ success: false, message: "Server Error", error });
+  }
+};
+
+
 module.exports = {
   postPaymentMethod,
   getAllPaymentMethod,
@@ -414,4 +509,6 @@ module.exports = {
   onlinepPayment,
   checkTransaction,
   checkPayment,
+  getAllProductNotReview,
+  getAllProductRevieweded
 };

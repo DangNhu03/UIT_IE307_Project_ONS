@@ -24,6 +24,8 @@ let OrdersSchema = new mongoose.Schema({
             variant_name: { type: String, required: false },
             price: { type: Number, required: true }, 
             quantity: { type: Number, required: true }, 
+            is_reviewed: {type: Boolean, require: false, default: false},
+            review_id:{type: Schema.Types.ObjectId, ref: "reviews"}
         }
     ],
     created_at: { type: Date, default: Date.now }

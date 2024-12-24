@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const Reviews = require('../models/reviewsModels');
 const Users = require("../models/usersModels"); // Model Users
 const Products = require("../models/productsModels"); // Model Products
+const Orders = require("../models/ordersModels");
 
-// POST: Thêm một voucher mới
+// POST: Thêm một review mới
 const addReview = async (req, res) => {
     try {
         const { user_id, prod_id, prod_variant_name, revi_rating, revi_content, revi_img } = req.body;
@@ -43,11 +44,93 @@ const addReview = async (req, res) => {
 
         // Lưu review vào cơ sở dữ liệu
         const savedReview = await newReview.save();
-        res.status(201).json({ message: "Review added successfully", data: savedReview });
+        res.status(200).json({ message: "Review added successfully", data: savedReview });
     } catch (error) {
         res.status(500).json({ message: "Error adding review", error: error.message });
     }
 };
+
+const addReviewByUser = async (req, res) => {
+    try {
+        console.log('req.body ne: ', req.body)
+        const { user_id, prod_id, prod_variant_name, revi_rating, revi_content, revi_img, order_id } = req.body;
+
+        // Kiểm tra user_id hợp lệ và tồn tại
+        if (!mongoose.Types.ObjectId.isValid(user_id)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+        const userExists = await Users.findById(user_id);
+        if (!userExists) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Kiểm tra prod_id hợp lệ và tồn tại
+        if (!mongoose.Types.ObjectId.isValid(prod_id)) {
+            return res.status(400).json({ message: "Invalid product ID" });
+        }
+        const productExists = await Products.findById(prod_id);
+        if (!productExists) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Kiểm tra order_id hợp lệ và tồn tại
+        if (!mongoose.Types.ObjectId.isValid(order_id)) {
+            return res.status(400).json({ message: "Invalid order ID" });
+        }
+        const orderExists = await Orders.findById(order_id);
+        if (!orderExists) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // Kiểm tra nếu revi_img là một mảng nếu có
+        if (revi_img && !Array.isArray(revi_img)) {
+            return res.status(400).json({ message: "revi_img must be an array" });
+        }
+
+        // Tạo review mới
+        const newReview = new Reviews({
+            user_id,
+            prod_id,
+            prod_variant_name,
+            revi_rating,
+            revi_content,
+            revi_img,
+        });
+
+        // Lưu review vào cơ sở dữ liệu
+        const savedReview = await newReview.save();
+
+        // Cập nhật trạng thái is_reviewed và review_id trong list_items của Orders
+        const updatedOrder = await Orders.findOneAndUpdate(
+            {
+                _id: order_id, // Tìm đơn hàng theo order_id
+                "list_items.product_id": prod_id, // Tìm phần tử trong list_items có product_id khớp
+            },
+            {
+                $set: {
+                    "list_items.$.is_reviewed": true, // Đánh dấu sản phẩm đã được review
+                    "list_items.$.review_id": savedReview._id, // Thêm review ID
+                },
+            },
+            { new: true } // Trả về dữ liệu đã cập nhật
+        );
+
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Order item not found or update failed" });
+        }
+
+        res.status(200).json({
+            message: "Review added and order updated successfully",
+            review: savedReview,
+            order: updatedOrder,
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error adding review and updating order", error: error.message });
+    }
+};
+
+
 
 
 // GET: Lấy tất cả các review
@@ -60,7 +143,7 @@ const getAllReview = async (req, res) => {
     }
 };
 
-const getReviewByProductId = async(req, res)=>{
+const getReviewByProductId = async (req, res) => {
     try {
         console.log('get danh gia theo id san pham')
         const { product_id } = req.params;
@@ -82,7 +165,7 @@ const getReviewByProductId = async(req, res)=>{
         res.status(500).json({ message: "Error fetching reviews", error: error.message });
     }
 }
-const deleteReview = async(req, res)=>{
+const deleteReview = async (req, res) => {
     try {
         const reviewId = req.params.id;
 
@@ -98,7 +181,7 @@ const deleteReview = async(req, res)=>{
     }
 }
 
-const updateReview = async(req, res)=>{
+const updateReview = async (req, res) => {
     try {
         const reviewId = req.params.id;
         const { revi_rating, revi_content, prod_variations } = req.body;
@@ -124,5 +207,6 @@ module.exports = {
     deleteReview,
     updateReview,
     getAllReview,
-    getReviewByProductId
+    getReviewByProductId,
+    addReviewByUser
 };

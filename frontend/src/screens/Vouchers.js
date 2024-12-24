@@ -190,7 +190,7 @@ export default function Vouchers() {
               <VoucherList vouchers={filterVouchers(voucherNotStarted)} />
             )}
             {activeTab === 'myVoucher' && (
-              <VoucherList vouchers={filterVouchers(myVoucher.filter(v => v.is_used === false))} myVoucher={myVoucher.filter(v => v.is_used === false)} />
+              <VoucherList vouchers={filterVouchers(myVoucher.filter(v => v.is_used === false))} myVoucher={myVoucher.filter(v => v.is_used === false)} onUseVoucher={handleUseVoucher} />
             )}
           </>
         )}

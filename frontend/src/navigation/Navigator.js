@@ -29,6 +29,7 @@ import Support from "@screens/Support.js";
 import Setting from "@screens/Setting.js";
 import AddAddress from "@screens/accounts/AddAddress.js";
 import EditAddress from "@screens/accounts/EditAddress.js";
+import Review from "@screens/Review.js";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -235,14 +236,19 @@ const StackNavigator = () => {
           component={Setting}
           options={{ headerShown: false }}
         />
-                <Stack.Screen
+        <Stack.Screen
           name="AddAddress"
           component={AddAddress}
           options={{ headerShown: false }}
         />
-                       <Stack.Screen
+        <Stack.Screen
           name="EditAddress"
           component={EditAddress}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Review"
+          component={Review}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
