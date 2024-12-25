@@ -29,6 +29,7 @@ import Support from "@screens/Support.js";
 import Setting from "@screens/Setting.js";
 import AddAddress from "@screens/accounts/AddAddress.js";
 import EditAddress from "@screens/accounts/EditAddress.js";
+import SelectAddress from "@screens/payments/SelectAddress.js";
 import Review from "@screens/Review.js";
 
 const StackNavigator = () => {
@@ -249,6 +250,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Review"
           component={Review}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SelectAddress"
+          component={SelectAddress}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

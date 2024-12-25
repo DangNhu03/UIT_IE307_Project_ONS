@@ -33,7 +33,9 @@ export default function DeliveryAddress({ onAddressFetched }) {
         setLoading(false);
         return;
       }
-      const response = await fetch(`${API_URL}/accounts/locations/default/${user_id}`);
+      const response = await fetch(
+        `${API_URL}/accounts/locations/default/${user_id}`
+      );
       const data = await response.json();
       console.log("Fetched data cua delivery address: ", data);
 
@@ -79,6 +81,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
     }
   };
   console.log("deliveryAddress", deliveryAddress);
+
+  const handleNavigateToSelectAddress = () => {
+    navigation.navigate('SelectAddress', {
+      onSelect: (selectedAddress) => {
+        console.log('Selected address:', selectedAddress);
+      }
+    });
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -90,7 +100,12 @@ export default function DeliveryAddress({ onAddressFetched }) {
       </View>
       {deliveryAddress ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
+          <View style={styles.inforAddressContainer}>
+            <Text style={styles.titleText}>Địa chỉ nhận hàng</Text>
+            <TouchableOpacity onPress={handleNavigateToSelectAddress}>
+              <Text style={styles.linkText}>Sửa</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.address}>
             <View style={styles.inforUser}>
               <Text style={styles.addressText}>
@@ -138,6 +153,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     gap: 10,
+  },
+  inforAddressContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  linkText: {
+    fontSize: 16,
+    color: "#FF71CD",
   },
   titleText: {
     fontSize: 16,
