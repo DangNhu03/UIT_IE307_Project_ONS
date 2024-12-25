@@ -25,6 +25,8 @@ import {
 } from "react-native";
 import { API_URL } from "../../../url";
 import * as Linking from "expo-linking";
+import { AppState } from "react-native";
+
 export default function Payment() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -37,6 +39,7 @@ export default function Payment() {
   const voucherDiscount = voucher?.vouc_discount_value || 0;
   const [totalPricePayment, setTotalPricePayment] = useState(0);
   const { user } = useAuthContext();
+  const [orderId, setOrderId] = useState(null);
 
   const handleDeliveryAddress = (address) => {
     setSelectedAddress(address);
@@ -197,32 +200,62 @@ export default function Payment() {
       }
     }
   };
-  useEffect(() => {
-    const handleDeepLink = ({ url }) => {
-      console.log("Redirected to:", url);
 
-      if (url) {
-        console.log("url:", url);
-        // Add your navigation logic here
-        const parsed = Linking.parse(url);
-        const resultCode = parsed.queryParams?.resultCode;
-        console.log("resultCode:", resultCode);
-        // Check if resultCode=0
-        if (resultCode === 0) {
-          createOrder();
-          return;
-        } else if (resultCode !== 1006) {
-          Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+  const checkPaymentStatus = async (orderId) => {
+    try {
+      console.log("Checking payment status for Order ID:", orderId);
+
+      const response = await fetch(
+        `${API_URL}/orders/check-status-transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("Response from check-transaction API:", data);
+
+      // Kiểm tra xem thanh toán có thành công không
+      if (data.resultCode === 0) {
+        console.log("Payment status message:", data.message);
+        createOrder();
+      } else {
+        console.log("Payment failed:", data.message);
+        Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
+      }
+      setOrderId(null);
+    } catch (error) {
+      console.log("Error checking payment status:", error);
+    }
+  };
+
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      "change",
+      (nextAppState) => {
+        if (nextAppState === "active") {
+          if (orderId) {
+            console.log(
+              "App is back in foreground, checking payment status..."
+            );
+            checkPaymentStatus(orderId);
+          } else {
+            console.log("Order ID is not set, skipping payment status check.");
+          }
         }
       }
-    };
-    const subscription = Linking.addEventListener("url", handleDeepLink);
+    );
 
     return () => {
-      // Clean up listener
-      subscription.remove();
+      appStateListener.remove();
     };
-  }, []);
+  }, [orderId]);
+
   const handlePlaceOrder = async () => {
     if (!validateOrderDetails()) return;
     // console.log("All information is selected, proceed to place the order.");
@@ -247,9 +280,8 @@ export default function Payment() {
       });
 
       const momoData = await momoResponse.json();
-      const orderId = momoData.orderId;
       console.log("Order ID:", orderId);
-
+      setOrderId(momoData.orderId);
       if (momoData.resultCode === 0) {
         console.log("MoMo shortLink:", momoData.shortLink);
         Linking.openURL(momoData.shortLink).catch((err) =>

@@ -7,7 +7,7 @@ const Voucher = require("../models/vouchersModels");
 const Cart = require("../models/cartsModels");
 const crypto = require("crypto");
 const axios = require("axios");
-const config = require('../config');
+const config = require("../config");
 const mongoose = require("mongoose");
 const Review = require("../models/reviewsModels");
 // POST: Thêm phương thức thanh toán
@@ -344,7 +344,7 @@ const onlinepPayment = async (req, res) => {
   let result;
   try {
     result = await axios(options);
-    console.log(result)
+    console.log(result);
     return res.status(200).json(result.data);
   } catch (error) {
     return res.status(500).json({ statusCode: 500, message: error.message });
@@ -359,7 +359,9 @@ const checkPayment = async (req, res) => {
   if (resultCode === 0) {
     // Giao dịch thành công, cập nhật trạng thái đơn hàng trong DB
     console.log("Payment successful!");
-    return res.status(200).json({ success: true, message: "Payment successful" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Payment successful" });
   } else {
     // Giao dịch thất bại
     console.log("Payment failed:", message);
@@ -370,8 +372,6 @@ const checkPayment = async (req, res) => {
 const checkTransaction = async (req, res) => {
   const { orderId } = req.body;
 
-  // const signature = accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
-  // &requestId=$requestId
   var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
   var accessKey = "F8BBA842ECF85";
   const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
@@ -389,7 +389,6 @@ const checkTransaction = async (req, res) => {
     lang: "vi",
   });
 
-  // options for axios
   const options = {
     method: "POST",
     url: "https://test-payment.momo.vn/v2/gateway/api/query",
@@ -399,11 +398,24 @@ const checkTransaction = async (req, res) => {
     data: requestBody,
   };
 
-  const result = await axios(options);
+  try {
+    const result = await axios(options);
+    console.log("Response from MoMo:", result.data);
 
-  return res.status(200).json(result.data);
+    const { resultCode } = result.data;
+
+    if (resultCode === 0) {
+      return res.status(200).json(result.data);
+    } else {
+      return res.status(400).json(result.data);
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
 };
-
 const getAllProductNotReview = async (req, res) => {
   try {
     const { user_id } = req.params;
