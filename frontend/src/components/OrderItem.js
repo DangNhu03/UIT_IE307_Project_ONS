@@ -66,7 +66,9 @@ const styles = StyleSheet.create({
   productImage: {
     height: 101,
     width: 101,
-    borderRadius: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FFE1FF',
   },
   productContainer: {
     flex: 1,

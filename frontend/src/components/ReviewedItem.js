@@ -1,23 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import React from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { format } from "date-fns";
+import { MaterialIcons } from '@expo/vector-icons';
 
-const ReviewItem = ({ data }) => {
+export default function ReviewedItem({ data }) {
     const maxImagesToShow = 3;
-    const extraImages = data.revi_img?.length - maxImagesToShow;
+    const extraImages = data?.review_image?.length - maxImagesToShow;
     return (
-        <View style={styles.reviewContainer}>
-            {/* Avatar và thông tin người dùng */}
-            <Image source={{ uri: data.user_id.user_avatar }} style={styles.avatar} />
+        <View style={styles.container}>
+            <Image source={{ uri: data?.image }} style={styles.productImage} />
             <View style={styles.reviewContent}>
-                <Text style={styles.reviewerName}>{data.user_id.user_name}</Text>
+                <Text style={styles.productName} numberOfLines={1} ellipsizeMode="tail">{data?.product_name || 'aaa'}</Text>
                 {/* Đánh giá sao */}
                 <View style={styles.ratingContainer}>
                     {Array.from({ length: 5 }).map((_, index) => (
                         <MaterialIcons
                             key={index}
-                            name={index < data.revi_rating ? "star" : "star-border"}
+                            name={index < data?.review_rating ? "star" : "star-border"}
                             size={18}
                             color="#FFB800"
                         />
@@ -25,15 +24,15 @@ const ReviewItem = ({ data }) => {
                 </View>
                 {/* Nội dung đánh giá */}
                 <Text style={styles.reviewDate}>
-                    {format(new Date(data.created_at), "dd-MM-yyyy HH:mm")}
-                    {data.prod_variant_name && ` | Phân loại: ${data.prod_variant_name}`}
+                    {format(new Date(data?.review_date), "dd-MM-yyyy HH:mm")}
+                    {data?.variant_name && ` | Phân loại: ${data?.variant_name}`}
                 </Text>
-                <Text style={styles.reviewText}>{data.revi_content}</Text>
+                <Text style={styles.reviewText}>{data?.review_content}</Text>
                 {/* Hình ảnh đánh giá */}
                 {
-                    data.revi_img?.length > 0 && (
+                    data?.review_image?.length > 0 && (
                         <View style={styles.reviewImageContainer}>
-                            {data.revi_img?.slice(0, maxImagesToShow).map((img, index) => (
+                            {data?.review_image?.slice(0, maxImagesToShow).map((img, index) => (
                                 <TouchableOpacity key={index}>
                                     <Image
                                         source={{ uri: img }}
@@ -54,29 +53,37 @@ const ReviewItem = ({ data }) => {
             </View>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    reviewContainer: {
-        flexDirection: 'row',
-        // marginVertical: 10,
-        // paddingHorizontal: 10,
+    container: {
+        paddingRight: 10,
+        gap: 10,
+        backgroundColor: "#FFF",
+        borderRadius: 5,
+        flexDirection: 'row'
     },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: 10,
+    productImage: {
+        paddingVertical: 10,
+        paddingLeft: 10,
+        paddingRight: 5,
+        width: 80,
+        // height: '100%',
+        // maxHeight:100,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#FFE1FF',
     },
     reviewContent: {
         flex: 1,
         gap: 5
     },
-    reviewerName: {
-        fontWeight: 'bold',
-        fontSize: 14,
-        // marginBottom: 3,
-        color: '#241E92',
+    productName: {
+        fontSize: 16,
+        color: '#3B394A',
+        lineHeight: 21,
+        flexShrink: 1, // Allow text to shrink if necessary
+        overflow: 'hidden', // Hide overflowed text
     },
     ratingContainer: {
         flexDirection: 'row',
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         borderRadius: 8,
         borderWidth: 0.7,
-        borderColor: '#FF71CD',
+        borderColor: '#FFE1FF',
     },
     reviewImageX: {
         width: 60,
@@ -113,9 +120,6 @@ const styles = StyleSheet.create({
     },
     moreImagesText: {
         textAlign: 'center',
-        color: '#3B394A'
+        color:'#3B394A'
     }
-
 });
-
-export default ReviewItem;
