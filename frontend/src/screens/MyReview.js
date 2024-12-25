@@ -71,6 +71,17 @@ export default function MyReview() {
     fetchProductReviewed();
   }, []);
 
+  const handleEditReview = (review) => {
+    navigation.navigate('EditReview', {
+      reviewData: review, // Dữ liệu địa chỉ để chỉnh sửa
+      // user_id: user_id,
+      refreshData: { 
+        fetchNotReviewed: fetchProductNotReview, 
+        fetchReviewed: fetchProductReviewed 
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <ArrowBack title="Đánh giá của tôi" />
@@ -130,7 +141,7 @@ export default function MyReview() {
           ) : productReviewed.length > 0 ? (
             productReviewed.map((product, index) => (
               <View key={index} style={styles.listOrderContainer}>
-                <ReviewedItem data={product} />
+                <ReviewedItem data={product} onEdit={handleEditReview}/>
               </View>
             ))
           ) : (

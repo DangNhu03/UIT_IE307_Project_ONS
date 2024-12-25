@@ -183,12 +183,22 @@ const deleteReview = async (req, res) => {
 
 const updateReview = async (req, res) => {
     try {
-        const reviewId = req.params.id;
-        const { revi_rating, revi_content, prod_variations } = req.body;
+        const { review_id } = req.params;
+        const { revi_rating, revi_content, revi_img } = req.body;
+        console.log('reviewid', review_id)
+        console.log('revi rating', revi_rating)
+        if (!mongoose.Types.ObjectId.isValid(review_id)) {
+            return res.status(400).json({ message: "ID đánh giá không hợp lệ" });
+        }
+
+        // Kiểm tra nếu revi_img là một mảng nếu có
+        if (revi_img && !Array.isArray(revi_img)) {
+            return res.status(400).json({ message: "revi_img must be an array" });
+        }
 
         const updatedReview = await Reviews.findByIdAndUpdate(
-            reviewId,
-            { $set: { revi_rating, revi_content, prod_variations } },
+            review_id,
+            { $set: { revi_rating, revi_content, revi_img } },
             { new: true } // Trả về tài liệu sau khi cập nhật
         );
 
