@@ -228,6 +228,7 @@ export default function Payment() {
         console.log("Payment failed:", data.message);
         Alert.alert("Lỗi", "Không thể đặt hàng. Vui lòng thử lại.");
       }
+      setOrderId(null);
     } catch (error) {
       console.log("Error checking payment status:", error);
     }
