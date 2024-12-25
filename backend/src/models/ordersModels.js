@@ -25,7 +25,7 @@ let OrdersSchema = new mongoose.Schema({
             price: { type: Number, required: true }, 
             quantity: { type: Number, required: true }, 
             is_reviewed: {type: Boolean, require: false, default: false},
-            review_id:{type: Schema.Types.ObjectId, ref: "reviews"}
+            review_id:{type: Schema.Types.ObjectId, ref: "reviews", default:null}
         }
     ],
     created_at: { type: Date, default: Date.now }

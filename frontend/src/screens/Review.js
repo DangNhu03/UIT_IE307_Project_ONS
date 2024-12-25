@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, TextInput } from "react-native";
 import { format } from "date-fns";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import ArrowBack from "@components/ArrowBack"
 import Button from "@components/Button"
 import { Rating } from 'react-native-ratings'; // Thêm import
@@ -33,20 +33,20 @@ export default function Review({ navigation, route }) {
     const chooseImage = async () => {
         // Kiểm tra nếu đã có 5 hình ảnh, không cho phép chọn thêm
         if (image.length >= 5) {
-            Alert.alert("Thông báo", "Bạn chỉ có thể chọn tối đa 5 hình ảnh.");
+            Alert.alert("Thông báo", "Bạn chỉ có thể chọn tối đa 5 hình ảnh/video.");
             return;
         }
-    
+
         // Yêu cầu chọn hình ảnh
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'], // Chỉ chọn hình ảnh
+            mediaTypes: ['images','videos'],
             allowsEditing: true,
             quality: 1,
-            selectionLimit: 5 - image.length, // Cho phép chọn số ảnh còn lại để đạt tối đa 5 ảnh
+            selectionLimit: 5 - image.length,
         });
-    
+
         console.log(result);
-    
+
         if (!result.canceled) {
             // Cập nhật mảng hình ảnh đã chọn vào trạng thái
             setImage(prevImages => [...prevImages, ...result.assets]);
@@ -57,32 +57,71 @@ export default function Review({ navigation, route }) {
         setSelectedImageIndex(null); // Reset tapped image index after removal
     };
 
-    const uploadImage = async (uri) => {
+    const uploadImage = async (file) => {
         const data = new FormData();
         data.append("file", {
-            uri,
-            type: "image/jpeg", // Định dạng của hình ảnh
-            name: "reviewImg.jpg", // Tên file
+            uri: file.uri,
+            type: file.type === "video" ? "video/mp4" : "image/jpeg",
+            name: `upload.${file.type === "video" ? "mp4" : "jpg"}`,
         });
         data.append("upload_preset", UPLOAD_PRESET_NAME);
-        data.append("cloud_name", CLOUDINARY_CLOUD_NAME); // CLOUD_NAME từ tài khoản của bạn
-
+    
+        const url = file.type === "video"
+            ? `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`
+            : `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            const response = await fetch(url, {
                 method: "POST",
                 body: data,
             });
-
+    
             if (!response.ok) {
                 throw new Error("Upload failed");
             }
-
+    
             const result = await response.json();
             console.log("Upload thành công:", result.secure_url);
-            return result.secure_url; // Trả về đường dẫn HTTPS của ảnh đã upload
+            return result.secure_url;
         } catch (error) {
             console.error("Lỗi khi upload:", error);
             throw error;
+        }
+    };
+    
+    const openCamera = async () => {
+        if (image.length >= 5) {
+            Alert.alert("Thông báo", "Bạn chỉ có thể chọn tối đa 5 hình ảnh/video.");
+            return;
+        }
+
+        // Yêu cầu quyền truy cập camera
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert("Thông báo", "Bạn cần cấp quyền truy cập camera để sử dụng tính năng này.");
+            return;
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images', 'videos'],
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            result.assets.forEach((asset) => {
+                if (asset.type === 'video') {
+                    console.log('Video path:', asset.uri);
+                } else if (asset.type === 'image') {
+                    console.log('Image path:', asset.uri);
+                }
+            });
+        
+            // Thêm vào state
+            setImage(prevImages => [...prevImages, ...result.assets]);
         }
     };
 
@@ -171,7 +210,7 @@ export default function Review({ navigation, route }) {
                         />
                     </View>
                     <View style={styles.reviewImg}>
-                        <Text style={styles.textReview}>Thêm tối đa 5 hình ảnh:</Text>
+                        <Text style={styles.textReview}>Thêm tối đa 5 hình ảnh/video:</Text>
                         <View style={styles.imgContatiner}>
                             {image.length > 0 && image.map((img, index) => (
                                 <TouchableOpacity
@@ -193,7 +232,26 @@ export default function Review({ navigation, route }) {
                                 </TouchableOpacity>
                             ))}
                         </View>
-                        <Button title="Chọn hình ảnh" onPress={chooseImage} />
+                        <View style={styles.buttonGroup}>
+                            <Button
+                                title="Chụp ảnh"
+                                onPress={openCamera}
+                                icon={<Ionicons name="camera" size={24} color="#E5A5FF" />}
+                                backgroundColor="#FFF"
+                                textColor="#E5A5FF"
+                                borderColor="#E5A5FF"
+                                borderWidth={1}
+                            />
+                            <Button
+                                title="Thêm ảnh/video"
+                                onPress={chooseImage}
+                                icon={<Ionicons name="images" size={24} color="#E5A5FF" />}
+                                backgroundColor="#FFF"
+                                textColor="#E5A5FF"
+                                borderColor="#E5A5FF"
+                                borderWidth={1}
+                            />
+                        </View>
                     </View>
                 </View>
                 <View style={styles.formButton}>
@@ -330,5 +388,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 0.7,
         borderColor: '#FFE1FF',
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        gap: 10, // Khoảng cách giữa các nút,
     },
 });

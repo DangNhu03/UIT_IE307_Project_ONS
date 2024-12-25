@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flexGrow: 1,  // Ensures the ScrollView grows and fills available space
     paddingHorizontal: 10,
-    justifyContent:'center',
+    // justifyContent:'center',
   },
   listOrderContainer: {
     backgroundColor: "#fff",
@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
   },
   noProductText: {
     textAlign: "center",
+    textAlignVertical:"center",
     fontSize: 16,
     color:'#FFF',
   },
