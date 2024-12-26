@@ -3,7 +3,7 @@ module.exports = {
   secretKey: "K951B6PE1waDMi640xX08PD3vg6EkVlz",
   orderInfo: "pay with MoMo",
   partnerCode: "MOMO",
-  redirectUrl: "exp://172.17.17.82:8081/--/home --android",
+  redirectUrl: "exp://172.16.0.199:8081/--/home --android",
   ipnUrl: "https://652b-113-161-91-132.ngrok-free.app/orders/callback", //chú ý: cần dùng ngrok thì momo mới post đến url này được
   requestType: "payWithMethod",
   extraData: "",

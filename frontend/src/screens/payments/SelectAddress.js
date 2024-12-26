@@ -1,13 +1,22 @@
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import { useAuthContext } from "@contexts/AuthContext";
-import AddressItem from '@components/AddressItem';
-import axios from 'axios';
+import ArrowBack from "@components/ArrowBack";
+import AddressItem from "@components/AddressItem";
+import axios from "axios";
 import { API_URL } from "../../../../url";
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
 
-export default function SelectAddress({ route }) {
+export default function SelectAddress({ route, onSelectAddress }) {
   const { user } = useAuthContext();
   const user_id = user && user[0]?._id;
   const navigation = useNavigation();
@@ -15,20 +24,21 @@ export default function SelectAddress({ route }) {
   const [loading, setLoading] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
 
+  // Fetch addresses from the API
   const fetchAddresses = () => {
     axios
       .get(`${API_URL}/accounts/locations/${user_id}`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       })
       .then((response) => {
-        console.log('Addresses fetched from API: ', response.data);
+        console.log("Addresses fetched from API: ", response.data);
         setAddresses(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching addresses:', error);
+        console.error("Error fetching addresses:", error);
         setLoading(false);
       });
   };
@@ -37,34 +47,13 @@ export default function SelectAddress({ route }) {
     fetchAddresses();
   }, []);
 
-  const handleSelectAddress = (address) => {
-    setSelectedAddress(address);
-  };
-
-  const handleConfirmSelection = () => {
-    if (selectedAddress) {
-      // Pass the selected address back to the parent screen
-      route.params?.onSelect(selectedAddress);
-      navigation.goBack();
-    } else {
-      alert('Please select an address');
-    }
-  };
-
+  // Toggle address selection
   const toggleSelection = (address) => {
-    if (selectedAddress?._id === address._id) {
-      setSelectedAddress(null);  // Deselect if already selected
-    } else {
-      setSelectedAddress(address);  // Select the new address
-    }
-  };
+    setSelectedAddress(address);
+    console.log("Selected address:", address);
 
-  const handleEditAddress = (address) => {
-    navigation.navigate('EditAddress', {
-      addressData: address,
-      user_id: user_id,
-      refreshData: fetchAddresses,  // Refresh addresses after editing
-    });
+    navigation.goBack();
+    route.params?.onAddressSelected?.(address); 
   };
 
   const handleSetDefault = (addressId) => {
@@ -87,67 +76,62 @@ export default function SelectAddress({ route }) {
       });
   };
 
+  const handleEditAddress = (address) => {
+    navigation.navigate("EditAddress", {
+      addressData: address,
+      user_id: user_id,
+      refreshData: fetchAddresses,
+    });
+  };
+
+  const handleDeleteAddress = (addressId) => {
+    axios
+      .delete(`${API_URL}/accounts/locations/${user_id}/${addressId}`)
+      .then(() => {
+        console.log("Address deleted successfully");
+        fetchAddresses();
+      })
+      .catch((error) => {
+        console.error("Error deleting address:", error);
+      });
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        {
-          loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : (
-            <ScrollView
-              contentContainerStyle={styles.addressesContainer}
-              showsVerticalScrollIndicator={false}
-            >
-              {addresses.length === 0 ? (
-                <View style={styles.noAddressContainer}>
-                  <Text style={styles.noAddress}>No addresses available!</Text>
-                </View>
-              ) : (
-                addresses.map((address, index) => (
-                  <View key={index} style={styles.addressItemContainer}>
-                    {/* Checkbox to select/deselect address */}
-                    <TouchableOpacity
-                      style={styles.circle}
-                      onPress={() => toggleSelection(address)}
-                    >
-                      <MaterialIcons
-                        name={selectedAddress?._id === address._id ? "check-box" : "check-box-outline-blank"}
-                        size={24}
-                        color="#241E92"
-                      />
-                    </TouchableOpacity>
-
-                    {/* Address item */}
-                    <AddressItem
-                      data={address}
-                      onSelect={() => handleSelectAddress(address)}
-                      isSelected={selectedAddress?._id === address._id}
-                    />
-
-                    {/* Edit and Set Default buttons */}
-                    <TouchableOpacity onPress={() => handleEditAddress(address)}>
-                      <Text style={styles.linkText}>Edit</Text>
-                    </TouchableOpacity>
-
-                    {!address.is_default && (
-                      <TouchableOpacity onPress={() => handleSetDefault(address._id)}>
-                        <Text style={styles.linkText}>Set as Default</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ))
-              )}
-            </ScrollView>
-          )
-        }
+      <ArrowBack title="Chọn địa chỉ nhận hàng" />
+      <View style={styles.contentContainer}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#fff" />
+        ) : (
+          <ScrollView style={styles.listAddressContainer}>
+            {addresses.map((address) => (
+              <View key={address._id} style={styles.addressItemWrapper}>
+                <AddressItem
+                  data={address}
+                  onSetDefault={() => handleSetDefault(address._id)}
+                  onEdit={() => handleEditAddress(address)}
+                  onDelete={() => handleDeleteAddress(address._id)}
+                  showCheckbox={true}
+                  isSelected={selectedAddress?._id === address._id}
+                  onSelect={() => toggleSelection(address)}
+                />
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
-
       <TouchableOpacity
-        style={styles.confirmButton}
+        style={styles.addContainer}
         activeOpacity={0.7}
-        onPress={handleConfirmSelection}
+        onPress={() =>
+          navigation.navigate("AddAddress", {
+            user_id: user_id,
+            refreshData: fetchAddresses, // Gọi lại fetchAddresses khi quay lại
+          })
+        } 
       >
-        <Text style={styles.confirmText}>Confirm Selection</Text>
+        <AntDesign name="pluscircleo" size={24} color="#241E92" />
+        <Text style={styles.addText}>Thêm địa chỉ</Text>
       </TouchableOpacity>
     </View>
   );
@@ -156,54 +140,32 @@ export default function SelectAddress({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: "#241e92",
+    paddingTop: 40,
   },
-  addressesContainer: {
-    flexGrow: 1,
-    gap: 10,
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
-  content: {
-    flex: 1,
-  },
-  noAddressContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  contentContainer: {
     padding: 10,
+    flex: 1,
   },
-  noAddress: {
+  listAddressContainer: {
+    flex: 1,
+    paddingBottom: 20,
+  },
+
+  addressItemWrapper: {
+    marginBottom: 10,
+  },
+  addContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "white",
+    paddingVertical: 20,
+    width: "100%",
+    justifyContent: "center",
+  },
+  addText: {
     fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
-  },
-  confirmButton: {
-    backgroundColor: '#241E92',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  confirmText: {
-    fontSize: 18,
-    color: 'white',
-  },
-  addressItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    paddingVertical: 10,
-  },
-  circle: {
-    marginRight: 10, // Space between checkbox and the address item
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#241E92',
-    marginTop: 10,
+    color: "#241E92",
   },
 });

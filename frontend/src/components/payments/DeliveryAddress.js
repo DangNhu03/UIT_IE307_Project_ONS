@@ -83,10 +83,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
   console.log("deliveryAddress", deliveryAddress);
 
   const handleNavigateToSelectAddress = () => {
-    navigation.navigate('SelectAddress', {
-      onSelect: (selectedAddress) => {
-        console.log('Selected address:', selectedAddress);
-      }
+    navigation.navigate("SelectAddress", {
+      onAddressSelected: (address) => {
+        console.log("Address selected and returned:", address);
+        setDeliveryAddress(address);
+        if (onAddressFetched) {
+          onAddressFetched(address); 
+        }
+      },
     });
   };
   return (
