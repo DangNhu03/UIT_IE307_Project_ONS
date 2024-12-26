@@ -250,6 +250,7 @@ export function useAddToCart() {
     getCartNoLogin,
     updateCartQuantityNoLogin,
     updateCartWithOrderList,
+    updateCartQuantity,
   };
 }
 
