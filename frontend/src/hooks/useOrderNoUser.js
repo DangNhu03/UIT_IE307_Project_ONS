@@ -40,7 +40,7 @@ export const addAddressNoUser = async (newAddress) => {
 export const getAddressNoUser = async () => {
   try {
     const addressList =
-      JSON.parse(await AsyncStorage.getItem("addressNoUser")) || [];
+      JSON.parse(await AsyncStorage.getItem("addressNoUser")) || null;
     console.log("Địa chỉ từ AsyncStorage:", addressList);
 
     return addressList;
@@ -172,7 +172,7 @@ export const getOrdersByStatusNoUser = async (status) => {
     return filteredOrders;
   } catch (error) {
     console.error("Có lỗi xảy ra khi lấy đơn hàng theo trạng thái:", error);
-    return []; 
+    return [];
   }
 };
 
