@@ -53,7 +53,7 @@ export default function SelectAddress({ route, onSelectAddress }) {
     console.log("Selected address:", address);
 
     navigation.goBack();
-    route.params?.onAddressSelected?.(address); 
+    route.params?.onAddressSelected?.(address);
   };
 
   const handleSetDefault = (addressId) => {
@@ -128,7 +128,7 @@ export default function SelectAddress({ route, onSelectAddress }) {
             user_id: user_id,
             refreshData: fetchAddresses, // Gọi lại fetchAddresses khi quay lại
           })
-        } 
+        }
       >
         <AntDesign name="pluscircleo" size={24} color="#241E92" />
         <Text style={styles.addText}>Thêm địa chỉ</Text>

@@ -12,6 +12,7 @@ import { API_URL } from "../../../../url";
 import { useNavigation } from "@react-navigation/native";
 import { getAddressNoUser } from "@hooks/useOrderNoUser";
 import { updateCartWithOrderList } from "@hooks/useOrderNoUser";
+import { useFocusEffect } from "@react-navigation/native";
 export default function DeliveryAddress({ onAddressFetched }) {
   const { user } = useAuthContext();
   const [deliveryAddress, setDeliveryAddress] = useState(null);
@@ -21,7 +22,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
   const navigation = useNavigation();
   const fetchDeliveryAddressNoUser = async () => {
     const addressList = await getAddressNoUser();
-    console.log(addressList);
+    console.log("no login", addressList);
     setDeliveryAddress(addressList);
     if (onAddressFetched) {
       onAddressFetched(addressList);
@@ -30,16 +31,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
   const fetchDeliveryAddress = async () => {
     try {
       if (!user_id) {
-        setLoading(false);
-        return;
+        fetchDeliveryAddressNoUser();
       }
       const response = await fetch(
         `${API_URL}/accounts/locations/default/${user_id}`
       );
-      const data = await response.json();
-      console.log("Fetched data cua delivery address: ", data);
-
-      if (data) {
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log("Fetched data cua delivery address: ", data);
         setDeliveryAddress(data);
         if (onAddressFetched) {
           onAddressFetched(data);
@@ -71,7 +70,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
     if (!user_id) {
       navigation.navigate("AddAddress", {
         user_id: "no_user",
-        refreshData: fetchDeliveryAddressNoUser,
+        refreshData: fetchDeliveryAddress,
       });
     } else {
       navigation.navigate("AddAddress", {
@@ -83,15 +82,23 @@ export default function DeliveryAddress({ onAddressFetched }) {
   console.log("deliveryAddress", deliveryAddress);
 
   const handleNavigateToSelectAddress = () => {
-    navigation.navigate("SelectAddress", {
-      onAddressSelected: (address) => {
-        console.log("Address selected and returned:", address);
-        setDeliveryAddress(address);
-        if (onAddressFetched) {
-          onAddressFetched(address); 
-        }
-      },
-    });
+    if (!user_id) {
+      console.log("hohi");
+      navigation.navigate("EditAddress", {
+        addressData: deliveryAddress,
+        refreshData: fetchDeliveryAddress,
+      });
+    } else {
+      navigation.navigate("SelectAddress", {
+        onAddressSelected: (address) => {
+          console.log("Address selected and returned:", address);
+          setDeliveryAddress(address);
+          if (onAddressFetched) {
+            onAddressFetched(address);
+          }
+        },
+      });
+    }
   };
   return (
     <View style={styles.container}>
@@ -169,6 +176,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: "#241E92",
+    flex: 1,
   },
   address: {
     flexDirection: "column",

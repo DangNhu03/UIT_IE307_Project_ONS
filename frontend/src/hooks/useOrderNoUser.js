@@ -49,6 +49,61 @@ export const getAddressNoUser = async () => {
     return [];
   }
 };
+
+export const updateAddressNoUser = async (updatedAddress) => {
+  try {
+    // Fetch the current address
+    let currentAddress = JSON.parse(await AsyncStorage.getItem("addressNoUser"));
+
+    if (!currentAddress) {
+      console.error("No existing address found to update.");
+      return { success: false, message: "No address found to update." };
+    }
+
+    // Validate input fields
+    if (
+      !updatedAddress.loca_address_province ||
+      !updatedAddress.loca_address_district ||
+      !updatedAddress.loca_address_commue ||
+      !updatedAddress.loca_phone ||
+      !updatedAddress.loca_per_name
+    ) {
+      return {
+        success: false,
+        message: "Vui lòng nhập đầy đủ thông tin bắt buộc.",
+      };
+    }
+
+    // Construct the updated full address
+    const fullAddress = [
+      updatedAddress?.loca_address_detail,
+      updatedAddress?.loca_address_commue,
+      updatedAddress?.loca_address_district,
+      updatedAddress?.loca_address_province,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    // Merge updated address with the existing one
+    currentAddress = {
+      ...currentAddress,
+      ...updatedAddress,
+      loca_address: fullAddress,
+    };
+
+    // Save the updated address back to AsyncStorage
+    await AsyncStorage.setItem("addressNoUser", JSON.stringify(currentAddress));
+
+    console.log("Address updated successfully:", currentAddress);
+
+    return { success: true, message: "Address updated successfully." };
+  } catch (error) {
+    console.error("Error updating address for no-user:", error);
+    return { success: false, message: "Error updating address." };
+  }
+};
+
+
 export const createOrderNoUser = async (orderData) => {
   try {
     if (
