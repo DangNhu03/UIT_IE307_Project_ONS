@@ -33,7 +33,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
   const fetchDeliveryAddress = async () => {
     try {
       if (!user_id) {
-        fetchDeliveryAddressNoUser();
+        // fetchDeliveryAddressNoUser();
       }
       const response = await fetch(
         `${API_URL}/accounts/locations/default/${user_id}`
@@ -72,7 +72,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
     if (!user_id) {
       navigation.navigate("AddAddress", {
         user_id: "no_user",
-        refreshData: fetchDeliveryAddress,
+        refreshData: fetchDeliveryAddressNoUser,
       });
     } else {
       navigation.navigate("AddAddress", {
@@ -88,7 +88,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
       console.log("hohi");
       navigation.navigate("EditAddress", {
         addressData: deliveryAddress,
-        refreshData: fetchDeliveryAddress,
+        refreshData: fetchDeliveryAddressNoUser,
       });
     } else {
       navigation.navigate("SelectAddress", {
