@@ -26,6 +26,9 @@ export const authReducer = (state, action) => {
       AsyncStorage.removeItem("cartNouserQuantity").catch((err) =>
         console.error("Lỗi khi xóa giỏ hàng tạm thời:", err)
       );
+      AsyncStorage.removeItem("addressNoUser").catch((err) =>
+        console.error("Lỗi khi xóa địa chỉ tạm thời:", err)
+      );
       return { user: null};
     case "UPDATE_CART_QUANTITY":
       return { ...state, totalQuantity: action.payload };

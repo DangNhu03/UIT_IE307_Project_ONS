@@ -89,7 +89,10 @@ export function useAddToCart() {
       const variant_id = product.prod_variations[selectedVariant]?._id;
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa, nếu có thì tăng số lượng
       cartItems.forEach((item) => {
-        if (item.product_id === product._id && item.variant_id === variant_id) {
+        if (
+          item.product_id === product._id &&
+          ((variant_id && item.variant_id === variant_id) || (!variant_id && !item.variant_id))
+        ) {
           item.quantity += quantity;
           found = true;
         }

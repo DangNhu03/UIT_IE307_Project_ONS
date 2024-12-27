@@ -23,7 +23,9 @@ export default function DeliveryAddress({ onAddressFetched }) {
   const fetchDeliveryAddressNoUser = async () => {
     const addressList = await getAddressNoUser();
     console.log("no login", addressList);
-    setDeliveryAddress(addressList);
+    if (addressList.length > 0) {
+      setDeliveryAddress(addressList);
+    }
     if (onAddressFetched) {
       onAddressFetched(addressList);
     }
@@ -43,7 +45,6 @@ export default function DeliveryAddress({ onAddressFetched }) {
         if (onAddressFetched) {
           onAddressFetched(data);
         }
-
       }
       setLoading(false);
     } catch (error) {
