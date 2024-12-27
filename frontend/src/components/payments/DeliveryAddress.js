@@ -36,14 +36,14 @@ export default function DeliveryAddress({ onAddressFetched }) {
       const response = await fetch(
         `${API_URL}/accounts/locations/default/${user_id}`
       );
-      const data = await response.json();
-      console.log("Fetched data cua delivery address: ", data);
-
-      if (data) {
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log("Fetched data cua delivery address: ", data);
         setDeliveryAddress(data);
         if (onAddressFetched) {
           onAddressFetched(data);
         }
+
       }
       setLoading(false);
     } catch (error) {
@@ -88,7 +88,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
         console.log("Address selected and returned:", address);
         setDeliveryAddress(address);
         if (onAddressFetched) {
-          onAddressFetched(address); 
+          onAddressFetched(address);
         }
       },
     });
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: "#241E92",
+    flex: 1,
   },
   address: {
     flexDirection: "column",

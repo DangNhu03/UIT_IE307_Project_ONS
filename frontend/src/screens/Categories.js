@@ -126,8 +126,8 @@ export default function Categories() {
       case "Bán chạy":
         filteredProducts.sort((a, b) => b.prod_sold - a.prod_sold);
         break;
-      case "Giá ↑↓":
-        filteredProducts.sort((a, b) => a.prod_price - b.prod_price);
+      case "Giá ↑":
+        filteredProducts.sort((a, b) => (a.prod_price - (a.prod_price * (a.prod_discount / 100))) - (b.prod_price - (b.prod_price * (b.prod_discount / 100))));
         break;
       case "Nổi bật":
         filteredProducts.sort((a, b) => b.prod_avg_rating - a.prod_avg_rating);
