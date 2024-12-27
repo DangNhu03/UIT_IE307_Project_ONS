@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Import hook navigation
+import { format } from "date-fns";
 
 const Noti = ({ data }) => {
     const navigation = useNavigation(); // Khởi tạo navigation
@@ -30,7 +31,8 @@ const Noti = ({ data }) => {
                 </View>
                 <View style={styles.content2}>
                     <Text style={styles.time}>
-                        {data.noti_time}
+                        {/* {data.noti_time} */}
+                        {format(new Date(data.noti_time), "dd-MM-yyyy")}
                     </Text>
                     <TouchableOpacity onPress={onPress} style={styles.button}>
                         <Text style={styles.textButton}>Truy cập ngay</Text>

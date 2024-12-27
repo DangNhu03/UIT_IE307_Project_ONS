@@ -133,7 +133,7 @@ export default function Review({ navigation, route }) {
         try {
             setLoading(true);
             // Upload từng hình ảnh và lấy các link HTTPS
-            const uploadedImages = await Promise.all(image.map((img) => uploadImage(img.uri)));
+            const uploadedImages = await Promise.all(image.map((img) => uploadImage(img)));
 
             // Tạo dữ liệu review
             const reviewData = {

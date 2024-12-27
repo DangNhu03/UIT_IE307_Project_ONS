@@ -43,6 +43,7 @@ export default function DeliveryAddress({ onAddressFetched }) {
         if (onAddressFetched) {
           onAddressFetched(data);
         }
+
       }
       setLoading(false);
     } catch (error) {
