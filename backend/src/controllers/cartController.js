@@ -122,7 +122,7 @@ const updateQuantityInCart = async (req, res) => {
     );
 
     if (productIndex === -1) {
-      return res.status(404).json({ message: "Product not found in cart" });
+      return res.status(404).json({ message: "Không có sản phẩm trong giỏ hàng" });
     }
 
     // Cập nhật số lượng sản phẩm
@@ -167,7 +167,7 @@ const removeProductFromCart = async (req, res) => {
 
     // Nếu không tìm thấy sản phẩm, trả về lỗi
     if (productIndex === -1) {
-      return res.status(404).json({ message: "Product not found in cart" });
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     }
 
     // Xóa sản phẩm khỏi giỏ hàng

@@ -31,7 +31,8 @@ export default function MyOrder() {
   const [loadingOrder, setLoadingOrder] = useState(false);
   const user_id =
     user && Array.isArray(user) && user.length > 0 ? user[0]._id : null;
-  const { updateCartWithOrderList } = useAddToCart();
+  const { updateCartWithOrderList, addToCart, updateCartQuantity } =
+    useAddToCart();
 
   const orderStatuses = [
     { id: "1", title: "Mới đặt" },
@@ -179,6 +180,7 @@ export default function MyOrder() {
           const result = await response.json();
 
           if (response.status === 200) {
+            await updateCartQuantity()
             console.log("Added to cart successfully:", result);
           } else {
             console.log("Failed to add to cart:", result.message);
