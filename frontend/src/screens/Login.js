@@ -7,14 +7,33 @@ import Input from "@components/Input";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useLogin } from "@hooks/useLogin";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
+import { useCallback } from "react";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
+import * as Linking from "expo-linking";
+import { useRegisterAndLogin } from "@hooks/useRegisterAndLogin";
+import Loading from "@screens/Loading";
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 
 export default function Login() {
+  useWarmUpBrowser();
+  const { registerAndLogin } = useRegisterAndLogin();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const { logIn, loading } = useLogin();
   const navigation = useNavigation();
+  const [loadingLogin, setLoadingLogin] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(false);
   const validateInputs = () => {
     const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
 
@@ -45,22 +64,28 @@ export default function Login() {
   const handleRegisterRedirect = () => {
     navigation.navigate("Register");
   };
+
   const handleLogin = async () => {
     if (!validateInputs()) return;
 
     const user = { phone, password };
     console.log("Đăng nhập với thông tin:", user);
 
+    setLoadingLogin(true);
+
     try {
       await logIn(user);
+      console.log("Đăng nhập thành công");
     } catch (error) {
       console.log("Đăng nhập thất bại:", error);
+    } finally {
+      setLoadingLogin(false);
     }
   };
 
-  const forgotPassWord =()=>{
+  const forgotPassWord = () => {
     navigation.navigate("ForgotPassword");
-  }
+  };
   const handleInputChange = (field, value) => {
     if (field === "phone") setPhone(value);
     if (field === "password") setPassword(value);
@@ -71,6 +96,85 @@ export default function Login() {
     }));
   };
 
+  const { startOAuthFlow: startGoogleOAuth } = useOAuth({
+    strategy: "oauth_google",
+  });
+  const { startOAuthFlow: startFacebookOAuth } = useOAuth({
+    strategy: "oauth_facebook",
+  });
+  const { user } = useUser();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Hàm xác thực Google Login
+  const handleGoogleAuthLogin = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/dashboard", { scheme: "myapp" });
+      console.log("Starting Google OAuth Flow...");
+      const { createdSessionId, setActive } = await startGoogleOAuth({
+        redirectUrl: redirectUrl,
+      });
+
+      if (createdSessionId) {
+        console.log("Session created", createdSessionId);
+        setActive({ session: createdSessionId });
+        setIsAuthenticated(true);
+      } else {
+        console.log("Additional steps required for Google login.");
+      }
+    } catch (err) {
+      console.error("Google Login error:", err);
+    }
+  }, [startGoogleOAuth]);
+
+  // Hàm xác thực Facebook Login
+  const handleFacebookLogin = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/dashboard", { scheme: "myapp" });
+      console.log("Starting Facebook OAuth Flow...");
+      const { createdSessionId, setActive } = await startFacebookOAuth({
+        redirectUrl: redirectUrl,
+      });
+
+      if (createdSessionId) {
+        console.log("Session created", createdSessionId);
+        setActive({ session: createdSessionId });
+        setIsAuthenticated(true);
+        console.log("Additional steps required for Facebook login.");
+      }
+    } catch (err) {
+      console.error("Facebook Login error:", err);
+    }
+  }, [startFacebookOAuth]);
+
+  const handleRegisterAndLogin = useCallback(async () => {
+    if (user) {
+      try {
+        setLoadingScreen(true); 
+        await user.reload();
+        const name = user?.fullName;
+        const email = user?.emailAddresses[0]?.emailAddress;
+        const avatar = user?.imageUrl;
+
+        console.log("User info after reload:", { name, email, avatar });
+
+        await registerAndLogin(name, email, avatar);
+      } catch (error) {
+        console.log("Error in handleRegisterAndLogin:", error);
+      } finally {
+        setLoadingScreen(false); 
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      handleRegisterAndLogin();
+    }
+  }, [isAuthenticated, user, handleRegisterAndLogin]);
+
+  if (loadingScreen) {
+    return <Loading />; 
+  }
   return (
     <View style={styles.container}>
       <ArrowBack title="Đăng nhập" />
@@ -102,13 +206,16 @@ export default function Login() {
             />
           }
         />
-        <TouchableOpacity style={styles.forgotPasswordContainer} onPress={forgotPassWord}>
+        <TouchableOpacity
+          style={styles.forgotPasswordContainer}
+          onPress={forgotPassWord}
+        >
           <Text style={styles.forgotPasswordText}>Bạn quên mật khẩu?</Text>
         </TouchableOpacity>
 
         <View style={styles.buttonContainer}>
           <Button
-            title="ĐĂNG NHẬP"
+            title={loadingLogin ? "Đang đăng nhập" : "ĐĂNG NHẬP"}
             onPress={handleLogin}
             backgroundColor="#FFFFFF"
             textColor="#2a1cbb"
@@ -131,7 +238,7 @@ export default function Login() {
         <View style={styles.socialButtons}>
           <Button
             title="Facebook"
-            onPress={() => console.log("Login with Facebook")}
+            onPress={handleFacebookLogin}
             backgroundColor="#FFFFFF"
             textColor="#000000"
             width={140}
@@ -139,7 +246,7 @@ export default function Login() {
           />
           <Button
             title="Google"
-            onPress={() => console.log("Login with Google")}
+            onPress={handleGoogleAuthLogin}
             backgroundColor="#FFFFFF"
             textColor="#000000"
             width={140}

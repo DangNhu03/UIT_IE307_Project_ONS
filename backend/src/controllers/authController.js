@@ -1,5 +1,5 @@
 const User = require("../models/usersModels"); // Model của users
-const Locations = require("../models/locationsModels")
+const Locations = require("../models/locationsModels");
 const Voucher = require("../models/vouchersModels"); // Model của vouchers
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -16,14 +16,10 @@ const postUser = async (req, res) => {
   try {
     const { name, phone, email, password } = req.body;
 
-    if (!name || !phone || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
     const user = await User.findOne({ user_phone: phone });
 
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "Người dùng đã tồn tại" });
     } else {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -34,7 +30,6 @@ const postUser = async (req, res) => {
         user_phone: phone,
         user_email: email,
         user_pass: hashedPassword,
-        local_default_id: new mongoose.Types.ObjectId(),
       });
 
       await newUser.save();
@@ -71,6 +66,59 @@ const loginUser = async (req, res) => {
     if (!match) {
       return res.status(400).json({ message: "Invalid password" });
     }
+
+    const token = createToken(user._id);
+    res.status(200).json([user, token]);
+    console.log("Login success");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST: Thêm người dùng mới
+const postUserWithEmail = async (req, res) => {
+  try {
+    const { name, email, avatar } = req.body;
+
+    const user = await User.findOne({ user_email: email });
+
+    if (user) {
+      return res.status(400).json({ message: "Người dùng đã tồn tại" });
+    } else {
+      const newUser = new User({
+        _id: new mongoose.Types.ObjectId(),
+        user_name: name,
+        user_email: email,
+        user_avatar: avatar,
+      });
+
+      await newUser.save();
+      console.log("new user", newUser);
+
+      const token = await createToken(newUser._id);
+      res.status(201).json([newUser, token]);
+    }
+  } catch (error) {
+    console.log("err", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+// POST: Đăng nhập
+const loginWithEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(req.body);
+
+    if (!email) {
+      return res.status(400).json({ message: "Please fill in all fields" });
+    }
+
+    const user = await User.findOne({ user_email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log("found user", user);
 
     const token = createToken(user._id);
     res.status(200).json([user, token]);
@@ -180,9 +228,9 @@ const getListVouchers = async (req, res) => {
     // Kết hợp thông tin voucher và is_used trong cùng một đối tượng
     const vouchers = user.list_vouchers.map((item) => ({
       ...item.voucher_id.toObject(), // Chuyển đối tượng voucher_id thành một object thuần túy
-      is_used: item.is_used          // Thêm trường is_used vào bên ngoài đối tượng voucher
+      is_used: item.is_used, // Thêm trường is_used vào bên ngoài đối tượng voucher
     }));
-    
+
     // Trả về danh sách voucher với trường is_used
     res.status(200).json({
       message: "List of vouchers fetched successfully",
@@ -229,8 +277,9 @@ const forgotPassword = async (req, res) => {
     user.user_pass = hashedPassword;
     await user.save();
 
-    return res.status(200).json({ message: "Mật khẩu đã được cập nhật thành công" });
-
+    return res
+      .status(200)
+      .json({ message: "Mật khẩu đã được cập nhật thành công" });
   } catch (error) {
     console.error("Lỗi trong quá trình xử lý quên mật khẩu:", error);
     return res.status(500).json({ message: "Có lỗi xảy ra, vui lòng thử lại" });
@@ -241,7 +290,7 @@ const forgotPassword = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, phone, email } = req.body;
-  console.log(req.body)
+  console.log(req.body);
 
   try {
     // Kiểm tra ID hợp lệ
@@ -270,7 +319,9 @@ const updateUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ message: "Failed to update user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update user", error: error.message });
   }
 };
 
@@ -307,7 +358,9 @@ const updatePassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating password:", error);
-    res.status(500).json({ message: "Failed to update password", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update password", error: error.message });
   }
 };
 
@@ -332,7 +385,7 @@ const verifyPassword = async (req, res) => {
     console.error("Lỗi xác minh mật khẩu:", error);
     res.status(500).json({ message: "Lỗi server, vui lòng thử lại." });
   }
-}
+};
 const deleteUser = async (req, res) => {
   const { id: user_id } = req.params;
 
@@ -345,7 +398,9 @@ const deleteUser = async (req, res) => {
 
   try {
     // Khởi tạo ObjectId với từ khóa `new`
-    const user = await User.findByIdAndDelete(new mongoose.Types.ObjectId(user_id));
+    const user = await User.findByIdAndDelete(
+      new mongoose.Types.ObjectId(user_id)
+    );
 
     if (!user) {
       console.log("User not found in database:", user_id);
@@ -360,7 +415,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
 module.exports = {
   postUser,
   getAllUser,
@@ -373,5 +427,7 @@ module.exports = {
   updateUser,
   updatePassword,
   verifyPassword,
-  deleteUser
+  deleteUser,
+  postUserWithEmail,
+  loginWithEmail,
 };

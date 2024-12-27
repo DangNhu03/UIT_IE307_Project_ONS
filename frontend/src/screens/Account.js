@@ -15,8 +15,9 @@ import {
 } from "react-native";
 import InfoList from "@components/account/InfoList";
 import OrderStatusList from "@components/account/OrderStatusList";
-
+import { useClerk } from "@clerk/clerk-expo";
 export default function Account() {
+  const { signOut } = useClerk();
   const { user, dispatch } = useAuthContext();
   const navigation = useNavigation();
   const user_name =
@@ -87,7 +88,9 @@ export default function Account() {
     { id: "2", title: "Đang xử lý", iconName: "truck-fast-outline" },
     { id: "3", title: "Thành công", iconName: "package" },
     { id: "4", title: "Đã hủy", iconName: "autorenew" },
-    { id: "5", title: "Đánh giá", iconName: "star-circle-outline" },
+    ...(user && Array.isArray(user) && user.length > 0
+      ? [{ id: "5", title: "Đánh giá", iconName: "star-circle-outline" }]
+      : []),
   ];
 
   const handlePressSupport = (item) => {
@@ -116,6 +119,7 @@ export default function Account() {
   };
 
   const handleLogout = () => {
+    signOut();
     Alert.alert(
       "Đăng xuất",
       "Bạn có chắc chắn muốn đăng xuất?",

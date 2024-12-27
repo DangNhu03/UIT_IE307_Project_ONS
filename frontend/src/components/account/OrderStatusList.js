@@ -27,13 +27,22 @@ const OrderStatusList = ({ data }) => {
             onPress={() => handlePress(item.title)}
           />
         )}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flexDirection: "row",
+    width: "100%",
+  },
+  listContent: {
+    justifyContent: "space-evenly", 
+    alignItems: "center",         
+    flexGrow: 1,  
+  },
 });
 
 export default OrderStatusList;

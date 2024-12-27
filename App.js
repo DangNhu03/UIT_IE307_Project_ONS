@@ -5,17 +5,29 @@ import { StyleSheet, Text, View } from "react-native";
 import StackNavigator from "@navigation/Navigator";
 // import store from "./store";
 // import { UserContext } from "./UserContext"
-import {AuthContextProvider} from "@contexts/AuthContext"
-import Toast from 'react-native-toast-message';
+import { AuthContextProvider } from "@contexts/AuthContext";
+import Toast from "react-native-toast-message";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { tokenCache } from "./utils/cache";
+
 export default function App() {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  if (!publishableKey) {
+    throw new Error("Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your .env file");
+  }
   return (
     <>
       {/* <Provider store={store}>
         <UserContext> */}
-      <AuthContextProvider>
-        <StackNavigator />
-        <Toast />
-      </AuthContextProvider>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <ClerkLoaded>
+          <AuthContextProvider>
+            <StackNavigator />
+            <Toast />
+          </AuthContextProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
       {/* <ModalPortal /> */}
       {/* </UserContext>
       </Provider> */}

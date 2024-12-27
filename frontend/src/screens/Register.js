@@ -7,8 +7,24 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
+import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
+import { useCallback } from "react";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
+import * as Linking from "expo-linking";
+import { useRegisterAndLogin } from "@hooks/useRegisterAndLogin";
+import Loading from "@screens/Loading";
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 export default function Register() {
+  useWarmUpBrowser();
+  const { registerAndLogin } = useRegisterAndLogin();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -19,6 +35,7 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const { register, loading, errorExist } = useRegister();
   const navigation = useNavigation();
+  const [loadingScreen, setLoadingScreen] = useState(false);
   const validateInputs = () => {
     const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
 
@@ -105,6 +122,85 @@ export default function Register() {
     await register(user);
   };
 
+  const { startOAuthFlow: startGoogleOAuth } = useOAuth({
+    strategy: "oauth_google",
+  });
+  const { startOAuthFlow: startFacebookOAuth } = useOAuth({
+    strategy: "oauth_facebook",
+  });
+  const { user } = useUser();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Hàm xác thực Google Login
+  const handleGoogleAuthLogin = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/dashboard", { scheme: "myapp" });
+      console.log("Starting Google OAuth Flow...");
+      const { createdSessionId, setActive } = await startGoogleOAuth({
+        redirectUrl: redirectUrl,
+      });
+
+      if (createdSessionId) {
+        console.log("Session created", createdSessionId);
+        setActive({ session: createdSessionId });
+        setIsAuthenticated(true);
+      } else {
+        console.log("Additional steps required for Google login.");
+      }
+    } catch (err) {
+      console.error("Google Login error:", err);
+    }
+  }, [startGoogleOAuth]);
+
+  // Hàm xác thực Facebook Login
+  const handleFacebookLogin = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/dashboard", { scheme: "myapp" });
+      console.log("Starting Facebook OAuth Flow...");
+      const { createdSessionId, setActive } = await startFacebookOAuth({
+        redirectUrl: redirectUrl,
+      });
+
+      if (createdSessionId) {
+        console.log("Session created", createdSessionId);
+        setActive({ session: createdSessionId });
+        setIsAuthenticated(true);
+        console.log("Additional steps required for Facebook login.");
+      }
+    } catch (err) {
+      console.error("Facebook Login error:", err);
+    }
+  }, [startFacebookOAuth]);
+
+  const handleRegisterAndLogin = useCallback(async () => {
+    if (user) {
+      try {
+        setLoadingScreen(true);
+        await user.reload();
+        const name = user?.fullName;
+        const email = user?.emailAddresses[0]?.emailAddress;
+        const avatar = user?.imageUrl;
+
+        console.log("User info after reload:", { name, email, avatar });
+
+        await registerAndLogin(name, email, avatar);
+      } catch (error) {
+        console.log("Error in handleRegisterAndLogin:", error);
+      } finally {
+        setLoadingScreen(false);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      handleRegisterAndLogin();
+    }
+  }, [isAuthenticated, user, handleRegisterAndLogin]);
+
+  if (loadingScreen) {
+    return <Loading />;
+  }
   return (
     <View style={styles.container}>
       <ArrowBack title="Đăng ký" />
@@ -194,7 +290,7 @@ export default function Register() {
         <View style={styles.socialButtons}>
           <Button
             title="Facebook"
-            onPress={() => console.log("Login with Facebook")}
+            onPress={handleFacebookLogin}
             backgroundColor="#FFFFFF"
             textColor="#000000"
             width={140}
@@ -202,7 +298,7 @@ export default function Register() {
           />
           <Button
             title="Google"
-            onPress={() => console.log("Login with Google")}
+            onPress={handleGoogleAuthLogin}
             backgroundColor="#FFFFFF"
             textColor="#000000"
             width={140}

@@ -4,6 +4,8 @@ const auth = require("../controllers/authController");
 
 router.post("/api/auth/register", auth.postUser);
 router.post("/api/auth/login", auth.loginUser);
+router.post("/api/auth/register-email", auth.postUserWithEmail);
+router.post("/api/auth/login-email", auth.loginWithEmail);
 router.get("/users", auth.getAllUser);
 router.get("/api/users/:id", auth.getUserById);
 router.post("/api/users/vouchers", auth.addVoucher);

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   input: {
-    fontSize:14,
+    fontSize:12,
     flex: 1,
     color: '#3B394A',
     lineHeight: 21
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "#FF71CD",
-    fontSize: 14,
+    fontSize: 12,
     marginTop: 5,
   },
 });
